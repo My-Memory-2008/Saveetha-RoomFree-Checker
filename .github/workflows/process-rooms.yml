@@ -31,7 +31,7 @@ jobs:
 
     - name: Pull Vision Model Checkpoint
       run: |
-        ollama pull qwen2.5
+        ollama pull qwen2.5vl
 
     - name: Process Processing Script
       run: |
