@@ -504,25 +504,48 @@
         let scannedRoomGlobal = null;
 
         function startScanner() {
+            // Hide previous results card
             document.getElementById('result-card').style.display = 'none';
-            document.getElementById('camera-placeholder').style.opacity = '0';
-            document.getElementById('camera-placeholder').style.pointerEvents = 'none';
             
+            // Hide the placeholder image panel smoothly
+            const placeholderEl = document.getElementById('camera-placeholder');
+            placeholderEl.style.opacity = '0';
+            placeholderEl.style.pointerEvents = 'none';
+            
+            // Unhide and style the camera mount element container
             const readerEl = document.getElementById('reader');
             readerEl.style.opacity = '1';
             readerEl.style.transform = 'scale(1)';
+            readerEl.style.width = '100%';
+            readerEl.style.height = '100%';
             
-            if (!html5QrcodeScanner) html5QrcodeScanner = new Html5Qrcode("reader");
+            // Initialize the scanner engine if it doesn't exist yet
+            if (!html5QrcodeScanner) {
+                // Pass the direct HTML element object rather than a raw string ID
+                html5QrcodeScanner = new Html5Qrcode(readerEl);
+            }
 
+            // Set up a clear configuration matrix for mobile devices
+            const config = { 
+                fps: 10, 
+                qrbox: function(viewfinderWidth, viewfinderHeight) {
+                    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                    const boxSize = Math.floor(minEdge * 0.7);
+                    return { width: boxSize, height: boxSize };
+                }
+            };
+
+            // Request permission and start video transmission stream
             html5QrcodeScanner.start(
                 { facingMode: "environment" }, 
-                { fps: 10, qrbox: { width: 220, height: 220 } },
+                config,
                 (decodedText) => { 
                     stopScanner(); 
                     lookupRoomRegistry(decodedText); 
                 }
             ).catch(err => {
-                alert("Camera deployment exception: " + err);
+                console.error("Camera mounting layout error:", err);
+                alert("Camera permission denied, or camera is currently busy in another tab.");
                 resetUIPlaceholder();
             });
         }
@@ -531,7 +554,7 @@
             if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
                 html5QrcodeScanner.stop().then(() => {
                     resetUIPlaceholder();
-                }).catch(err => console.error(err));
+                }).catch(err => console.error("Error stopping engine:", err));
             } else {
                 resetUIPlaceholder();
             }
@@ -541,8 +564,10 @@
             const readerEl = document.getElementById('reader');
             readerEl.style.opacity = '0';
             readerEl.style.transform = 'scale(0.95)';
-            document.getElementById('camera-placeholder').style.opacity = '1';
-            document.getElementById('camera-placeholder').style.pointerEvents = 'auto';
+            
+            const placeholderEl = document.getElementById('camera-placeholder');
+            placeholderEl.style.opacity = '1';
+            placeholderEl.style.pointerEvents = 'auto';
         }
 
         async function lookupRoomRegistry(roomID) {
@@ -629,7 +654,7 @@
 
                 if (response.ok && data.success) {
                     btn.innerHTML = `<span>🤖</span> Analysis Executing (Takes ~1 min)...`;
-                    document.getElementById('polling-status').style.style.display = 'flex';
+                    document.getElementById('polling-status').style.display = 'flex';
                     startPolling();
                 } else {
                     alert("Runner workflow trigger fault: " + data.error);
@@ -670,3 +695,4 @@
     </script>
 </body>
 </html>
+
