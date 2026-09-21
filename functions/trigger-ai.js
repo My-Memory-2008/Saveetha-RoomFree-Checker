@@ -12,7 +12,7 @@ export async function onRequest(context) {
         const GITHUB_REPO = "Saveetha-RoomFree-Checker";
         const WORKFLOW_NAME = "process-rooms.yml";
 
-        const url = `https://github.com{GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_NAME}/dispatches`;
+        const url = `https://github.com/{GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_NAME}/dispatches`;
 
         const ghResponse = await fetch(url, {
             method: "POST",
