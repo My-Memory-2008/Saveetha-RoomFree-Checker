@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Availability Scanner</title>
+    <script src="https://jsdelivr.net"></script>
+    <script src="https://unpkg.com" type="text/javascript"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center p-4">
+
+    <header class="w-full max-w-md text-center my-6">
+        <h1 class="text-3xl font-bold text-emerald-400">RoomScanner AI</h1>
+        <p class="text-gray-400 text-sm mt-1">Scan room QR codes to check live availability</p>
+    </header>
+
+    <main class="w-full max-w-md bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-700">
+        <div class="relative overflow-hidden rounded-xl bg-black aspect-video flex items-center justify-center border border-gray-600 mb-4">
+            <div id="reader" class="w-full h-full"></div>
+        </div>
+
+        <div class="flex gap-3 mb-6">
+            <button onclick="startScanner()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-4 rounded-xl transition cursor-pointer">Start Scanner</button>
+            <button onclick="stopScanner()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2 px-4 rounded-xl transition cursor-pointer">Stop</button>
+        </div>
+
+        <!-- Info Card Box -->
+        <div id="result-card" class="hidden border-t border-gray-700 pt-4">
+            <div class="flex justify-between items-center mb-3">
+                <h2 id="room-number" class="text-2xl font-bold text-white">Room ---</h2>
+                <span id="room-status" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Unknown</span>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="bg-gray-700/50 p-3 rounded-lg">
+                    <span class="text-xs text-gray-400 block font-medium">Status Description</span>
+                    <p id="current-details" class="text-sm mt-0.5 text-gray-200">No data loaded.</p>
+                </div>
+                <div class="bg-gray-700/50 p-3 rounded-lg">
+                    <span class="text-xs text-gray-400 block font-medium">Upcoming Schedule (AI Extracted)</span>
+                    <p id="upcoming-details" class="text-sm mt-0.5 text-gray-200">-</p>
+                </div>
+            </div>
+
+            <!-- Run AI Workflow Button -->
+            <button id="ai-btn" onclick="triggerWorkflowAI()" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-sm transition hidden cursor-pointer">
+                🤖 Run Live Qwen-AI Analysis
+            </button>
+            <p id="polling-status" class="text-xs text-center text-amber-400 mt-2 hidden animate-pulse">Checking workflow completion...</p>
+        </div>
+    </main>
+
+    <script>
+        let html5QrcodeScanner = null;
+        let scannedRoomGlobal = null;
+
+        function startScanner() {
+            document.getElementById('result-card').classList.add('hidden');
+            if (!html5QrcodeScanner) html5QrcodeScanner = new Html5Qrcode("reader");
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, 
+                { fps: 10, qrbox: 250 },
+                (decodedText) => { stopScanner(); lookupRoomRegistry(decodedText); }
+            ).catch(err => alert("Camera error: " + err));
+        }
+
+        function stopScanner() {
+            if (html5QrcodeScanner && html5QrcodeScanner.isScanning) html5QrcodeScanner.stop();
+        }
+
+        async function lookupRoomRegistry(roomID) {
+            scannedRoomGlobal = roomID.trim();
+            document.getElementById('result-card').classList.remove('hidden');
+            document.getElementById('room-number').innerText = `Room ${scannedRoomGlobal}`;
+            
+            try {
+                const res = await fetch('/rooms.json');
+                const database = await res.json();
+                const roomInfo = database[scannedRoomGlobal];
+
+                if (roomInfo) {
+                    document.getElementById('room-status').innerText = roomInfo.currentStatus;
+                    document.getElementById('room-status').className = roomInfo.currentStatus === "Free" ? "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400" : "px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400";
+                    document.getElementById('current-details').innerText = "Cached local snapshot exists.";
+                    document.getElementById('upcoming-details').innerText = roomInfo.upcomingTimings || "No timeline parsed.";
+                } else {
+                    document.getElementById('room-status').innerText = "Not Analyzed";
+                    document.getElementById('room-status').className = "px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400";
+                    document.getElementById('current-details').innerText = "Schedule data missing for this room.";
+                    document.getElementById('upcoming-details').innerText = "Click the button below to parse image assets.";
+                }
+                document.getElementById('ai-btn').classList.remove('hidden');
+            } catch(e) {
+                // Initial creation fallback if json file doesn't exist yet
+                document.getElementById('ai-btn').classList.remove('hidden');
+            }
+        }
+
+        async function triggerWorkflowAI() {
+            if(!scannedRoomGlobal) return;
+            const btn = document.getElementById('ai-btn');
+            btn.disabled = true;
+            btn.innerText = "Waking up GitHub Action Runner...";
+
+            try {
+                const response = await fetch('/trigger-ai', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ roomNumber: scannedRoomGlobal })
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    btn.innerText = "AI Processing (Takes ~1 min)...";
+                    document.getElementById('polling-status').classList.remove('hidden');
+                    startPolling();
+                } else {
+                    alert("Trigger failed: " + data.error);
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert("Network error executing cloud function Proxy.");
+                btn.disabled = false;
+            }
+        }
+
+        function startPolling() {
+            let attempts = 0;
+            const interval = setInterval(async () => {
+                attempts++;
+                if (attempts > 12) { // Stop after 2 minutes
+                    clearInterval(interval);
+                    document.getElementById('polling-status').innerText = "Execution took longer than expected. Please manually refresh.";
+                    return;
+                }
+                try {
+                    // Cache bust file request to check updates
+                    const res = await fetch(`/rooms.json?t=${new Date().getTime()}`);
+                    const db = await res.json();
+                    if(db[scannedRoomGlobal]) {
+                        clearInterval(interval);
+                        location.reload(); // Refresh viewport layout to demonstrate fresh status data
+                    }
+                } catch(e){}
+            }, 10000); // Poll every 10 seconds
+        }
+    </script>
+</body>
+</html>
