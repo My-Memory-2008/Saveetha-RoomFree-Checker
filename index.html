@@ -4,133 +4,499 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoomScanner AI - Live Availability Dashboard</title>
-    <!-- Stable Tailwind CSS v3 Engine Layout -->
-    <script src="https://tailwindcss.com"></script>
+    
     <!-- HTML5-QR Code Reader Framework Component -->
     <script src="https://unpkg.com" type="text/javascript"></script>
+    
     <style>
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(0.95); opacity: 0.5; }
+        /* Modern CSS Variable Reset */
+        :root {
+            --bg-dark: #020617;
+            --panel-glass: rgba(30, 41, 59, 0.65);
+            --border-glow: rgba(99, 102, 241, 0.25);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-indigo: #6366f1;
+            --accent-amber: #f59e0b;
         }
-        .ai-glow {
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Lighting */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1200px;
+            height: 300px;
+            background: radial-gradient(circle at top, rgba(99, 102, 241, 0.15) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* Header Layout Styles */
+        header {
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            margin-top: 16px;
+            margin-bottom: 24px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        /* Card Layout Panels */
+        main {
+            width: 100%;
+            max-width: 440px;
+            background: var(--panel-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin: auto 0;
+            transition: border-color 0.3s ease;
+        }
+
+        main:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Visual Media Window Box */
+        .viewport-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .placeholder-ui {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 2;
+        }
+
+        .placeholder-ui img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.25;
+            mix-blend-mode: luminosity;
+            transition: transform 0.5s ease;
+        }
+
+        .viewport-box:hover .placeholder-ui img {
+            transform: scale(1.04);
+        }
+
+        .icon-circle {
+            position: relative;
+            padding: 14px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            color: var(--accent-indigo);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .placeholder-title {
+            position: relative;
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+            letter-spacing: 0.025em;
+        }
+
+        .placeholder-desc {
+            position: relative;
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+            max-width: 260px;
+            line-height: 1.4;
+        }
+
+        #reader {
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1;
+        }
+
+        /* Action Buttons styling */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .btn-secondary:hover {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Info Display Layouts */
+        .result-card {
+            display: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 20px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .room-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+        }
+
+        .room-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 9999px;
+            background-color: var(--accent-indigo);
+            box-shadow: 0 0 10px var(--accent-indigo);
+        }
+
+        #room-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid transparent;
+        }
+
+        .badge-unknown {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-amber);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 16px;
+            border-radius: 14px;
+            display: flex;
+            gap: 14px;
+            margin-bottom: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .info-box:hover {
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .box-icon {
+            padding: 6px;
+            border-radius: 8px;
+            background: #1e293b;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: max-content;
+        }
+
+        .box-content {
+            flex: 1;
+        }
+
+        .box-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #475569;
+            display: block;
+        }
+
+        .box-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #e2e8f0;
+            margin-top: 2px;
+            line-height: 1.5;
+        }
+
+        /* AI Trigger Controls */
+        .btn-ai {
+            width: 100%;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+            color: white;
+            padding: 16px;
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.3);
+            margin-top: 8px;
+        }
+
+        .btn-ai:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            box-shadow: 0 12px 30px -5px rgba(124, 58, 237, 0.45);
+        }
+
+        .polling-status {
+            display: none;
+            margin-top: 14px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-amber);
+        }
+
+        /* Plain Spinner Integration */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(245, 158, 11, 0.2);
+            border-top-color: var(--accent-amber);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        footer {
+            width: 100%;
+            text-align: center;
+            font-size: 11px;
+            color: #334155;
+            letter-spacing: 0.025em;
+            margin-top: 24px;
+            margin-bottom: 8px;
+        }
+
+        /* Pure CSS Animation Implementations */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
         }
     </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 selection:bg-indigo-500/30 font-sans antialiased overflow-x-hidden">
+<body>
 
-    <!-- Decorative Top Background Glow -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-72 bg-gradient-to-b from-indigo-600/10 via-emerald-500/5 to-transparent blur-3xl pointer-events-none -z-10"></div>
-
-    <!-- Header Section -->
-    <header class="w-full max-w-md text-center mt-6 mb-4 transition-all duration-300">
-        <div class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-semibold tracking-wide uppercase mb-3 animate-pulse">
-            ✨ Powered by Qwen 2.5 VL
-        </div>
-        <h1 class="text-4xl font-extrabold tracking-tight text-white bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
-            RoomScanner AI
-        </h1>
-        <p class="text-slate-400 text-sm mt-1.5 font-medium">
-            Scan room codes to instantly verify real-time availability.
-        </p>
+    <!-- Header Section Area -->
+    <header>
+        <div class="badge">✨ Powered by Qwen 2.5 VL</div>
+        <h1>RoomScanner AI</h1>
+        <p>Scan room destination codes to verify active scheduling instantly.</p>
     </header>
 
-    <!-- Main Card Interface Container -->
-    <main class="w-full max-w-md glass-panel rounded-3xl shadow-2xl p-5 border border-slate-800/80 transition-all duration-500 hover:border-slate-700/50 my-auto">
+    <!-- Main Dynamic Application Container -->
+    <main>
         
-        <!-- Video Viewport / Dynamic Placeholder Imagery Section -->
-        <div class="relative overflow-hidden rounded-2xl bg-slate-900 border border-slate-700/60 aspect-[16/10] flex flex-col items-center justify-center mb-5 group shadow-inner">
+        <!-- Video Viewport Display Mount -->
+        <div class="viewport-box">
             
-            <!-- Default Placeholder UI Image -->
-            <div id="camera-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
-                <img src="https://unsplash.com" 
-                     alt="Office Background Layout" 
-                     class="absolute inset-0 w-full h-full object-cover opacity-20 filter saturate-50 mix-blend-luminosity group-hover:scale-105 transition-transform duration-700">
-                <div class="relative p-4 rounded-full bg-slate-800/80 border border-slate-700/50 mb-3 text-indigo-400 shadow-md">
-                    <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-7 h-7">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-                    </svg>
+            <!-- Default Placeholder Photographic Asset Frame -->
+            <div id="camera-placeholder" class="placeholder-ui">
+                <img src="https://unsplash.com" alt="Modern Workspace Layout Architecture Frame">
+                <div class="icon-circle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
                 </div>
-                <span class="relative font-semibold text-slate-300 text-sm tracking-wide">Camera Scanner Offline</span>
-                <p class="relative text-xs text-slate-500 mt-1 max-w-[240px]">Click Start Scanner below to activate the viewfinder feed.</p>
+                <div class="placeholder-title">Camera Scanner Offline</div>
+                <div class="placeholder-desc">Initiate the live streaming window scanner to evaluate your local code assets.</div>
             </div>
 
-            <!-- Active Camera Viewport Container -->
-            <div id="reader" class="w-full h-full opacity-0 scale-95 transition-all duration-300"></div>
+            <!-- Active Viewfinder Capture Target Mount -->
+            <div id="reader"></div>
         </div>
 
-        <!-- Dashboard Action Ribbon Buttons -->
-        <div class="flex gap-3 mb-5">
-            <button onclick="startScanner()" class="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-900/20 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
-                <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" /></svg>
+        <!-- System Controls Trigger Interface Deck -->
+        <div class="btn-group">
+            <button onclick="startScanner()" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 Start Scanner
             </button>
-            <button onclick="stopScanner()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-3 px-5 rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center cursor-pointer">
-                Stop
-            </button>
+            <button onclick="stopScanner()" class="btn btn-secondary">Stop</button>
         </div>
-
-        <!-- Output Metric Dashboard Panel -->
-        <div id="result-card" class="hidden border-t border-slate-800/80 pt-5 space-y-4 transform transition-all duration-500 translate-y-2 opacity-0">
+                <!-- Output Metric Result Display Deck -->
+        <div id="result-card" class="result-card">
             
-            <div class="flex justify-between items-center bg-slate-900/40 border border-slate-800 p-3 rounded-xl">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.7)]"></div>
-                    <h2 id="room-number" class="text-xl font-bold text-white tracking-tight">Room ---</h2>
+            <div class="room-row">
+                <div class="room-title-group">
+                    <div id="status-glow" class="status-dot"></div>
+                    <div id="room-number">Room ---</div>
                 </div>
-                <span id="room-status" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border transition-all duration-300">
-                    Unknown
-                </span>
+                <span id="room-status" class="status-badge badge-unknown">Unknown</span>
             </div>
             
-            <div class="grid grid-cols-1 gap-3">
-                <div class="bg-slate-900/60 border border-slate-800/60 p-4 rounded-xl flex items-start gap-3 hover:bg-slate-900/90 transition-colors duration-200">
-                    <div class="p-2 rounded-lg bg-slate-800 text-slate-400 mt-0.5">
-                        <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 111.063.852l-.708 2.836a.75.75 0 001.063.852l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>
-                    </div>
-                    <div>
-                        <span class="text-[11px] font-bold tracking-wider text-slate-500 uppercase block">Status Description</span>
-                        <p id="current-details" class="text-sm font-medium mt-0.5 text-slate-200 leading-relaxed">No data loaded.</p>
-                    </div>
+            <!-- Description Matrix Lists -->
+            <div class="info-box">
+                <div class="box-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </div>
-
-                <div class="bg-slate-900/60 border border-slate-800/60 p-4 rounded-xl flex items-start gap-3 hover:bg-slate-900/90 transition-colors duration-200">
-                    <div class="p-2 rounded-lg bg-slate-800 text-slate-400 mt-0.5">
-                        <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
-                    </div>
-                    <div>
-                        <span class="text-[11px] font-bold tracking-wider text-slate-500 uppercase block">Upcoming Schedule (AI Extracted)</span>
-                        <p id="upcoming-details" class="text-sm font-medium mt-0.5 text-indigo-200/90 leading-relaxed">-</p>
-                    </div>
+                <div class="box-content">
+                    <span class="box-label">Status Description</span>
+                    <p id="current-details" class="box-text">No data loaded.</p>
                 </div>
             </div>
 
-            <!-- Run AI Workflow Button -->
-            <div class="pt-2">
-                <button id="ai-btn" onclick="triggerWorkflowAI()" class="ai-glow w-full bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-all duration-300 shadow-xl active:scale-[0.99] hidden items-center justify-center gap-2 cursor-pointer group">
-                    <span class="text-base group-hover:rotate-12 transition-transform duration-200">🤖</span>
-                    Run Live Qwen-AI Analysis
-                </button>
-                <div id="polling-status" class="hidden mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-400">
-                    <svg class="animate-spin h-4 w-4 text-amber-400" xmlns="http://w3.org" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Checking background workflow completion...
+            <div class="info-box">
+                <div class="box-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 </div>
+                <div class="box-content">
+                    <span class="box-label">Upcoming Schedule (AI Extracted)</span>
+                    <p id="upcoming-details" class="box-text">-</p>
+                </div>
+            </div>
+
+            <!-- Run Operational Server Execution Deck -->
+            <button id="ai-btn" onclick="triggerWorkflowAI()" class="btn btn-ai" style="display: none;">
+                <span>🤖</span> Run Live Qwen-AI Analysis
+            </button>
+            
+            <div id="polling-status" class="polling-status">
+                <div class="spinner"></div>
+                <span>Checking background workflow completion...</span>
             </div>
         </div>
     </main>
 
-    <footer class="w-full text-center text-[11px] text-slate-600 tracking-wide mt-6 mb-2">
+    <!-- Global Layout Footer Elements -->
+    <footer>
         RoomScanner Dashboard Platform Engine &bull; Secure Cloudflare Pages Deployment Environment
     </footer>
     <script>
@@ -138,11 +504,13 @@
         let scannedRoomGlobal = null;
 
         function startScanner() {
-            document.getElementById('result-card').classList.add('hidden');
-            document.getElementById('camera-placeholder').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('result-card').style.display = 'none';
+            document.getElementById('camera-placeholder').style.opacity = '0';
+            document.getElementById('camera-placeholder').style.pointerEvents = 'none';
             
             const readerEl = document.getElementById('reader');
-            readerEl.classList.remove('opacity-0', 'scale-95');
+            readerEl.style.opacity = '1';
+            readerEl.style.transform = 'scale(1)';
             
             if (!html5QrcodeScanner) html5QrcodeScanner = new Html5Qrcode("reader");
 
@@ -154,7 +522,7 @@
                     lookupRoomRegistry(decodedText); 
                 }
             ).catch(err => {
-                alert("Camera interface fault: " + err);
+                alert("Camera deployment exception: " + err);
                 resetUIPlaceholder();
             });
         }
@@ -170,23 +538,28 @@
         }
 
         function resetUIPlaceholder() {
-            document.getElementById('reader').classList.add('opacity-0', 'scale-95');
-            document.getElementById('camera-placeholder').classList.remove('opacity-0', 'pointer-events-none');
+            const readerEl = document.getElementById('reader');
+            readerEl.style.opacity = '0';
+            readerEl.style.transform = 'scale(0.95)';
+            document.getElementById('camera-placeholder').style.opacity = '1';
+            document.getElementById('camera-placeholder').style.pointerEvents = 'auto';
         }
 
         async function lookupRoomRegistry(roomID) {
             scannedRoomGlobal = roomID.trim();
             
             const resultCard = document.getElementById('result-card');
-            resultCard.classList.remove('hidden');
+            resultCard.style.display = 'block';
             
             setTimeout(() => {
-                resultCard.classList.remove('translate-y-2', 'opacity-0');
+                resultCard.style.opacity = '1';
+                resultCard.style.transform = 'translateY(0)';
             }, 50);
 
             document.getElementById('room-number').innerText = `Room ${scannedRoomGlobal}`;
             
             const statusEl = document.getElementById('room-status');
+            const glowEl = document.getElementById('status-glow');
             const aiBtn = document.getElementById('ai-btn');
 
             try {
@@ -197,35 +570,54 @@
                 if (roomInfo) {
                     const isFree = roomInfo.currentStatus === "Free";
                     statusEl.innerText = roomInfo.currentStatus;
-                    statusEl.className = isFree 
-                        ? "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
-                        : "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-500/10 text-rose-400 border-rose-500/20";
                     
-                    document.getElementById('current-details').innerText = `Room cached state checked out.`;
-                    document.getElementById('upcoming-details').innerText = roomInfo.upcomingTimings || "No timeline parsed.";
+                    if(isFree) {
+                        statusEl.className = "status-badge";
+                        statusEl.style.background = "rgba(16, 185, 129, 0.1)";
+                        statusEl.style.color = "var(--accent-emerald)";
+                        statusEl.style.borderColor = "rgba(16, 185, 129, 0.2)";
+                        glowEl.style.backgroundColor = "var(--accent-emerald)";
+                        glowEl.style.boxShadow = "0 0 10px var(--accent-emerald)";
+                    } else {
+                        statusEl.className = "status-badge";
+                        statusEl.style.background = "rgba(244, 63, 94, 0.1)";
+                        statusEl.style.color = "var(--accent-rose)";
+                        statusEl.style.borderColor = "rgba(244, 63, 94, 0.2)";
+                        glowEl.style.backgroundColor = "var(--accent-rose)";
+                        glowEl.style.boxShadow = "0 0 10px var(--accent-rose)";
+                    }
+                    
+                    document.getElementById('current-details').innerText = `Local cached snapshot verified.`;
+                    document.getElementById('upcoming-details').innerText = roomInfo.upcomingTimings || "No operational timeline items.";
                 } else {
-                    setRoomUnknownState(statusEl);
+                    setRoomUnknownState(statusEl, glowEl);
                 }
             } catch(e) {
-                setRoomUnknownState(statusEl);
+                setRoomUnknownState(statusEl, glowEl);
             }
             
             aiBtn.style.display = 'flex';
         }
 
-        function setRoomUnknownState(statusEl) {
+        function setRoomUnknownState(statusEl, glowEl) {
             statusEl.innerText = "Not Analyzed";
-            statusEl.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border-amber-500/20";
-            document.getElementById('current-details').innerText = "Schedule details missing for this room.";
-            document.getElementById('upcoming-details').innerText = "Click below to initialize Qwen-Action runner.";
+            statusEl.className = "status-badge badge-unknown";
+            statusEl.style.background = "rgba(245, 158, 11, 0.1)";
+            statusEl.style.color = "var(--accent-amber)";
+            statusEl.style.borderColor = "rgba(245, 158, 11, 0.2)";
+            glowEl.style.backgroundColor = "var(--accent-amber)";
+            glowEl.style.boxShadow = "0 0 10px var(--accent-amber)";
+            document.getElementById('current-details').innerText = "Timeline cache registry profile absent for this destination target.";
+            document.getElementById('upcoming-details').innerText = "Trigger the Qwen model execution payload below.";
         }
 
         async function triggerWorkflowAI() {
             if(!scannedRoomGlobal) return;
             const btn = document.getElementById('ai-btn');
             btn.disabled = true;
-            btn.classList.add('opacity-60', 'cursor-not-allowed');
-            btn.innerHTML = `<span>⏳</span> Spawning Cloud Automation...`;
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+            btn.innerHTML = `<span>⏳</span> Booting Runner Automation Layer...`;
 
             try {
                 const response = await fetch('/trigger-ai', {
@@ -236,23 +628,24 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    btn.innerHTML = `<span>🤖</span> Runner Active (Takes ~1 min)...`;
-                    document.getElementById('polling-status').classList.remove('hidden');
+                    btn.innerHTML = `<span>🤖</span> Analysis Executing (Takes ~1 min)...`;
+                    document.getElementById('polling-status').style.style.display = 'flex';
                     startPolling();
                 } else {
-                    alert("Trigger failed: " + data.error);
+                    alert("Runner workflow trigger fault: " + data.error);
                     resetAIButton(btn);
                 }
             } catch (err) {
-                alert("Network error trying to connect to serverless proxy.");
+                alert("Network communication exception connecting with Cloudflare serverless proxy.");
                 resetAIButton(btn);
             }
         }
 
         function resetAIButton(btn) {
             btn.disabled = false;
-            btn.classList.remove('opacity-60', 'cursor-not-allowed');
-            btn.innerHTML = `<span class="text-base">🤖</span> Run Live Qwen-AI Analysis`;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.innerHTML = `<span>🤖</span> Run Live Qwen-AI Analysis`;
         }
 
         function startPolling() {
@@ -261,7 +654,7 @@
                 attempts++;
                 if (attempts > 12) { 
                     clearInterval(interval);
-                    document.getElementById('polling-status').innerText = "Processing delay experienced. Please reload manually.";
+                    document.getElementById('polling-status').innerText = "Processing limit surpassed. Refresh page layout manually.";
                     return;
                 }
                 try {
