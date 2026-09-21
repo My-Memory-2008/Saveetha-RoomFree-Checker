@@ -320,35 +320,50 @@
         }
 
         async function triggerWorkflowAI() {
-            const btn = document.getElementById('ai-btn');
-            const pollStatus = document.getElementById('polling-status');
-            
-            btn.disabled = true;
-            pollStatus.style.display = 'flex';
+    const btn = document.getElementById('ai-btn');
+    const pollStatus = document.getElementById('polling-status');
+    
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    pollStatus.style.display = 'flex';
+    btn.innerHTML = `<span>⏳</span> Booting Runner Automation Layer...`;
 
-            try {
-                // Trigger the secure Cloudflare pages endpoint proxy function
-                const response = await fetch('/trigger-ai', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ roomNumber: "ALL_ROOMS" }) // Request scanning all image folders
-                });
-                
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    startPollingDatabase();
-                } else {
-                    alert("Failed to wake up workflow agent: " + (data.error || "Unknown error"));
-                    btn.disabled = false;
-                    pollStatus.style.display = 'none';
-                }
-            } catch (err) {
-                alert("Network error occurred connecting with Cloudflare Functions.");
-                btn.disabled = false;
-                pollStatus.style.display = 'none';
-            }
+    try {
+        const response = await fetch('/trigger-ai', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ roomNumber: "ALL_ROOMS" })
+        });
+        
+        // Safely extract text first to verify it isn't an unformatted server error block
+        const responseText = await response.text();
+        let data = {};
+        
+        try {
+            data = JSON.parse(responseText);
+        } catch(e) {
+            throw new Error("Server returned invalid non-JSON payload information.");
         }
+
+        if (response.ok && data.success) {
+            btn.innerHTML = `<span>🤖</span> Analysis Executing (Takes ~1 min)...`;
+            startPollingDatabase();
+        } else {
+            alert("Workflow trigger fault: " + (data.error || "Check your repository token permissions."));
+            resetAIButton(btn, pollStatus);
+        }
+    } catch (err) {
+        alert("Execution exception: " + err.message);
+        resetAIButton(btn, pollStatus);
+    }
+}
+
+function resetAIButton(btn, pollStatus) {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    pollStatus.style.display = 'none';
+    btn.innerHTML = `<span>🤖</span> Run Live Qwen-AI Analysis`;
+}
 
         function startPollingDatabase() {
             let loops = 0;
