@@ -20,8 +20,13 @@ jobs:
 
     - name: Launch Ollama Infrastructure
       run: |
-        curl -fsSL https://ollama.com | sh
+        curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
+        echo "Waiting for Ollama server to boot..."
+          until curl -s http://127.0.0.1:11434 > /dev/null; do
+            sleep 1
+        done
+        echo "Ollama server is up and running!"
         sleep 10
 
     - name: Pull Vision Model Checkpoint
