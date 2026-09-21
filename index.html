@@ -319,7 +319,7 @@
             `;
         }
 
-        async function triggerWorkflowAI() {
+    async function triggerWorkflowAI() {
     const btn = document.getElementById('ai-btn');
     const pollStatus = document.getElementById('polling-status');
     
@@ -335,25 +335,29 @@
             body: JSON.stringify({ roomNumber: "ALL_ROOMS" })
         });
         
-        // Safely extract text first to verify it isn't an unformatted server error block
         const responseText = await response.text();
-        let data = {};
         
+        // Fix: If the response looks like HTML/CSS, it means Cloudflare didn't find the function route
+        if (responseText.trim().startsWith("<!DOCTYPE") || responseText.includes("{") && responseText.includes("font-family")) {
+            throw new Error("Cloudflare Pages could not find your backend route. Ensure the folder is named exactly 'functions' at the root of your GitHub repository.");
+        }
+
+        let data = {};
         try {
             data = JSON.parse(responseText);
         } catch(e) {
-            throw new Error("Server returned invalid non-JSON payload information.");
+            throw new Error("Invalid response format received from application backend.");
         }
 
         if (response.ok && data.success) {
             btn.innerHTML = `<span>🤖</span> Analysis Executing (Takes ~1 min)...`;
             startPollingDatabase();
         } else {
-            alert("Workflow trigger fault: " + (data.error || "Check your repository token permissions."));
+            alert("Workflow trigger fault: " + (data.error || "Check your repository token permissions settings."));
             resetAIButton(btn, pollStatus);
         }
     } catch (err) {
-        alert("Execution exception: " + err.message);
+        alert("Configuration Error: " + err.message);
         resetAIButton(btn, pollStatus);
     }
 }
@@ -364,6 +368,7 @@ function resetAIButton(btn, pollStatus) {
     pollStatus.style.display = 'none';
     btn.innerHTML = `<span>🤖</span> Run Live Qwen-AI Analysis`;
 }
+
 
         function startPollingDatabase() {
             let loops = 0;
