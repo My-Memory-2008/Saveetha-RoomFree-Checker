@@ -108,29 +108,24 @@
         <!-- Rendered dynamically below -->
     </div>
 
-    <script>
-        // ⚠️ INPUT YOUR VALUES DIRECTLY HERE (SINCE ONLY YOU ARE USING THIS SITE)
-        const GITHUB_USERNAME = "YOUR_GITHUB_USERNAME";
-        const REPO_NAME = "YOUR_REPO_NAME";
-        const GITHUB_TOKEN = "ghp_YOUR_PERSONAL_ACCESS_TOKEN_HERE"; 
-        const WORKFLOW_FILE = "process-rooms.yml";
-
+        <script>
         document.addEventListener("DOMContentLoaded", loadRoomRegistry);
 
         async function loadRoomRegistry() {
             const gridContainer = document.getElementById("rooms-grid");
             try {
+                // Fetch the central compiled database file with a cache-busting timestamp
                 const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
                 if (!response.ok) throw new Error();
                 
                 const database = await response.json();
                 const rooms = Object.keys(database);
                 
-                // Filter out busy rooms immediately. Keep only rooms marked as "Free"
+                // Filter out busy rooms instantly. Keep only rooms marked as "Free"
                 const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
 
                 if (freeRooms.length === 0) {
-                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">No free rooms available right now or database needs a scan.</div>`;
+                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No free rooms available right now. Your AI scan shows everything is occupied or rooms.json is blank.</div>`;
                     return;
                 }
 
@@ -151,45 +146,15 @@
                     gridContainer.appendChild(card);
                 });
             } catch (err) {
-                gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">No data loaded. Press the button above to run your first room-images analysis script.</div>`;
+                gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No data loaded. Your rooms.json file doesn't exist yet or is empty. Please run your GitHub Action workflow first.</div>`;
             }
         }
 
-        async function triggerWorkflowAI() {
-            const btn = document.getElementById('ai-btn');
-            const poll = document.getElementById('polling-status');
-            btn.disabled = true;
-            poll.style.display = 'flex';
-
-            const url = `https://github.com{GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
-            try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Accept": "application/vnd.github+json",
-                        "Authorization": `Bearer ${GITHUB_TOKEN}`,
-                        "X-GitHub-Api-Version": "2022-11-28"
-                    },
-                    body: JSON.stringify({ ref: "main", inputs: { room_id: "ALL" } })
-                });
-
-                if (response.status === 204 || response.ok) {
-                    // Start checking for file changes
-                    setInterval(async () => {
-                        const res = await fetch(`rooms.json?t=${new Date().getTime()}`);
-                        if (res.ok) location.reload();
-                    }, 10000);
-                } else {
-                    alert("GitHub Dispatch API rejected request. Check token details.");
-                    btn.disabled = false;
-                    poll.style.display = 'none';
-                }
-            } catch (e) {
-                alert("Error connecting straight to GitHub API.");
-                btn.disabled = false;
-                poll.style.display = 'none';
-            }
+        // Simpler feedback since you'll trigger the action via your GitHub Dashboard
+        function triggerWorkflowAI() {
+            alert("To refresh: Go to your GitHub repository -> Actions -> Click 'Process Single Room with Qwen AI' -> Click 'Run workflow'. It takes ~60 seconds to complete!");
         }
     </script>
+
 </body>
 </html>
