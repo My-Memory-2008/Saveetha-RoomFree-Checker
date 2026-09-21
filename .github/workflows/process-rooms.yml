@@ -1,0 +1,43 @@
+name: Process Single Room with Qwen AI
+
+on:
+  workflow_dispatch:
+    inputs:
+      room_id:
+        description: 'Target identifier key mapped'
+        required: true
+        type: string
+
+jobs:
+  inference-task:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout Repository Codebase
+      uses: actions/checkout@v4
+
+    - name: Download and Spin Ollama Core
+      run: |
+        curl -fsSL https://ollama.com | sh
+        ollama serve &
+        sleep 10
+
+    - name: Cache/Pull Vision Engine
+      run: |
+        ollama pull qwen2.5:3b
+
+    - name: Run Script Evaluation Loop
+      env:
+        TARGET_ROOM: ${{ inputs.room_id }}
+      run: |
+        node scripts/analyze-single.js
+
+    - name: Commit and Merge Updates Back to Main
+      run: |
+        git config --global user.name "Github System Agent"
+        git config --global user.email "actions@github.com"
+        git add rooms.json
+        git commit -m "Automated operational registry rewrite for [Room ${{ inputs.room_id }}]" || exit 0
+        git push
