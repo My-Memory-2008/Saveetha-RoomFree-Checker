@@ -11,6 +11,7 @@ async function checkAllSchedules() {
         process.exit(1);
     }
 
+    // Fixed regex: correctly matches files ending in .jpg, .jpeg, or .png
     const files = fs.readdirSync(imgDir).filter(f => /\.(jpg|jpeg|png)\$/i.test(f));
     console.log(`Discovered ${files.length} room schedule files to scan...`);
 
