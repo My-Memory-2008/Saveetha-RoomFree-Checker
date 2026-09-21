@@ -1,1 +1,12 @@
-{}
+{
+  "101": {
+    "roomNumber": "101",
+    "currentStatus": "Free",
+    "upcomingTimings": "Unparsable file formatting."
+  },
+  "IMG20260921112404": {
+    "roomNumber": "IMG20260921112404",
+    "currentStatus": "Free",
+    "upcomingTimings": "Unparsable file formatting."
+  }
+}
