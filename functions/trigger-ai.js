@@ -5,14 +5,14 @@ export async function onRequest(context) {
 
     try {
         const { roomNumber } = await context.request.json();
-        const token = context.env.GITHUB_PAT_TOKEN; // Pulls securely from config settings vault
+        const token = context.env.GITHUB_PAT_TOKEN; 
 
-        // ⚠️ RENAME TO MATCH YOUR GITHUB TARGET SPECIFICS EXACTLY
+        // ⚠️ ENTIRELY VERIFY AND RE-ENTER YOUR RAW DETAILS IN ALL THREE METRICS BELOW
         const GITHUB_OWNER = "My-Memory-2008";
         const GITHUB_REPO = "Saveetha-RoomFree-Checker";
         const WORKFLOW_NAME = "process-rooms.yml";
 
-        const url = `https://github.com/{GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_NAME}/dispatches`;
+        const url = `https://github.com{GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_NAME}/dispatches`;
 
         const ghResponse = await fetch(url, {
             method: "POST",
@@ -28,13 +28,22 @@ export async function onRequest(context) {
             })
         });
 
-        if (ghResponse.ok) {
-            return new Response(JSON.stringify({ success: true }), { headers: { "Content-Type": "application/json" } });
+        // GitHub workflow dispatches return 204 status on a successful launch trigger
+        if (ghResponse.status === 204 || ghResponse.ok) {
+            return new Response(JSON.stringify({ success: true }), { 
+                headers: { "Content-Type": "application/json" } 
+            });
         } else {
             const errLog = await ghResponse.text();
-            return new Response(JSON.stringify({ error: errLog }), { status: 500 });
+            return new Response(JSON.stringify({ error: errLog || "GitHub API authorization or layout configuration fault." }), { 
+                status: 500,
+                headers: { "Content-Type": "application/json" }
+            });
         }
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+        return new Response(JSON.stringify({ error: err.message }), { 
+            status: 500,
+            headers: { "Content-Type": "application/json" }
+        });
     }
 }
