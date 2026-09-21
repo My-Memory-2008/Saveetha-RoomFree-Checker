@@ -4,40 +4,38 @@ on:
   workflow_dispatch:
     inputs:
       room_id:
-        description: 'Target identifier key mapped'
+        description: 'Scan Execution Parameter'
         required: true
         type: string
 
 jobs:
-  inference-task:
+  run-vision-inference:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-    - name: Checkout Repository Codebase
+    - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Download and Spin Ollama Core
+    - name: Launch Ollama Infrastructure
       run: |
         curl -fsSL https://ollama.com | sh
         ollama serve &
         sleep 10
 
-    - name: Cache/Pull Vision Engine
+    - name: Pull Vision Model Checkpoint
       run: |
         ollama pull qwen2.5:3b
 
-    - name: Run Script Evaluation Loop
-      env:
-        TARGET_ROOM: ${{ inputs.room_id }}
+    - name: Process Processing Script
       run: |
         node scripts/analyze-single.js
 
-    - name: Commit and Merge Updates Back to Main
+    - name: Commit and Save Fresh Database Snapshot
       run: |
-        git config --global user.name "Github System Agent"
+        git config --global user.name "Self Workflow Agent"
         git config --global user.email "actions@github.com"
         git add rooms.json
-        git commit -m "Automated operational registry rewrite for [Room ${{ inputs.room_id }}]" || exit 0
+        git commit -m "Direct user triggered registry rewrite" || exit 0
         git push
