@@ -1,3 +1,4 @@
+// scripts/analyze-single.js
 const fs = require('fs');
 const path = require('path');
 
@@ -6,16 +7,27 @@ async function checkAllSchedules() {
     const imgDir = path.join(__dirname, '../room-images');
     let db = {};
 
+    // Auto-create folder if it's completely missing on the machine runner
     if (!fs.existsSync(imgDir)) {
-        console.error("Missing room-images/ folder path profile.");
-        process.exit(1);
+        console.log("Directory 'room-images' was missing. Creating folder...");
+        fs.mkdirSync(imgDir);
     }
 
-    // Fixed regex: correctly matches files ending in .jpg, .jpeg, or .png
-    const files = fs.readdirSync(imgDir).filter(f => /\.(jpg|jpeg|png)\$/i.test(f));
-    console.log(`Discovered ${files.length} room schedule files to scan...`);
+    const files = fs.readdirSync(imgDir);
+    
+    // Fix: Simple, clean check for image extensions without any regex bugs
+    const targetImages = files.filter(file => {
+        const ext = path.extname(file).toLowerCase();
+        return ext === '.jpg' || ext === '.jpeg' || ext === '.png';
+    });
 
-    for (let file of files) {
+    console.log(`Discovered ${targetImages.length} room schedule files to scan...`);
+
+    if (targetImages.length === 0) {
+        console.log("⚠️ No images found! Double check that you uploaded image files inside your 'room-images/' folder on GitHub.");
+    }
+
+    for (let file of targetImages) {
         const roomNumber = path.parse(file).name; 
         const imagePath = path.join(imgDir, file);
         const base64Data = fs.readFileSync(imagePath, { encoding: 'base64' });
