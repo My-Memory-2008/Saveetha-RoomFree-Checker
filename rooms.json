@@ -2,11 +2,11 @@
   "101": {
     "roomNumber": "101",
     "currentStatus": "Free",
-    "upcomingTimings": "Unparsable file formatting."
+    "upcomingTimings": "Schedule structure unparsable from image sheet asset."
   },
   "IMG20260921112404": {
     "roomNumber": "IMG20260921112404",
     "currentStatus": "Free",
-    "upcomingTimings": "Unparsable file formatting."
+    "upcomingTimings": "Schedule structure unparsable from image sheet asset."
   }
 }
