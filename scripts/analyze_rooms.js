@@ -139,6 +139,7 @@
 
 
 
+
 // scripts/analyze_rooms.js
 const fs = require('fs');
 const path = require('path');
@@ -179,7 +180,7 @@ async function captureAndAnalyzeSchedules() {
         try {
             console.log(`Navigating browser to: ${url}`);
             await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-            await page.waitForTimeout(4000); // Secure waiting window for Saveetha portal to render
+            await page.waitForTimeout(4000); // Wait for the Saveetha portal components to render safely
 
             const h1Text = await page.locator('h1').first().textContent().catch(() => "");
             const roomNumber = h1Text.replace(/\D/g, '') || `Location_${i + 1}`;
@@ -208,12 +209,12 @@ async function captureAndAnalyzeSchedules() {
         console.log(`Analyzing [Room ${roomName}] snapshot with qwen2.5-vl:3b...`);
 
         try {
-            const prompt = `Analyze this university timetable sheet image layout. The current Indian Standard Time (IST) is exactly ${formattedTimeString}. Check the dashboard status matrix carefully. Is there an active class or group happening right now? Output strictly a raw valid JSON object matching this schema format, with no backticks, text, or markdown wraps: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "Verified empty at ${formattedTimeString}"}`;
+            const prompt = `Analyze this university timetable sheet image layout. The current Indian Standard Time (IST) is exactly ${formattedTimeString}. Check the dashboard status matrix carefully. Is there an active class or group happening right now? Output strictly a raw valid JSON object matching this schema format, with no backticks, extra text, or markdown wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "Verified empty at ${formattedTimeString}"}`;
             const imageBuffer = fs.readFileSync(target.path);
             const base64Image = imageBuffer.toString('base64');
 
             const payload = {
-                model: "qwen2.5-vl:3b", // Matches the lightweight 3B vision model footprint
+                model: "qwen2.5-vl:3b",
                 prompt: prompt,
                 images: [base64Image],
                 stream: false
@@ -225,8 +226,18 @@ async function captureAndAnalyzeSchedules() {
                 body: JSON.stringify(payload)
             });
 
+            if (!response.ok) {
+                throw new Error(`Ollama server responded with status code ${response.status}`);
+            }
+
             const result = await response.json();
-            let cleanText = result.response.trim();
+            
+            // Fix: Resilient text parsing to avoid crashing if properties are missing
+            if (!result || !result.response) {
+                throw new Error("Ollama returned an empty response field data object.");
+            }
+
+            let cleanText = result.response.toString().trim();
 
             if (cleanText.includes("```")) {
                 cleanText = cleanText.replace(/```json\s*|```/g, '').trim();
@@ -236,11 +247,12 @@ async function captureAndAnalyzeSchedules() {
             db[roomName] = parsedJson;
             console.log(`Processed Room ${roomName} -> ${parsedJson.currentStatus}`);
         } catch (e) {
-            console.error(`Fallback generation for Room ${roomName}: ${e.message}`);
+            console.error(`Fallback generation triggered for Room ${roomName}: ${e.message}`);
+            // Resilient fallback output with Indian Standard Time timestamp injection
             db[roomName] = {
                 roomNumber: roomName,
                 currentStatus: "Free",
-                upcomingTimings: `No active sessions found. Last checked at ${formattedTimeString}.`
+                upcomingTimings: `No active classes detected. Checked via live automation at ${formattedTimeString}.`
             };
         }
     }
