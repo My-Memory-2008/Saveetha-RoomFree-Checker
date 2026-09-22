@@ -1,12 +1,12 @@
 {
-  "101": {
-    "roomNumber": "101",
+  "Room_1": {
+    "roomNumber": "5683",
     "currentStatus": "Free",
-    "upcomingTimings": "Schedule structure unparsable from image sheet asset."
+    "upcomingTimings": []
   },
-  "IMG20260921112404": {
-    "roomNumber": "IMG20260921112404",
+  "Room_2": {
+    "roomNumber": "5453",
     "currentStatus": "Free",
-    "upcomingTimings": "Schedule structure unparsable from image sheet asset."
+    "upcomingTimings": []
   }
 }
