@@ -180,7 +180,7 @@ async function captureAndAnalyzeSchedules() {
         try {
             console.log(`Navigating browser to: ${url}`);
             await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-            await page.waitForTimeout(4000); // Wait for the Saveetha portal components to render safely
+            await page.waitForTimeout(4000); // Wait for Saveetha portal to load completely
 
             const h1Text = await page.locator('h1').first().textContent().catch(() => "");
             const roomNumber = h1Text.replace(/\D/g, '') || `Location_${i + 1}`;
@@ -206,7 +206,7 @@ async function captureAndAnalyzeSchedules() {
 
     for (const target of capturedTargets) {
         const roomName = target.room;
-        console.log(`Analyzing [Room ${roomName}] snapshot with qwen2.5-vl:3b...`);
+        console.log(`Analyzing [Room ${roomName}] snapshot with qwen2.5-vl...`);
 
         try {
             const prompt = `Analyze this university timetable sheet image layout. The current Indian Standard Time (IST) is exactly ${formattedTimeString}. Check the dashboard status matrix carefully. Is there an active class or group happening right now? Output strictly a raw valid JSON object matching this schema format, with no backticks, extra text, or markdown wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "Verified empty at ${formattedTimeString}"}`;
@@ -214,7 +214,7 @@ async function captureAndAnalyzeSchedules() {
             const base64Image = imageBuffer.toString('base64');
 
             const payload = {
-                model: "qwen2.5-vl:3b",
+                model: "qwen2.5-vl", // Fix: Matches the pulled model signature exactly
                 prompt: prompt,
                 images: [base64Image],
                 stream: false
@@ -232,7 +232,6 @@ async function captureAndAnalyzeSchedules() {
 
             const result = await response.json();
             
-            // Fix: Resilient text parsing to avoid crashing if properties are missing
             if (!result || !result.response) {
                 throw new Error("Ollama returned an empty response field data object.");
             }
@@ -248,7 +247,6 @@ async function captureAndAnalyzeSchedules() {
             console.log(`Processed Room ${roomName} -> ${parsedJson.currentStatus}`);
         } catch (e) {
             console.error(`Fallback generation triggered for Room ${roomName}: ${e.message}`);
-            // Resilient fallback output with Indian Standard Time timestamp injection
             db[roomName] = {
                 roomNumber: roomName,
                 currentStatus: "Free",
