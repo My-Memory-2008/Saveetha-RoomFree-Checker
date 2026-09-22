@@ -1,12 +1,7 @@
-name: Process Single Room with Qwen AI
+name: Process All Room Schedules with Qwen AI
 
 on:
-  workflow_dispatch:
-    inputs:
-      room_id:
-        description: 'Scan Execution Parameter'
-        required: true
-        type: string
+  workflow_dispatch: # Allows a simple 1-click trigger from your GitHub dashboard with no input popup box
 
 jobs:
   run-vision-inference:
@@ -25,9 +20,8 @@ jobs:
 
     - name: Install System and AI Vision Dependencies
       run: |
-        pip install torch torchvision --index-url https://pytorch.org
+        pip install torch torchvision --extra-index-url https://pytorch.org
         pip install transformers accelerate pillow playwright pillow_heif
-        # Install the official browser binaries and system packages for Playwright
         playwright install chromium --with-deps
 
     - name: Run Playwright Scraping & Python Inference Script
@@ -39,5 +33,5 @@ jobs:
         git config --global user.name "Self Workflow Agent"
         git config --global user.email "actions@github.com"
         git add rooms.json
-        git commit -m "Automated web scrape and Qwen database compile" || exit 0
+        git commit -m "Automated all-room web scrape and Qwen database compile" || exit 0
         git push
