@@ -41,6 +41,8 @@
 
 
 
+
+
 name: Process All Room Schedules with Qwen AI
 
 on:
@@ -63,7 +65,8 @@ jobs:
 
     - name: Install System and Playwright Dependencies
       run: |
-        pip install playwright
+        # Fix: Re-added pillow to prevent the ModuleNotFoundError: No module named 'PIL'
+        pip install playwright pillow
         playwright install chromium --with-deps
 
     - name: Launch Ollama Background Engine & Download Model
