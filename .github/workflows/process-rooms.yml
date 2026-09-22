@@ -58,34 +58,34 @@ jobs:
     - name: Checkout Repository Codebase
       uses: actions/checkout@v4
 
-    - name: Set up Python Environment
-      uses: actions/setup-python@v5
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v4
       with:
-        python-version: '3.10'
+        node-version: '20'
 
     - name: Install System and Playwright Dependencies
       run: |
-        # Fix: Re-added pillow to prevent the ModuleNotFoundError: No module named 'PIL'
-        pip install playwright pillow
-        playwright install chromium --with-deps
+        npm install playwright
+        npx playwright install chromium --with-deps
 
-    - name: Launch Ollama Background Engine & Download Model
+    - name: Launch Ollama Background Engine & Download Vision Model
       run: |
         curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
         # Safe boot interval sleep parameters
         sleep 8
-        # Pull the ultra-fast 2.8B parameter vision engine
-        ollama pull minicpm-v
+        # Pull the lightweight 3B parameter Qwen VL vision engine
+        ollama pull qwen2.5-vl:3b
 
-    - name: Run Playwright Scraping & Inference Script
+    - name: Run Playwright Scraping & Node Inference Script
       run: |
-        python scripts/analyze_rooms.py
+        node scripts/analyze_rooms.js
 
     - name: Commit and Save Fresh Database Snapshot
       run: |
         git config --global user.name "Self Workflow Agent"
         git config --global user.email "actions@github.com"
         git add rooms.json
-        git commit -m "Automated all-room web scrape and Qwen database compile [IST Time Verified]" || exit 0
+        git commit -m "Automated all-room web scrape and Qwen-VL 3B database compile [IST Verified]" || exit 0
         git push
+
