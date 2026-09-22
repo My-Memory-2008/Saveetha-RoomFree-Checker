@@ -1,54 +1,3 @@
-# name: Process Single Room with Qwen AI
-
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       room_id:
-#         description: 'Scan Execution Parameter'
-#         required: true
-#         type: string
-
-# jobs:
-#   run-vision-inference:
-#     runs-on: ubuntu-latest
-#     permissions:
-#       contents: write
-
-#     steps:
-#     - name: Checkout Repository
-#       uses: actions/checkout@v4
-
-#     - name: Launch Ollama Infrastructure
-#       run: |
-#         curl -fsSL https://ollama.com/install.sh | sh
-#         ollama serve &
-#         echo "Waiting for Ollama server to boot..."
-#           until curl -s http://127.0.0.1:11434 > /dev/null; do
-#             sleep 1
-#         done
-#         echo "Ollama server is up and running!"
-#         sleep 10
-
-#     - name: Pull Vision Model Checkpoint
-#       run: |
-#         ollama pull qwen2.5vl
-
-#     - name: Process Processing Script
-#       run: |
-#         node scripts/analyze-single.js
-
-#     - name: Commit and Save Fresh Database Snapshot
-#       run: |
-#         git config --global user.name "Self Workflow Agent"
-#         git config --global user.email "actions@github.com"
-#         git add rooms.json
-#         git commit -m "Direct user triggered registry rewrite" || exit 0
-#         git push
-
-
-
-
-
 name: Process Single Room with Qwen AI
 
 on:
@@ -66,21 +15,22 @@ jobs:
       contents: write
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout Repository Codebase
       uses: actions/checkout@v4
 
     - name: Set up Python Environment
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-        cache: 'pip'
 
-    - name: Install AI Vision Dependencies
+    - name: Install System and AI Vision Dependencies
       run: |
         pip install torch torchvision --index-url https://pytorch.org
-        pip install transformers accelerate pillow pillow_heif
+        pip install transformers accelerate pillow playwright pillow_heif
+        # Install the official browser binaries and system packages for Playwright
+        playwright install chromium --with-deps
 
-    - name: Run Python Vision Extraction Script
+    - name: Run Playwright Scraping & Python Inference Script
       run: |
         python scripts/analyze_rooms.py
 
@@ -89,5 +39,5 @@ jobs:
         git config --global user.name "Self Workflow Agent"
         git config --global user.email "actions@github.com"
         git add rooms.json
-        git commit -m "Direct user triggered registry rewrite via Qwen-VL Python" || exit 0
+        git commit -m "Automated web scrape and Qwen database compile" || exit 0
         git push
