@@ -1,12 +1,12 @@
 {
-  "Room_1": {
-    "roomNumber": "5683",
-    "currentStatus": "Free",
-    "upcomingTimings": []
-  },
-  "Room_2": {
+  "5453": {
     "roomNumber": "5453",
     "currentStatus": "Free",
-    "upcomingTimings": []
+    "upcomingTimings": "No active sessions found. Last checked at 11:06 PM (Indian Standard Time)."
+  },
+  "5683": {
+    "roomNumber": "5683",
+    "currentStatus": "Free",
+    "upcomingTimings": "No active sessions found. Last checked at 11:06 PM (Indian Standard Time)."
   }
 }
