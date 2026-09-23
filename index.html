@@ -313,10 +313,7 @@
             const pollStatus = document.getElementById('polling-status');
             
             // Check if the injection workflow has executed at least once
-            if (GITHUB_TOKEN === "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") {
-                alert("The initial token injection sync has not occurred yet. Please open your GitHub Actions dashboard and click 'Run workflow' manually once to activate this frontend button!");
-                return;
-            }
+            
 
             btn.disabled = true;
             btn.style.opacity = '0.6';
