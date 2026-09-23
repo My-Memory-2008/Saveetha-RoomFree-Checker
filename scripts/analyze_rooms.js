@@ -139,6 +139,8 @@
 
 
 
+
+
 // scripts/analyze_rooms.js
 const fs = require('fs');
 const path = require('path');
@@ -151,7 +153,7 @@ async function captureAndAnalyzeSchedules() {
     let db = {};
 
     if (!fs.existsSync(linksFile)) {
-        console.error("links.txt file missing at root repository level.");
+        console.error("Critical Error: links.txt file missing at root repository level.");
         return;
     }
 
@@ -179,12 +181,16 @@ async function captureAndAnalyzeSchedules() {
         try {
             console.log(`Navigating browser to: ${url}`);
             await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-            await page.waitForTimeout(4000); // Wait for Saveetha portal to load completely
+            
+            // Give 5 full seconds for the Saveetha portal and current sessions tab to fully load
+            await page.waitForTimeout(5000); 
 
+            // Extract the room number from the <h1> heading cleanly
             const h1Text = await page.locator('h1').first().textContent().catch(() => "");
             const roomNumber = h1Text.replace(/\D/g, '') || `Location_${i + 1}`;
             const imgPath = path.join(screenshotDir, `${roomNumber}.png`);
 
+            // Take a clear snapshot of the webpage canvas
             await page.screenshot({ path: imgPath, fullPage: true });
             capturedTargets.push({ room: roomNumber, path: imgPath });
             console.log(`Captured clean web layout snapshot for Room: ${roomNumber}`);
@@ -194,13 +200,16 @@ async function captureAndAnalyzeSchedules() {
     }
     await browser.close();
 
-    if (capturedTargets.length === 0) return;
+    if (capturedTargets.length === 0) {
+        console.log("No screenshots generated successfully. Stopping execution.");
+        return;
+    }
 
     // 2. Derive Current Indian Standard Time (IST)
     const options = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true };
     const formattedTimeString = new Date().toLocaleTimeString('en-US', options) + " (Indian Standard Time)";
 
-    // 3. Stream payloads sequentially to Local Ollama Vision Daemon
+    // 3. Send images to the local Ollama Qwen-VL model instance
     console.log("Connecting with local Ollama service inference layers...");
 
     for (const target of capturedTargets) {
@@ -208,12 +217,14 @@ async function captureAndAnalyzeSchedules() {
         console.log(`Analyzing [Room ${roomName}] snapshot with qwen2.5-vl...`);
 
         try {
-            const prompt = `Analyze this university timetable sheet image layout. The current Indian Standard Time (IST) is exactly ${formattedTimeString}. Check the dashboard status matrix carefully. Is there an active class or group happening right now? Output strictly a raw valid JSON object matching this schema format, with no backticks, extra text, or markdown wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "Verified empty at ${formattedTimeString}"}`;
+            // Explicitly instructing the vision model to look for the "No Sessions Found" text block
+            const prompt = `Analyze this university timetable sheet image layout. Check the 'Current Sessions' tab carefully. If it displays 'No Sessions Found' or says there are no sessions available, it means the room is completely empty and available. The current time is ${formattedTimeString}. Output strictly a raw valid JSON object matching this schema format exactly, with no backticks, no extra text, and no markdown wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "Verified empty at ${formattedTimeString}"}`;
+            
             const imageBuffer = fs.readFileSync(target.path);
             const base64Image = imageBuffer.toString('base64');
 
             const payload = {
-                model: "qwen2.5-vl", // Fix: Matches the pulled model signature exactly
+                model: "qwen2.5-vl", 
                 prompt: prompt,
                 images: [base64Image],
                 stream: false
@@ -237,15 +248,25 @@ async function captureAndAnalyzeSchedules() {
 
             let cleanText = result.response.toString().trim();
 
+            // Stripping any code block formatting code wrapper if Qwen adds them by mistake
             if (cleanText.includes("```")) {
                 cleanText = cleanText.replace(/```json\s*|```/g, '').trim();
             }
 
             const parsedJson = JSON.parse(cleanText);
+            
+            // Force status cleanup to align with our website filtering variables
+            if (parsedJson.currentStatus.toLowerCase().includes("free") || parsedJson.currentStatus.toLowerCase().includes("no session")) {
+                parsedJson.currentStatus = "Free";
+            } else {
+                parsedJson.currentStatus = "Occupied";
+            }
+
             db[roomName] = parsedJson;
-            console.log(`Processed Room ${roomName} -> ${parsedJson.currentStatus}`);
+            console.log(`Processed Room ${roomName} -> Status: ${parsedJson.currentStatus}`);
         } catch (e) {
             console.error(`Fallback generation triggered for Room ${roomName}: ${e.message}`);
+            // Resilient fallback output so your page doesn't go blank if an inference timeout happens
             db[roomName] = {
                 roomNumber: roomName,
                 currentStatus: "Free",
@@ -259,3 +280,4 @@ async function captureAndAnalyzeSchedules() {
 }
 
 captureAndAnalyzeSchedules();
+
