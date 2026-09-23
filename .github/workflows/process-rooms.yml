@@ -93,13 +93,23 @@ jobs:
       run: |
         node scripts/analyze_rooms.js
 
+        
+    - name: Inject Secret Token into Website Code
+      env:
+        # Pulls the secret completely safely from your hidden GitHub vault
+        SECRET_KEY: ${{ secrets.MY_GITHUB_TOKEN }}
+      run: |
+        # Replaces the text string token placeholder inside index.html with the secret value
+        sed -i "s/TOKEN_SECRET_PLACEHOLDER_KEY/$SECRET_KEY/g" index.html
+
     - name: Commit and Save Fresh Database Snapshot
       run: |
         git config --global user.name "Self Workflow Agent"
         git config --global user.email "actions@github.com"
-        git add rooms.json
-        git commit -m "Automated all-room web scrape and Qwen-VL database compile [IST Verified]" || exit 0
+        git add rooms.json index.html
+        git commit -m "Automated all-room web scrape and secure token injection compile" || exit 0
         git push
+    
 
     - name: Upload Captured Screenshots to Artifacts
       if: always() # Ensures screenshots save even if a step has a tracking fault
