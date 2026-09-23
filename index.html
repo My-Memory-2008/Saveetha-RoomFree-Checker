@@ -261,7 +261,7 @@
 
         // ⚠️ LEAVE THIS PLACEHOLDER KEY EXACTLY AS IT IS below. 
         // Your background GitHub Action will automatically replace this text string string when it compiles!
-        const GITHUB_TOKEN = "TOKEN_SECRET_PLACEHOLDER_KEY"; 
+        const GITHUB_TOKEN = "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"; 
 
         document.addEventListener("DOMContentLoaded", loadRoomRegistry);
 
@@ -313,7 +313,7 @@
             const pollStatus = document.getElementById('polling-status');
             
             // Check if the injection workflow has executed at least once
-            if (GITHUB_TOKEN === "TOKEN_SECRET_PLACEHOLDER_KEY") {
+            if (GITHUB_TOKEN === "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") {
                 alert("The initial token injection sync has not occurred yet. Please open your GitHub Actions dashboard and click 'Run workflow' manually once to activate this frontend button!");
                 return;
             }
