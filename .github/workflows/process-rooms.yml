@@ -42,17 +42,16 @@
 
 
 
-
 name: Process All Room Schedules with Qwen AI
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Allows 1-click manual trigger from the Actions tab
 
 jobs:
   run-vision-inference:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Allows committing rooms.json back to the repository
 
     steps:
     - name: Checkout Repository Codebase
@@ -63,18 +62,31 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Install System and Playwright Dependencies
+    - name: Install Node Playwright Dependency
       run: |
         npm install playwright
+
+    - name: Install Playwright Chromium System Dependencies
+      run: |
         npx playwright install chromium --with-deps
 
-    - name: Launch Ollama Background Engine & Download Vision Model
+    - name: Install Ollama Core Engine
       run: |
+        # Safe dedicated installer string path execution 
         curl -fsSL https://ollama.com/install.sh | sh
+
+    - name: Start Ollama Server
+      run: |
         ollama serve &
-        # Safe boot interval sleep parameters
-        sleep 8
-        # Pull the lightweight 3B parameter Qwen VL vision engine
+        echo "Waiting for Ollama server to boot..."
+        until curl -s http://127.0.0.1:11434 > /dev/null; do
+          sleep 1
+        done
+        echo "Ollama server is up and running!"
+
+    - name: Download Vision Model
+      run: |
+        # Pulling the correct verified multi-modal registry tag name signature
         ollama pull qwen2.5vl:3b
 
     - name: Run Playwright Scraping & Node Inference Script
@@ -86,6 +98,5 @@ jobs:
         git config --global user.name "Self Workflow Agent"
         git config --global user.email "actions@github.com"
         git add rooms.json
-        git commit -m "Automated all-room web scrape and Qwen-VL 3B database compile [IST Verified]" || exit 0
+        git commit -m "Automated all-room web scrape and Qwen-VL database compile [IST Verified]" || exit 0
         git push
-
