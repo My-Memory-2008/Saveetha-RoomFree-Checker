@@ -100,3 +100,11 @@ jobs:
         git add rooms.json
         git commit -m "Automated all-room web scrape and Qwen-VL database compile [IST Verified]" || exit 0
         git push
+
+    - name: Upload Captured Screenshots to Artifacts
+      if: always() # Ensures screenshots save even if a step has a tracking fault
+      uses: actions/upload-artifact@v4
+      with:
+        name: room-screenshots-gallery
+        path: room-images/
+        retention-days: 5
