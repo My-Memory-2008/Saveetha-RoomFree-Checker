@@ -3,129 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Room Finder - AI Dashboard</title>
+    <title>Room Availability Registry - AI Analysis Dashboard</title>
+    
     <style>
+        /* Pure Vanilla CSS Variables Layout */
         :root {
-            --bg-dark: #090d16;
-            --panel-glass: rgba(22, 28, 45, 0.7);
-            --border-glow: #6366f1;
+            --bg-dark: #020617;
+            --panel-glass: rgba(30, 41, 59, 0.65);
+            --border-glow: rgba(99, 102, 241, 0.25);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-indigo: #6366f1;
             --accent-amber: #f59e0b;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            justify-content: space-between;
+            padding: 40px 24px;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* Decorative ambient top glow */
+        /* Ambient Top Lighting Glow Effect */
         body::before {
-            content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 1200px; height: 350px;
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1200px;
+            height: 350px;
             background: radial-gradient(circle at top, rgba(99, 102, 241, 0.15) 0%, rgba(16, 185, 129, 0.03) 60%, transparent 100%);
-            z-index: -1; pointer-events: none;
+            z-index: -1;
+            pointer-events: none;
+        }
+        header {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 32px;
         }
 
-        header { width: 100%; max-width: 800px; text-align: center; margin-bottom: 32px; }
-        header h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
-        header p { color: var(--text-secondary); font-size: 15px; }
+        .ai-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            background: rgba(99, 102, 241, 0.08);
+            color: #a5b4fc;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+        }
 
         .control-panel {
-            width: 100%; max-width: 800px; display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 24px; gap: 16px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 16px;
+            background: var(--panel-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .btn-ai {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white; font-family: inherit; font-size: 14px; font-weight: 700;
-            padding: 14px 28px; border-radius: 12px; cursor: pointer; border: none;
-            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); transition: all 0.2s ease;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        .btn-ai:hover:not(:disabled) { transform: translateY(-1px); opacity: 0.95; }
-        .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-ai:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
+        }
+
+        .btn-ai:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
         .grid-container {
-            width: 100%; max-width: 800px; display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
         }
 
         .room-card {
-            background: var(--panel-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.06); padding: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; gap: 14px;
+            background: var(--panel-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: all 0.3s ease;
         }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .room-title { font-size: 22px; font-weight: 700; color: white; }
+        .room-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.01em;
+        }
         
         .status-badge {
-            padding: 6px 14px; border-radius: 9999px; font-size: 11px; font-weight: 800;
-            text-transform: uppercase; background: rgba(16, 185, 129, 0.1);
-            color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .schedule-details {
-            font-size: 14px; line-height: 1.5; color: var(--text-secondary);
-            background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.25);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
         }
 
         .polling-status {
-            display: none; align-items: center; gap: 10px; font-size: 13px; color: var(--accent-amber); font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--accent-amber);
+            font-weight: 600;
         }
+
         .spinner {
-            width: 16px; height: 16px; border: 2px solid rgba(245, 158, 11, 0.2);
-            border-top-color: var(--accent-amber); border-radius: 50%; animation: spin 0.8s linear infinite;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(245, 158, 11, 0.2);
+            border-top-color: var(--accent-amber);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
+
+        footer {
+            width: 100%;
+            text-align: center;
+            font-size: 11px;
+            color: #334155;
+            letter-spacing: 0.025em;
+            margin-top: 40px;
+        }
+
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Header Section -->
     <header>
+        <div class="ai-badge">🤖 Qwen 2.5 VL Vision Automated</div>
         <h1>Available Spaces Registry</h1>
         <p>Showing currently unoccupied workspace modules containing no active classes or routines.</p>
     </header>
 
+    <!-- Operational Controls Dashboard Bar -->
     <div class="control-panel">
-        <button id="ai-btn" onclick="triggerWorkflowAI()" class="btn-ai">🤖 Trigger Qwen-AI Room Scan</button>
+        <button id="ai-btn" onclick="triggerWorkflowAI()" class="btn-ai">
+            <span>🤖</span> Run Live Qwen-AI Analysis
+        </button>
+        
         <div id="polling-status" class="polling-status">
             <div class="spinner"></div>
-            <span>GitHub Action Runner executing image processing loop...</span>
+            <span id="polling-text">Waking up GitHub Action Runner...</span>
         </div>
     </div>
 
+    <!-- Central Data Target Display Mounting Grid Container -->
     <div id="rooms-grid" class="grid-container">
-        <!-- Rendered dynamically below -->
+        <!-- Rendered dynamically by script routines below -->
     </div>
 
-        <script>
+    <footer>
+        RoomScanner Dashboard Platform Engine &bull; Serverless Cloudflare Pages Environment
+    </footer>
+    <script>
+        // ⚠️ STEP 1: CONFIGURE YOUR PERSONAL PRIVACY STRINGS DIRECTLY HERE 
+        const GITHUB_USERNAME = "My-Memory-2008"; 
+        const REPO_NAME = "Saveetha-RoomFree-Checker";             
+        const GITHUB_TOKEN = "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";     
+        const WORKFLOW_FILE = "process-rooms.yml";       
+
         document.addEventListener("DOMContentLoaded", loadRoomRegistry);
 
         async function loadRoomRegistry() {
             const gridContainer = document.getElementById("rooms-grid");
             try {
-                // Fetch the central compiled database file with a cache-busting timestamp
+                // Request cached schedule registry data with a cache-busting timestamp
                 const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
                 if (!response.ok) throw new Error();
                 
                 const database = await response.json();
                 const rooms = Object.keys(database);
                 
-                // Filter out busy rooms instantly. Keep only rooms marked as "Free"
+                // Filter out busy rooms immediately. Keep only rooms marked as "Free"
                 const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
 
                 if (freeRooms.length === 0) {
-                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No free rooms available right now. Your AI scan shows everything is occupied or rooms.json is blank.</div>`;
+                    gridContainer.innerHTML = `
+                        <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                            No free rooms available right now. Your AI scan shows everything is occupied or rooms.json is blank.
+                        </div>`;
                     return;
                 }
 
@@ -146,15 +307,79 @@
                     gridContainer.appendChild(card);
                 });
             } catch (err) {
-                gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No data loaded. Your rooms.json file doesn't exist yet or is empty. Please run your GitHub Action workflow first.</div>`;
+                gridContainer.innerHTML = `
+                    <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                        No database snapshot file parsed yet. Click the button above to execute your first live Qwen vision scan!
+                    </div>`;
+            }
+        }
+        async function triggerWorkflowAI() {
+            const btn = document.getElementById('ai-btn');
+            const pollStatus = document.getElementById('polling-status');
+            
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+            pollStatus.style.display = 'flex';
+            btn.innerHTML = `<span>⏳</span> Waking up Runner...`;
+
+            // GitHub repository action dispatcher URL target string layout
+            const url = `https://github.com{GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/vnd.github+json",
+                        "Authorization": `Bearer ${GITHUB_TOKEN}`,
+                        "X-GitHub-Api-Version": "2022-11-28",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ ref: "main" })
+                });
+
+                if (response.status === 204 || response.ok) {
+                    btn.innerHTML = `<span>🤖</span> AI Processing (Takes ~1 min)...`;
+                    document.getElementById('polling-text').innerText = "GitHub Action running Qwen-VL model checks...";
+                    startPollingDatabase();
+                } else {
+                    const errText = await response.text();
+                    alert("GitHub API Refused: Verify token workspace scopes or path text variables.");
+                    resetAIButton(btn, pollStatus);
+                }
+            } catch (err) {
+                alert("Network Error calling endpoint direct: " + err.message);
+                resetAIButton(btn, pollStatus);
             }
         }
 
-        // Simpler feedback since you'll trigger the action via your GitHub Dashboard
-        function triggerWorkflowAI() {
-            alert("To refresh: Go to your GitHub repository -> Actions -> Click 'Process Single Room with Qwen AI' -> Click 'Run workflow'. It takes ~60 seconds to complete!");
+        function resetAIButton(btn, pollStatus) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            pollStatus.style.display = 'none';
+            btn.innerHTML = `<span>🤖</span> Run Live Qwen-AI Analysis`;
+        }
+
+        function startPollingDatabase() {
+            let attempts = 0;
+            const interval = setInterval(async () => {
+                attempts++;
+                if (attempts > 18) { // Safety cutout break threshold after 3 full minutes of checking
+                    clearInterval(interval);
+                    location.reload();
+                    return;
+                }
+                
+                try {
+                    const res = await fetch(`rooms.json?cachebust=${new Date().getTime()}`);
+                    if (res.ok) {
+                        clearInterval(interval);
+                        location.reload(); // Refresh layout cards instantly to demonstrate fresh data parameters
+                    }
+                } catch(e){}
+            }, 10000); // Check file every 10 seconds sequentially
         }
     </script>
-
 </body>
 </html>
