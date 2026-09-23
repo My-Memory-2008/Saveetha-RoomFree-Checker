@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Availability Registry - AI Analysis Dashboard</title>
+    <title>Room Availability Hub - AI Scan Registry</title>
     
     <style>
-        /* Pure Vanilla CSS Variables Layout */
+        /* Modern Native CSS Theme Variables */
         :root {
-            --bg-dark: #020617;
-            --panel-glass: rgba(30, 41, 59, 0.65);
-            --border-glow: rgba(99, 102, 241, 0.25);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
+            --bg-dark: #030712;
+            --panel-glass: rgba(17, 24, 39, 0.7);
+            --border-glow: rgba(99, 102, 241, 0.15);
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
             --accent-emerald: #10b981;
-            --accent-rose: #f43f5e;
+            --accent-rose: #ef4444;
             --accent-indigo: #6366f1;
             --accent-amber: #f59e0b;
         }
@@ -28,18 +28,18 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 40px 24px;
+            padding: 40px 20px;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Ambient Top Lighting Glow Effect */
+        /* Top Ambient Glow Lighting Layer */
         body::before {
             content: "";
             position: absolute;
@@ -47,9 +47,9 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 1200px;
-            height: 350px;
-            background: radial-gradient(circle at top, rgba(99, 102, 241, 0.15) 0%, rgba(16, 185, 129, 0.03) 60%, transparent 100%);
+            max-width: 1300px;
+            height: 380px;
+            background: radial-gradient(circle at top, rgba(99, 102, 241, 0.15) 0%, rgba(16, 185, 129, 0.02) 65%, transparent 100%);
             z-index: -1;
             pointer-events: none;
         }
@@ -57,7 +57,7 @@
             width: 100%;
             max-width: 800px;
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 36px;
         }
 
         .ai-badge {
@@ -72,17 +72,17 @@
             letter-spacing: 0.05em;
             text-transform: uppercase;
             margin-bottom: 14px;
-            animation: pulse-glow 2s infinite ease-in-out;
+            animation: pulse-glow 2.5s infinite ease-in-out;
         }
 
         header h1 {
             font-size: 36px;
             font-weight: 800;
-            letter-spacing: -0.03em;
-            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #818cf8 100%);
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #ffffff 0%, #d1d5db 50%, #818cf8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         header p {
@@ -157,11 +157,6 @@
             transition: all 0.3s ease;
         }
 
-        .room-card:hover {
-            border-color: rgba(255, 255, 255, 0.12);
-            transform: translateY(-2px);
-        }
-
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -172,7 +167,6 @@
             font-size: 22px;
             font-weight: 700;
             color: white;
-            letter-spacing: -0.01em;
         }
         
         .status-badge {
@@ -220,7 +214,6 @@
             text-align: center;
             font-size: 11px;
             color: #334155;
-            letter-spacing: 0.025em;
             margin-top: 40px;
         }
 
@@ -233,17 +226,17 @@
 </head>
 <body>
 
-    <!-- Header Section -->
+    <!-- Header Content -->
     <header>
-        <div class="ai-badge">🤖 Qwen 2.5 VL Vision Automated</div>
-        <h1>Available Spaces Registry</h1>
-        <p>Showing currently unoccupied workspace modules containing no active classes or routines.</p>
+        <div class="ai-badge">🤖 Qwen 2.5 VL Engine Registry</div>
+        <h1>Available Spaces Dashboard</h1>
+        <p>Real-time tracking of vacant classroom modules containing no active portal schedules.</p>
     </header>
 
-    <!-- Operational Controls Dashboard Bar -->
+    <!-- Master Button Controls Area -->
     <div class="control-panel">
         <button id="ai-btn" onclick="triggerWorkflowAI()" class="btn-ai">
-            <span>🤖</span> Run Live Qwen-AI Analysis
+            <span>🤖</span> Scan & Check Live Rooms
         </button>
         
         <div id="polling-status" class="polling-status">
@@ -252,40 +245,42 @@
         </div>
     </div>
 
-    <!-- Central Data Target Display Mounting Grid Container -->
+    <!-- Active Cards Grid -->
     <div id="rooms-grid" class="grid-container">
-        <!-- Rendered dynamically by script routines below -->
+        <!-- Rendered dynamically by javascript engines below -->
     </div>
 
     <footer>
-        RoomScanner Dashboard Platform Engine &bull; Serverless Cloudflare Pages Environment
+        RoomScanner Registry Engine &bull; Hosted securely on Cloudflare Infrastructure
     </footer>
     <script>
-        // ⚠️ STEP 1: CONFIGURE YOUR PERSONAL PRIVACY STRINGS DIRECTLY HERE 
-        const GITHUB_USERNAME = "My-Memory-2008"; 
-        const REPO_NAME = "Saveetha-RoomFree-Checker";             
-        const GITHUB_TOKEN = "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";     
-        const WORKFLOW_FILE = "process-rooms.yml";       
+        // ⚠️ STEP 1: CONFIGURE ONLY YOUR REPOSITORY PARTICULARS HERE
+        const GITHUB_USERNAME = "My-Memory-2008"; // Enter your exact GitHub username
+        const REPO_NAME = "Saveetha-RoomFree-Checker";             // Enter your exact repository name
+        const WORKFLOW_FILE = "process-rooms.yml";       // Your workflow configuration file name
+
+        // ⚠️ LEAVE THIS PLACEHOLDER KEY EXACTLY AS IT IS below. 
+        // Your background GitHub Action will automatically replace this text string string when it compiles!
+        const GITHUB_TOKEN = "TOKEN_SECRET_PLACEHOLDER_KEY"; 
 
         document.addEventListener("DOMContentLoaded", loadRoomRegistry);
 
         async function loadRoomRegistry() {
             const gridContainer = document.getElementById("rooms-grid");
             try {
-                // Request cached schedule registry data with a cache-busting timestamp
                 const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
                 if (!response.ok) throw new Error();
                 
                 const database = await response.json();
                 const rooms = Object.keys(database);
                 
-                // Filter out busy rooms immediately. Keep only rooms marked as "Free"
+                // Isolate rooms that are explicitly reported as vacant ("Free") by Qwen
                 const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
 
                 if (freeRooms.length === 0) {
                     gridContainer.innerHTML = `
                         <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
-                            No free rooms available right now. Your AI scan shows everything is occupied or rooms.json is blank.
+                            All monitored rooms are currently reported as occupied, or the database file is blank.
                         </div>`;
                     return;
                 }
@@ -301,7 +296,7 @@
                             <span class="status-badge">● Vacant & Free</span>
                         </div>
                         <div class="schedule-details">
-                            <strong>Today's Routine:</strong><br>${room.upcomingTimings || "No classes or routines detected."}
+                            <strong>Live Timeline Extraction:</strong><br>${room.upcomingTimings || "No active lectures or group lab slots detected."}
                         </div>
                     `;
                     gridContainer.appendChild(card);
@@ -309,7 +304,7 @@
             } catch (err) {
                 gridContainer.innerHTML = `
                     <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
-                        No database snapshot file parsed yet. Click the button above to execute your first live Qwen vision scan!
+                        No database found. Click the button above to run your initial workflow vision scan.
                     </div>`;
             }
         }
@@ -317,13 +312,18 @@
             const btn = document.getElementById('ai-btn');
             const pollStatus = document.getElementById('polling-status');
             
+            // Check if the injection workflow has executed at least once
+            if (GITHUB_TOKEN === "TOKEN_SECRET_PLACEHOLDER_KEY") {
+                alert("The initial token injection sync has not occurred yet. Please open your GitHub Actions dashboard and click 'Run workflow' manually once to activate this frontend button!");
+                return;
+            }
+
             btn.disabled = true;
             btn.style.opacity = '0.6';
             btn.style.cursor = 'not-allowed';
             pollStatus.style.display = 'flex';
             btn.innerHTML = `<span>⏳</span> Waking up Runner...`;
 
-            // GitHub repository action dispatcher URL target string layout
             const url = `https://github.com{GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
 
             try {
@@ -340,15 +340,14 @@
 
                 if (response.status === 204 || response.ok) {
                     btn.innerHTML = `<span>🤖</span> AI Processing (Takes ~1 min)...`;
-                    document.getElementById('polling-text').innerText = "GitHub Action running Qwen-VL model checks...";
+                    document.getElementById('polling-text').innerText = "Qwen-VL is evaluating schedule snapshots...";
                     startPollingDatabase();
                 } else {
-                    const errText = await response.text();
-                    alert("GitHub API Refused: Verify token workspace scopes or path text variables.");
+                    alert("GitHub API rejected the action request. Check your repository permissions.");
                     resetAIButton(btn, pollStatus);
                 }
             } catch (err) {
-                alert("Network Error calling endpoint direct: " + err.message);
+                alert("Network Error trying to reach GitHub: " + err.message);
                 resetAIButton(btn, pollStatus);
             }
         }
@@ -358,14 +357,14 @@
             btn.style.opacity = '1';
             btn.style.cursor = 'pointer';
             pollStatus.style.display = 'none';
-            btn.innerHTML = `<span>🤖</span> Run Live Qwen-AI Analysis`;
+            btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
         }
 
         function startPollingDatabase() {
             let attempts = 0;
             const interval = setInterval(async () => {
                 attempts++;
-                if (attempts > 18) { // Safety cutout break threshold after 3 full minutes of checking
+                if (attempts > 18) { 
                     clearInterval(interval);
                     location.reload();
                     return;
@@ -375,10 +374,10 @@
                     const res = await fetch(`rooms.json?cachebust=${new Date().getTime()}`);
                     if (res.ok) {
                         clearInterval(interval);
-                        location.reload(); // Refresh layout cards instantly to demonstrate fresh data parameters
+                        location.reload(); 
                     }
                 } catch(e){}
-            }, 10000); // Check file every 10 seconds sequentially
+            }, 10000); 
         }
     </script>
 </body>
