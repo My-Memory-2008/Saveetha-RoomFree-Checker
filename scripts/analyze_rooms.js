@@ -224,7 +224,7 @@ async function captureAndAnalyzeSchedules() {
             const base64Image = imageBuffer.toString('base64');
 
             const payload = {
-                model: "qwen2.5vl:3b", 
+                model: "qwen2.5vl", 
                 prompt: prompt,
                 images: [base64Image],
                 stream: false
