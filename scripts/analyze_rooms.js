@@ -441,9 +441,6 @@
 
 
 
-
-
-
 // scripts/analyze_rooms.js
 const fs = require('fs');
 const path = require('path');
@@ -465,7 +462,7 @@ async function mapWithConcurrency(items, concurrencyLimit, asyncFn) {
         results.push(promise);
         executing.add(promise);
         if (executing.size >= concurrencyLimit) {
-            await Promise.race(executing); // Wait for one to finish before starting the next
+            await Promise.race(executing);
         }
     }
     return Promise.all(results);
@@ -503,10 +500,7 @@ async function captureAndAnalyzeSchedules() {
     const captureResults = await mapWithConcurrency(urls, 3, async (url, index) => {
         const page = await context.newPage();
         try {
-            // Use 'domcontentloaded' instead of 'networkidle' for massive speed gains
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
-            
-            // Wait specifically for the h1 tag instead of a blind 3-second timeout
             await page.waitForSelector('h1', { timeout: 3000 }).catch(() => {});
             
             const h1Text = await page.locator('h1').first().textContent().catch(() => "") || "";
@@ -538,12 +532,11 @@ async function captureAndAnalyzeSchedules() {
     console.log(`Starting parallel Ollama inference on ${validTargets.length} images...`);
 
     // ✅ OPTIMIZATION 3: Parallelize Ollama Inference (4 images at a time)
-    // SmolVLM-256M is so small that 4 concurrent requests will easily fit in the 7GB GitHub Actions RAM
     const analysisResults = await mapWithConcurrency(validTargets, 4, async (target) => {
         const roomName = target.room;
         try {
-            // ✅ OPTIMIZATION 4: Ultra-short prompt to minimize token generation time
-            const prompt = `Is this room free? If image shows 'No Sessions Found' or empty, status is 'Free'. Else 'Occupied'. Time: ${formattedTimeString}. Reply ONLY with raw JSON: {"roomNumber":"${roomName}","currentStatus":"Free" or "Occupied","upcomingTimings":"..."}`;
+            // ✅ FIX 1: Ultra-simple prompt designed specifically for 256M models
+            const prompt = `Analyze this timetable image. If the room is empty or says 'No Sessions', currentStatus is "Free". If there is a class, currentStatus is "Occupied". Reply with ONLY this JSON format: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "None"}`;
             
             const imageBuffer = fs.readFileSync(target.path);
             const base64Image = imageBuffer.toString('base64');
@@ -554,8 +547,8 @@ async function captureAndAnalyzeSchedules() {
                 images: [base64Image],
                 stream: false,
                 options: {
-                    temperature: 0.1, // Lower temperature = faster, more deterministic JSON output
-                    num_predict: 60   // Cap max tokens to prevent rambling
+                    temperature: 0.1,
+                    num_predict: 60
                 }
             };
 
@@ -569,11 +562,21 @@ async function captureAndAnalyzeSchedules() {
             const result = await response.json();
             
             let cleanText = result.response.toString().trim();
-            if (cleanText.includes("```")) {
-                cleanText = cleanText.replace(/```json\s*|```/g, '').trim();
+            
+            // ✅ FIX 2: Robust JSON extraction for small models that add conversational text
+            const jsonMatch = cleanText.match(/\{[\s\S]*?\}/);
+            if (jsonMatch) {
+                cleanText = jsonMatch[0];
+            } else {
+                throw new Error("No JSON object found in model response");
             }
 
+            // Remove markdown code blocks if present
+            cleanText = cleanText.replace(/```json\s*|```/g, '').trim();
+
             const parsedJson = JSON.parse(cleanText);
+            
+            // Force status cleanup
             parsedJson.currentStatus = parsedJson.currentStatus.toLowerCase().includes("free") ? "Free" : "Occupied";
             
             console.log(`✅ Analyzed: Room ${roomName} -> ${parsedJson.currentStatus}`);
