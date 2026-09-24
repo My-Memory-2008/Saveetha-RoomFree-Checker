@@ -217,13 +217,108 @@
 
 
 
-name: Process All Room Schedules with SmolVLM AI
+
+
+
+
+
+
+# name: Process All Room Schedules with SmolVLM AI
+
+# on:
+#   workflow_dispatch: # Allows 1-click manual trigger from the Actions tab
+
+# jobs:
+#   run-vision-inference:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: write # Allows committing rooms.json back to the repository
+
+#     steps:
+#     - name: Checkout Repository Codebase
+#       uses: actions/checkout@v4
+
+#     - name: Setup Node.js Environment
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: '20'
+
+#     - name: Install Node Playwright & SharpDependency
+#       run: |
+#         npm install playwright sharp
+
+#     - name: Install Playwright Chromium System Dependencies
+#       run: |
+#         npx playwright install chromium --with-deps
+
+#     - name: Install Ollama Core Engine
+#       run: |
+#         curl -fsSL https://ollama.com/install.sh | sh
+
+#     - name: Start Ollama Server
+#       run: |
+#         ollama serve &
+#         echo "Waiting for Ollama server to boot..."
+#         until curl -s http://127.0.0.1:11434 > /dev/null; do
+#           sleep 1
+#         done
+#         echo "Ollama server is up and running!"
+
+#     - name: Download SmolVLM-256M Vision Model (GGUF)
+#       run: |
+#         # ✅ FIXED: Pulling the GGUF-converted version that Ollama can actually read
+#         ollama pull hf.co/pierretokns/SmolVLM-256M-Instruct-GGUF
+#     - name: Run Playwright Scraping & Node Inference Script
+#       run: |
+#         node scripts/analyze_rooms.js
+
+#     - name: Inject Secret Token into Website Code
+#       env:
+#         SECRET_KEY: ${{ secrets.MY_GITHUB_TOKEN }}
+#       run: |
+#         node -e "
+#           const fs = require('fs');
+#           let text = fs.readFileSync('index.html', 'utf8');
+#           text = text.replace('TOKEN_SECRET_PLACEHOLDER_KEY', process.env.SECRET_KEY);
+#           fs.writeFileSync('index.html', text, 'utf8');
+#         "
+
+#     - name: Commit and Save Fresh Database Snapshot
+#       run: |
+#         git config --global user.name "Self Workflow Agent"
+#         git config --global user.email "actions@github.com"
+#         git add rooms.json index.html
+#         git commit -m "Automated all-room web scrape with SmolVLM-256M [IST Verified]" || exit 0
+#         git push
+
+#     - name: Upload Captured Screenshots to Artifacts
+#       if: always()
+#       uses: actions/upload-artifact@v4
+#       with:
+#         name: room-screenshots-gallery
+#         path: room-images/
+#         retention-days: 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+name: Process All Room Schedules (Instant Mode)
 
 on:
-  workflow_dispatch: # Allows 1-click manual trigger from the Actions tab
+  workflow_dispatch: # Allows 1-click manual trigger
 
 jobs:
-  run-vision-inference:
+  run-scraping:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Allows committing rooms.json back to the repository
@@ -237,58 +332,18 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Install Node Playwright & SharpDependency
+    - name: Install Playwright Dependencies
       run: |
-        npm install playwright sharp
-
-    - name: Install Playwright Chromium System Dependencies
-      run: |
+        npm install playwright
         npx playwright install chromium --with-deps
 
-    - name: Install Ollama Core Engine
-      run: |
-        curl -fsSL https://ollama.com/install.sh | sh
-
-    - name: Start Ollama Server
-      run: |
-        ollama serve &
-        echo "Waiting for Ollama server to boot..."
-        until curl -s http://127.0.0.1:11434 > /dev/null; do
-          sleep 1
-        done
-        echo "Ollama server is up and running!"
-
-    - name: Download SmolVLM-256M Vision Model (GGUF)
-      run: |
-        # ✅ FIXED: Pulling the GGUF-converted version that Ollama can actually read
-        ollama pull hf.co/pierretokns/SmolVLM-256M-Instruct-GGUF
-    - name: Run Playwright Scraping & Node Inference Script
-      run: |
-        node scripts/analyze_rooms.js
-
-    - name: Inject Secret Token into Website Code
-      env:
-        SECRET_KEY: ${{ secrets.MY_GITHUB_TOKEN }}
-      run: |
-        node -e "
-          const fs = require('fs');
-          let text = fs.readFileSync('index.html', 'utf8');
-          text = text.replace('TOKEN_SECRET_PLACEHOLDER_KEY', process.env.SECRET_KEY);
-          fs.writeFileSync('index.html', text, 'utf8');
-        "
+    - name: Run Instant Scraping Script
+      run: node scripts/analyze_rooms.js
 
     - name: Commit and Save Fresh Database Snapshot
       run: |
         git config --global user.name "Self Workflow Agent"
         git config --global user.email "actions@github.com"
-        git add rooms.json index.html
-        git commit -m "Automated all-room web scrape with SmolVLM-256M [IST Verified]" || exit 0
+        git add rooms.json
+        git commit -m "Automated instant room scrape [IST Verified]" || exit 0
         git push
-
-    - name: Upload Captured Screenshots to Artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: room-screenshots-gallery
-        path: room-images/
-        retention-days: 5
