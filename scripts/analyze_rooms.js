@@ -372,8 +372,8 @@ async function captureAndAnalyzeSchedules() {
             const base64Image = imageBuffer.toString('base64');
 
             const payload = {
-                // ✅ UPDATED: Using the ultra-fast SmolVLM 256M model
-                model: "hf.co/HuggingFaceTB/SmolVLM-256M-Instruct", 
+                // ✅ FIXED: Using the GGUF-converted SmolVLM 256M model
+                model: "hf.co/pierretokns/SmolVLM-256M-Instruct-GGUF", 
                 prompt: prompt,
                 images: [base64Image],
                 stream: false
