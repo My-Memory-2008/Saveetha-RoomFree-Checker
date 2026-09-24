@@ -440,12 +440,191 @@
 
 
 
+
+
+// // scripts/analyze_rooms.js
+// const fs = require('fs');
+// const path = require('path');
+// const { chromium } = require('playwright');
+
+// // ✅ OPTIMIZATION 1: Concurrency Helper to run multiple tasks at once
+// async function mapWithConcurrency(items, concurrencyLimit, asyncFn) {
+//     const results = [];
+//     const executing = new Set();
+//     for (const item of items) {
+//         const promise = asyncFn(item).then(result => {
+//             executing.delete(promise);
+//             return result;
+//         }).catch(err => {
+//             executing.delete(promise);
+//             console.error(`Error processing item:`, err.message);
+//             return null;
+//         });
+//         results.push(promise);
+//         executing.add(promise);
+//         if (executing.size >= concurrencyLimit) {
+//             await Promise.race(executing);
+//         }
+//     }
+//     return Promise.all(results);
+// }
+
+// async function captureAndAnalyzeSchedules() {
+//     const jsonPath = path.join(__dirname, '../rooms.json');
+//     const linksFile = path.join(__dirname, '../links.txt');
+//     const screenshotDir = path.join(__dirname, '../room-images');
+//     let db = {};
+
+//     if (!fs.existsSync(linksFile)) {
+//         console.error("Critical Error: links.txt file missing.");
+//         return;
+//     }
+
+//     if (!fs.existsSync(screenshotDir)) {
+//         fs.mkdirSync(screenshotDir, { recursive: true });
+//     }
+
+//     const urls = fs.readFileSync(linksFile, 'utf-8')
+//         .split('\n')
+//         .map(line => line.trim())
+//         .filter(line => line.startsWith('http'));
+
+//     console.log(`Loaded ${urls.length} live website links...`);
+//     if (urls.length === 0) return;
+
+//     console.log("Launching Playwright for parallel screenshot capture...");
+//     const browser = await chromium.launch({ headless: true });
+//     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+
+//     // ✅ OPTIMIZATION 2: Parallelize Screenshot Capture (3 tabs at a time)
+//     const captureResults = await mapWithConcurrency(urls, 3, async (url, index) => {
+//         const page = await context.newPage();
+//         try {
+//             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
+//             await page.waitForSelector('h1', { timeout: 3000 }).catch(() => {});
+            
+//             const h1Text = await page.locator('h1').first().textContent().catch(() => "") || "";
+//             const roomNumber = h1Text.replace(/\D/g, '') || `Location_${index + 1}`;
+//             const imgPath = path.join(screenshotDir, `${roomNumber}.png`);
+
+//             await page.screenshot({ path: imgPath, fullPage: true });
+//             console.log(`✅ Captured: Room ${roomNumber}`);
+//             return { room: roomNumber, path: imgPath };
+//         } catch (e) {
+//             console.error(`❌ Failed ${url}: ${e.message}`);
+//             return null;
+//         } finally {
+//             await page.close();
+//         }
+//     });
+
+//     await browser.close();
+    
+//     const validTargets = captureResults.filter(t => t !== null);
+//     if (validTargets.length === 0) {
+//         console.log("No screenshots generated. Stopping.");
+//         return;
+//     }
+
+//     const options = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true };
+//     const formattedTimeString = new Date().toLocaleTimeString('en-US', options) + " IST";
+
+//     console.log(`Starting parallel Ollama inference on ${validTargets.length} images...`);
+
+//     // ✅ OPTIMIZATION 3: Parallelize Ollama Inference (4 images at a time)
+//     const analysisResults = await mapWithConcurrency(validTargets, 4, async (target) => {
+//         const roomName = target.room;
+//         try {
+//             // ✅ FIX: Ask a simple YES/NO question instead of demanding JSON. 
+//             // 256M models are much better at simple classification than writing code/JSON.
+//             const prompt = `Look at this university timetable screenshot. Is the room currently empty with no active sessions? Reply with ONLY the word YES or NO.`;
+            
+//             const imageBuffer = fs.readFileSync(target.path);
+//             const base64Image = imageBuffer.toString('base64');
+
+//             const payload = {
+//                 model: "hf.co/pierretokns/SmolVLM-256M-Instruct-GGUF",
+//                 prompt: prompt,
+//                 images: [base64Image],
+//                 stream: false,
+//                 options: {
+//                     temperature: 0.1,
+//                     num_predict: 10 // We only need 1 word, so cap it at 10 tokens
+//                 }
+//             };
+
+//             const response = await fetch('http://localhost:11434/api/generate', {
+//                 method: 'POST',
+//                 headers: { 'Content-Type': 'application/json' },
+//                 body: JSON.stringify(payload)
+//             });
+
+//             if (!response.ok) throw new Error(`Ollama status ${response.status}`);
+//             const result = await response.json();
+            
+//             let cleanText = result.response.toString().trim().toUpperCase();
+//             console.log(`Raw model response for Room ${roomName}: "${cleanText}"`);
+
+//             // ✅ Let JavaScript build the JSON based on the simple YES/NO answer
+//             const isFree = cleanText.includes("YES") && !cleanText.includes("NO");
+            
+//             const parsedJson = {
+//                 roomNumber: roomName,
+//                 currentStatus: isFree ? "Free" : "Occupied",
+//                 upcomingTimings: isFree ? `Verified empty at ${formattedTimeString}` : `Active session detected at ${formattedTimeString}`
+//             };
+            
+//             console.log(`✅ Analyzed: Room ${roomName} -> ${parsedJson.currentStatus}`);
+//             return { roomName, data: parsedJson };
+//         } catch (e) {
+//             console.error(`❌ Fallback for Room ${roomName}: ${e.message}`);
+//             return { 
+//                 roomName, 
+//                 data: {
+//                     roomNumber: roomName,
+//                     currentStatus: "Free",
+//                     upcomingTimings: `Automation fallback at ${formattedTimeString}.`
+//                 }
+//             };
+//         }
+//     });
+
+//     // Compile final database
+//     analysisResults.forEach(res => {
+//         if (res) db[res.roomName] = res.data;
+//     });
+
+//     fs.writeFileSync(jsonPath, JSON.stringify(db, null, 2));
+//     console.log("🚀 Database processing completed successfully!");
+// }
+
+// captureAndAnalyzeSchedules();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // scripts/analyze_rooms.js
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
+const sharp = require('sharp'); // ✅ NEW: Ultra-fast image resizing
 
-// ✅ OPTIMIZATION 1: Concurrency Helper to run multiple tasks at once
+// ✅ OPTIMIZATION 1: Concurrency Helper
 async function mapWithConcurrency(items, concurrencyLimit, asyncFn) {
     const results = [];
     const executing = new Set();
@@ -492,7 +671,7 @@ async function captureAndAnalyzeSchedules() {
 
     console.log("Launching Playwright for parallel screenshot capture...");
     const browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const context = await browser.newContext({ viewport: { width: 1024, height: 768 } }); // ✅ Smaller viewport = smaller images
 
     // ✅ OPTIMIZATION 2: Parallelize Screenshot Capture (3 tabs at a time)
     const captureResults = await mapWithConcurrency(urls, 3, async (url, index) => {
@@ -505,7 +684,8 @@ async function captureAndAnalyzeSchedules() {
             const roomNumber = h1Text.replace(/\D/g, '') || `Location_${index + 1}`;
             const imgPath = path.join(screenshotDir, `${roomNumber}.png`);
 
-            await page.screenshot({ path: imgPath, fullPage: true });
+            // ✅ FIX: Capture ONLY the viewport, not the massive full page!
+            await page.screenshot({ path: imgPath, fullPage: false }); 
             console.log(`✅ Captured: Room ${roomNumber}`);
             return { room: roomNumber, path: imgPath };
         } catch (e) {
@@ -529,15 +709,17 @@ async function captureAndAnalyzeSchedules() {
 
     console.log(`Starting parallel Ollama inference on ${validTargets.length} images...`);
 
-    // ✅ OPTIMIZATION 3: Parallelize Ollama Inference (4 images at a time)
-    const analysisResults = await mapWithConcurrency(validTargets, 4, async (target) => {
+    // ✅ OPTIMIZATION 3: Concurrency set to 2 (GitHub Actions only has 2 CPU cores!)
+    const analysisResults = await mapWithConcurrency(validTargets, 2, async (target) => {
         const roomName = target.room;
         try {
-            // ✅ FIX: Ask a simple YES/NO question instead of demanding JSON. 
-            // 256M models are much better at simple classification than writing code/JSON.
             const prompt = `Look at this university timetable screenshot. Is the room currently empty with no active sessions? Reply with ONLY the word YES or NO.`;
             
-            const imageBuffer = fs.readFileSync(target.path);
+            let imageBuffer = fs.readFileSync(target.path);
+            
+            // ✅ CRITICAL SPEED FIX: Resize image to max 1024x1024 before sending to AI.
+            // This reduces the pixel count the AI has to process by up to 80%!
+            imageBuffer = await sharp(imageBuffer).resize(1024, 1024, { fit: 'inside' }).toBuffer();
             const base64Image = imageBuffer.toString('base64');
 
             const payload = {
@@ -547,7 +729,8 @@ async function captureAndAnalyzeSchedules() {
                 stream: false,
                 options: {
                     temperature: 0.1,
-                    num_predict: 10 // We only need 1 word, so cap it at 10 tokens
+                    num_predict: 10,
+                    num_ctx: 512 // ✅ Limits AI memory window for massive CPU speedup
                 }
             };
 
@@ -561,9 +744,6 @@ async function captureAndAnalyzeSchedules() {
             const result = await response.json();
             
             let cleanText = result.response.toString().trim().toUpperCase();
-            console.log(`Raw model response for Room ${roomName}: "${cleanText}"`);
-
-            // ✅ Let JavaScript build the JSON based on the simple YES/NO answer
             const isFree = cleanText.includes("YES") && !cleanText.includes("NO");
             
             const parsedJson = {
@@ -575,7 +755,7 @@ async function captureAndAnalyzeSchedules() {
             console.log(`✅ Analyzed: Room ${roomName} -> ${parsedJson.currentStatus}`);
             return { roomName, data: parsedJson };
         } catch (e) {
-            console.error(`❌ Fallback for Room ${roomName}: ${e.message}`);
+            console.error(` Fallback for Room ${roomName}: ${e.message}`);
             return { 
                 roomName, 
                 data: {
@@ -587,13 +767,12 @@ async function captureAndAnalyzeSchedules() {
         }
     });
 
-    // Compile final database
     analysisResults.forEach(res => {
         if (res) db[res.roomName] = res.data;
     });
 
     fs.writeFileSync(jsonPath, JSON.stringify(db, null, 2));
-    console.log("🚀 Database processing completed successfully!");
+    console.log(" Database processing completed successfully!");
 }
 
 captureAndAnalyzeSchedules();
