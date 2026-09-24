@@ -257,6 +257,36 @@
     font-weight: 500;
 }
 
+
+
+
+
+        .verify-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        .verify-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+
+        
 @keyframes shimmer {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
@@ -323,8 +353,184 @@
     </footer>
 
 
-
     <script>
+    // ⚠️ STEP 1: CONFIGURE YOUR REPOSITORY PARTICULARS HERE
+    const GITHUB_USERNAME = "My-Memory-2008"; 
+    const REPO_NAME = "Saveetha-RoomFree-Checker";             
+    const WORKFLOW_FILE = "process-rooms.yml";       
+    const FUNCTION_URL = "/trigger"; 
+
+    document.addEventListener("DOMContentLoaded", loadRoomRegistry);
+
+    async function loadRoomRegistry() {
+        const gridContainer = document.getElementById("rooms-grid");
+        try {
+            const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+            if (!response.ok) throw new Error();
+            
+            const database = await response.json();
+            const rooms = Object.keys(database);
+            const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
+
+            if (freeRooms.length === 0) {
+                gridContainer.innerHTML = `
+                    <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                        All monitored rooms are currently reported as occupied, or the database file is blank.
+                    </div>`;
+                return;
+            }
+
+            gridContainer.innerHTML = "";
+            freeRooms.forEach(key => {
+                const room = database[key];
+                const card = document.createElement("div");
+                card.className = "room-card";
+                
+                // ✅ Renders the card with the new "Verify Live Status" button
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="room-title">Room ${room.roomNumber}</div>
+                        <span class="status-badge">● Vacant & Free</span>
+                    </div>
+                    <div class="schedule-details">
+                        <strong>Live Timeline Extraction:</strong><br>${room.upcomingTimings || "No active lectures or group lab slots detected."}
+                    </div>
+                    ${room.link ? `
+                        <a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">
+                            🔗 Verify Live Status
+                        </a>
+                    ` : ''}
+                `;
+                gridContainer.appendChild(card);
+            });
+        } catch (err) {
+            gridContainer.innerHTML = `
+                <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                    No database found. Click the button above to run your initial workflow vision scan.
+                </div>`;
+        }
+    }
+
+    async function triggerWorkflowAI() {
+        const btn = document.getElementById('ai-btn');
+        const progressWrapper = document.getElementById('progress-wrapper');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        
+        btn.disabled = true;
+        progressWrapper.style.display = 'flex';
+        progressFill.style.width = '0%';
+        progressFill.classList.remove('success');
+        progressText.innerText = "Triggering GitHub Action...";
+        progressText.style.color = "var(--text-secondary)";
+        btn.innerHTML = `<span>⏳</span> Processing...`;
+
+        try {
+            const response = await fetch(FUNCTION_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ GITHUB_USERNAME, REPO_NAME, WORKFLOW_FILE })
+            });
+
+            if (response.ok) {
+                startRealTimeProgressPolling();
+            } else {
+                alert("Failed to trigger workflow.");
+                resetUI();
+            }
+        } catch (err) {
+            alert("Network Error: " + err.message);
+            resetUI();
+        }
+    }
+
+    function startRealTimeProgressPolling() {
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        let attempts = 0;
+
+        const interval = setInterval(async () => {
+            attempts++;
+            
+            try {
+                const statusRes = await fetch(`/api/status?t=${new Date().getTime()}`);
+                const data = await statusRes.json();
+
+                if (data.runStatus === 'in_progress' || data.runStatus === 'queued') {
+                    progressFill.style.width = `${data.progress}%`;
+                    progressText.innerText = `GitHub Action: ${data.currentStep}`;
+                } 
+                else if (data.runStatus === 'completed' && data.conclusion === 'success') {
+                    progressFill.style.width = `90%`;
+                    progressText.innerText = "GitHub finished! Waiting for Cloudflare site rebuild...";
+                    
+                    clearInterval(interval);
+                    startCloudflareRebuildPolling();
+                }
+                else if (data.runStatus === 'completed' && data.conclusion !== 'success') {
+                    progressText.innerText = "Workflow failed. Check GitHub Actions tab.";
+                    progressText.style.color = "var(--accent-rose)";
+                    clearInterval(interval);
+                    resetUI();
+                }
+            } catch (e) {
+                console.log("Polling error:", e);
+            }
+
+            if (attempts > 60) { 
+                clearInterval(interval);
+                progressText.innerText = "Timed out. Please refresh manually.";
+                resetUI();
+            }
+        }, 5000); 
+    }
+
+    function startCloudflareRebuildPolling() {
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        let attempts = 0;
+
+        const interval = setInterval(async () => {
+            attempts++;
+            try {
+                const res = await fetch(`rooms.json?nocache=${new Date().getTime()}`, { cache: "no-store" });
+                if (res.ok) {
+                    clearInterval(interval);
+                    progressFill.style.width = '100%';
+                    progressFill.classList.add('success');
+                    progressText.innerText = "Scan complete! Reloading dashboard...";
+                    progressText.style.color = "var(--accent-emerald)";
+                    
+                    setTimeout(() => window.location.reload(), 1500);
+                }
+            } catch(e) {}
+
+            if (attempts > 36) { 
+                clearInterval(interval);
+                progressText.innerText = "Rebuild timed out. Please refresh manually.";
+                resetUI();
+            }
+        }, 5000);
+    }
+
+    function resetUI() {
+        const btn = document.getElementById('ai-btn');
+        const progressWrapper = document.getElementById('progress-wrapper');
+        btn.disabled = false;
+        btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
+        progressWrapper.style.display = 'none';
+    }
+</script>
+
+
+    
+
+
+
+
+    
+
+    <!-- <script>
     const GITHUB_USERNAME = "My-Memory-2008"; 
     const REPO_NAME = "Saveetha-RoomFree-Checker";             
     const WORKFLOW_FILE = "process-rooms.yml";       
@@ -480,7 +686,7 @@
         btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
         progressWrapper.style.display = 'none';
     }
-</script>
+</script> -->
 
     <!-- <script>
     // ⚠️ STEP 1: CONFIGURE YOUR REPOSITORY PARTICULARS HERE
