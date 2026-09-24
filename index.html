@@ -309,46 +309,45 @@
             }
         }
         async function triggerWorkflowAI() {
-            const btn = document.getElementById('ai-btn');
-            const pollStatus = document.getElementById('polling-status');
-            
-            // Check if the injection workflow has executed at least once
-            
+    const btn = document.getElementById('ai-btn');
+    const pollStatus = document.getElementById('polling-status');
+    
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    btn.style.cursor = 'not-allowed';
+    pollStatus.style.display = 'flex';
+    btn.innerHTML = `<span>⏳</span> Waking up Runner...`;
 
-            btn.disabled = true;
-            btn.style.opacity = '0.6';
-            btn.style.cursor = 'not-allowed';
-            pollStatus.style.display = 'flex';
-            btn.innerHTML = `<span>⏳</span> Waking up Runner...`;
+    // ✅ FIXED: Added missing '$' and corrected the GitHub REST API endpoint
+    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
 
-            const url = `https://github.com/{GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Accept": "application/vnd.github+json",
+                "Authorization": `Bearer ${GITHUB_TOKEN}`, // ⚠️ Use a newly generated, secure token
+                "X-GitHub-Api-Version": "2022-11-28",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ ref: "main" })
+        });
 
-            try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Accept": "application/vnd.github+json",
-                        "Authorization": `Bearer ${GITHUB_TOKEN}`,
-                        "X-GitHub-Api-Version": "2022-11-28",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ ref: "main" })
-                });
-
-                if (response.status === 204 || response.ok) {
-                    btn.innerHTML = `<span>🤖</span> AI Processing (Takes ~1 min)...`;
-                    document.getElementById('polling-text').innerText = "Qwen-VL is evaluating schedule snapshots...";
-                    startPollingDatabase();
-                } else {
-                    alert("GitHub API rejected the action request. Check your repository permissions.");
-                    resetAIButton(btn, pollStatus);
-                }
-            } catch (err) {
-                alert("Network Error trying to reach GitHub: " + err.message);
-                resetAIButton(btn, pollStatus);
-            }
+        if (response.status === 204 || response.ok) {
+            btn.innerHTML = `<span>🤖</span> AI Processing (Takes ~1 min)...`;
+            document.getElementById('polling-text').innerText = "Qwen-VL is evaluating schedule snapshots...";
+            startPollingDatabase();
+        } else {
+            // Improved error logging to tell you exactly what GitHub rejected
+            const errorText = await response.text();
+            alert(`GitHub API rejected the request. Status: ${response.status}\nDetails: ${errorText}`);
+            resetAIButton(btn, pollStatus);
         }
-
+    } catch (err) {
+        alert("Network Error trying to reach GitHub: " + err.message);
+        resetAIButton(btn, pollStatus);
+    }
+}
         function resetAIButton(btn, pollStatus) {
             btn.disabled = false;
             btn.style.opacity = '1';
