@@ -261,7 +261,7 @@
 
         // ⚠️ LEAVE THIS PLACEHOLDER KEY EXACTLY AS IT IS below. 
         // Your background GitHub Action will automatically replace this text string string when it compiles!
-        const GITHUB_TOKEN = "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"; 
+        const GITHUB_TOKEN = "github_token"; 
 
         document.addEventListener("DOMContentLoaded", loadRoomRegistry);
 
@@ -321,7 +321,7 @@
             pollStatus.style.display = 'flex';
             btn.innerHTML = `<span>⏳</span> Waking up Runner...`;
 
-            const url = `https://github.com{GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
+            const url = `https://github.com/{GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
 
             try {
                 const response = await fetch(url, {
