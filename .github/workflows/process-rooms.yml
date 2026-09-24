@@ -258,11 +258,10 @@ jobs:
         done
         echo "Ollama server is up and running!"
 
-    - name: Download SmolVLM-256M Vision Model
+    - name: Download SmolVLM-256M Vision Model (GGUF)
       run: |
-        # ✅ UPDATED: Pulling the ultra-fast 256M parameter model directly from Hugging Face
-        ollama pull hf.co/HuggingFaceTB/SmolVLM-256M-Instruct
-
+        # ✅ FIXED: Pulling the GGUF-converted version that Ollama can actually read
+        ollama pull hf.co/pierretokns/SmolVLM-256M-Instruct-GGUF
     - name: Run Playwright Scraping & Node Inference Script
       run: |
         node scripts/analyze_rooms.js
