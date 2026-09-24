@@ -1,12 +1,12 @@
 {
   "5453": {
     "roomNumber": "5453",
-    "currentStatus": "Free",
-    "upcomingTimings": "Verified empty at 01:40 PM IST"
+    "currentStatus": "Occupied",
+    "upcomingTimings": "Active session detected at 01:52 PM IST"
   },
   "5683": {
     "roomNumber": "5683",
-    "currentStatus": "Free",
-    "upcomingTimings": "Verified empty at 01:40 PM IST"
+    "currentStatus": "Occupied",
+    "upcomingTimings": "Active session detected at 01:52 PM IST"
   }
 }
