@@ -2,11 +2,18 @@
   "5453": {
     "roomNumber": "5453",
     "currentStatus": "Free",
-    "upcomingTimings": "Verified empty at 12:05 PM (Indian Standard Time)"
+    "upcomingTimings": [
+      [
+        "Verified empty at 01:06 PM (Indian Standard Time)"
+      ],
+      [
+        "No sessions found"
+      ]
+    ]
   },
   "5683": {
     "roomNumber": "5683",
     "currentStatus": "Free",
-    "upcomingTimings": "Verified empty at 12:05 PM (Indian Standard Time)"
+    "upcomingTimings": "No active classes detected. Checked via live automation at 01:06 PM (Indian Standard Time)."
   }
 }
