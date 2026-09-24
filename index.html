@@ -270,7 +270,8 @@
     async function loadRoomRegistry() {
         const gridContainer = document.getElementById("rooms-grid");
         try {
-            const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+            // const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+            const response = await fetch(`/api/rooms?t=${new Date().getTime()}`);
             if (!response.ok) throw new Error();
             
             const database = await response.json();
