@@ -440,7 +440,6 @@
 
 
 
-
 // scripts/analyze_rooms.js
 const fs = require('fs');
 const path = require('path');
@@ -494,7 +493,6 @@ async function captureAndAnalyzeSchedules() {
     console.log("Launching Playwright for parallel screenshot capture...");
     const browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-    const capturedTargets = [];
 
     // ✅ OPTIMIZATION 2: Parallelize Screenshot Capture (3 tabs at a time)
     const captureResults = await mapWithConcurrency(urls, 3, async (url, index) => {
@@ -535,8 +533,9 @@ async function captureAndAnalyzeSchedules() {
     const analysisResults = await mapWithConcurrency(validTargets, 4, async (target) => {
         const roomName = target.room;
         try {
-            // ✅ FIX 1: Ultra-simple prompt designed specifically for 256M models
-            const prompt = `Analyze this timetable image. If the room is empty or says 'No Sessions', currentStatus is "Free". If there is a class, currentStatus is "Occupied". Reply with ONLY this JSON format: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "None"}`;
+            // ✅ FIX: Ask a simple YES/NO question instead of demanding JSON. 
+            // 256M models are much better at simple classification than writing code/JSON.
+            const prompt = `Look at this university timetable screenshot. Is the room currently empty with no active sessions? Reply with ONLY the word YES or NO.`;
             
             const imageBuffer = fs.readFileSync(target.path);
             const base64Image = imageBuffer.toString('base64');
@@ -548,7 +547,7 @@ async function captureAndAnalyzeSchedules() {
                 stream: false,
                 options: {
                     temperature: 0.1,
-                    num_predict: 60
+                    num_predict: 10 // We only need 1 word, so cap it at 10 tokens
                 }
             };
 
@@ -561,23 +560,17 @@ async function captureAndAnalyzeSchedules() {
             if (!response.ok) throw new Error(`Ollama status ${response.status}`);
             const result = await response.json();
             
-            let cleanText = result.response.toString().trim();
-            
-            // ✅ FIX 2: Robust JSON extraction for small models that add conversational text
-            const jsonMatch = cleanText.match(/\{[\s\S]*?\}/);
-            if (jsonMatch) {
-                cleanText = jsonMatch[0];
-            } else {
-                throw new Error("No JSON object found in model response");
-            }
+            let cleanText = result.response.toString().trim().toUpperCase();
+            console.log(`Raw model response for Room ${roomName}: "${cleanText}"`);
 
-            // Remove markdown code blocks if present
-            cleanText = cleanText.replace(/```json\s*|```/g, '').trim();
-
-            const parsedJson = JSON.parse(cleanText);
+            // ✅ Let JavaScript build the JSON based on the simple YES/NO answer
+            const isFree = cleanText.includes("YES") && !cleanText.includes("NO");
             
-            // Force status cleanup
-            parsedJson.currentStatus = parsedJson.currentStatus.toLowerCase().includes("free") ? "Free" : "Occupied";
+            const parsedJson = {
+                roomNumber: roomName,
+                currentStatus: isFree ? "Free" : "Occupied",
+                upcomingTimings: isFree ? `Verified empty at ${formattedTimeString}` : `Active session detected at ${formattedTimeString}`
+            };
             
             console.log(`✅ Analyzed: Room ${roomName} -> ${parsedJson.currentStatus}`);
             return { roomName, data: parsedJson };
