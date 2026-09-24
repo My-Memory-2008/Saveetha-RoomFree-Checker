@@ -217,6 +217,51 @@
             margin-top: 40px;
         }
 
+        /* Modern Progress Bar Styles */
+.progress-wrapper {
+    width: 100%;
+    margin-top: 16px;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 99px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+    background-size: 200% 100%;
+    border-radius: 99px;
+    transition: width 0.3s ease;
+    animation: shimmer 2s linear infinite;
+}
+
+.progress-fill.success {
+    background: linear-gradient(90deg, #10b981, #34d399);
+    animation: none;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+    font-weight: 500;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse-glow {
             0%, 100% { opacity: 0.8; transform: scale(1); }
@@ -243,6 +288,29 @@
             <div class="spinner"></div>
             <span id="polling-text">Waking up GitHub Action Runner...</span>
         </div>
+
+
+
+        <!-- Master Button Controls Area -->
+<div class="control-panel">
+    <button id="ai-btn" onclick="triggerWorkflowAI()" class="btn-ai">
+        <span>🤖</span> Scan & Check Live Rooms
+    </button>
+    
+    <div id="polling-status" class="polling-status">
+        <div class="spinner"></div>
+        <span id="polling-text">Waking up GitHub Action Runner...</span>
+    </div>
+
+    <!-- ✅ ADD THIS NEW PROGRESS BAR SECTION -->
+    <div id="progress-wrapper" class="progress-wrapper">
+        <div class="progress-track">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <div id="progress-text" class="progress-text">Initializing AI sequence...</div>
+    </div>
+</div>
+        
     </div>
 
     <!-- Active Cards Grid -->
@@ -254,7 +322,162 @@
         RoomScanner Registry Engine &bull; Hosted securely on Cloudflare Infrastructure
     </footer>
 
+
+
     <script>
+    // ⚠️ STEP 1: CONFIGURE YOUR REPOSITORY PARTICULARS HERE
+    const GITHUB_USERNAME = "My-Memory-2008"; 
+    const REPO_NAME = "Saveetha-RoomFree-Checker";             
+    const WORKFLOW_FILE = "process-rooms.yml";       
+    const FUNCTION_URL = "/trigger"; 
+
+    document.addEventListener("DOMContentLoaded", loadRoomRegistry);
+
+    async function loadRoomRegistry() {
+        const gridContainer = document.getElementById("rooms-grid");
+        try {
+            const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+            if (!response.ok) throw new Error();
+            
+            const database = await response.json();
+            const rooms = Object.keys(database);
+            const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
+
+            if (freeRooms.length === 0) {
+                gridContainer.innerHTML = `
+                    <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                        All monitored rooms are currently reported as occupied, or the database file is blank.
+                    </div>`;
+                return;
+            }
+
+            gridContainer.innerHTML = "";
+            freeRooms.forEach(key => {
+                const room = database[key];
+                const card = document.createElement("div");
+                card.className = "room-card";
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="room-title">Room ${room.roomNumber}</div>
+                        <span class="status-badge">● Vacant & Free</span>
+                    </div>
+                    <div class="schedule-details">
+                        <strong>Live Timeline Extraction:</strong><br>${room.upcomingTimings || "No active lectures or group lab slots detected."}
+                    </div>
+                `;
+                gridContainer.appendChild(card);
+            });
+        } catch (err) {
+            gridContainer.innerHTML = `
+                <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                    No database found. Click the button above to run your initial workflow vision scan.
+                </div>`;
+        }
+    }
+
+    async function triggerWorkflowAI() {
+        const btn = document.getElementById('ai-btn');
+        const pollStatus = document.getElementById('polling-status');
+        const progressWrapper = document.getElementById('progress-wrapper');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        
+        // Reset UI states
+        btn.disabled = true;
+        pollStatus.style.display = 'none';
+        progressWrapper.style.display = 'flex';
+        progressFill.style.width = '0%';
+        progressFill.classList.remove('success');
+        progressText.innerText = "Triggering GitHub Action Runner...";
+        btn.innerHTML = `<span>⏳</span> Processing...`;
+
+        try {
+            const response = await fetch(FUNCTION_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ GITHUB_USERNAME, REPO_NAME, WORKFLOW_FILE })
+            });
+
+            if (response.ok) {
+                progressText.innerText = "Action triggered! Waiting for AI & Cloudflare rebuild...";
+                startProgressAnimation();
+                startPollingDatabase();
+            } else {
+                const errorText = await response.text();
+                alert(`Failed to trigger workflow.\nDetails: ${errorText}`);
+                resetUI(btn, pollStatus, progressWrapper);
+            }
+        } catch (err) {
+            alert("Network Error: " + err.message);
+            resetUI(btn, pollStatus, progressWrapper);
+        }
+    }
+
+    // Smoothly animates the bar up to 90% over 3 minutes
+    function startProgressAnimation() {
+        const progressFill = document.getElementById('progress-fill');
+        let progress = 0;
+        const maxTimeSeconds = 180; // 3 minutes
+        const updateInterval = 100; // ms
+        const increment = 90 / ((maxTimeSeconds * 1000) / updateInterval);
+
+        window.progressAnimInterval = setInterval(() => {
+            progress += increment;
+            if (progress > 90) progress = 90; // Cap at 90% until confirmed success
+            progressFill.style.width = `${progress}%`;
+        }, updateInterval);
+    }
+
+    function startPollingDatabase() {
+        let attempts = 0;
+        const maxAttempts = 36; // 36 * 5 seconds = 3 minutes
+        
+        window.pollingInterval = setInterval(async () => {
+            attempts++;
+            
+            try {
+                const res = await fetch(`rooms.json?nocache=${new Date().getTime()}`, { cache: "no-store" });
+                if (res.ok) {
+                    clearInterval(window.pollingInterval);
+                    clearInterval(window.progressAnimInterval);
+                    
+                    // ✅ SUCCESS STATE
+                    const progressFill = document.getElementById('progress-fill');
+                    const progressText = document.getElementById('progress-text');
+                    
+                    progressFill.style.width = '100%';
+                    progressFill.classList.add('success');
+                    progressText.innerText = "Scan complete! Reloading dashboard...";
+                    progressText.style.color = "var(--accent-emerald)";
+                    
+                    // Automatically reload the page after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.reload(); 
+                    }, 1500);
+                }
+            } catch(e) {
+                // Keep waiting
+            }
+
+            if (attempts > maxAttempts) { 
+                clearInterval(window.pollingInterval);
+                clearInterval(window.progressAnimInterval);
+                document.getElementById('progress-text').innerText = "Timed out. Please refresh manually.";
+                document.getElementById('progress-text').style.color = "var(--accent-rose)";
+                resetUI(document.getElementById('ai-btn'), document.getElementById('polling-status'), document.getElementById('progress-wrapper'));
+            }
+        }, 5000); // Check every 5 seconds
+    }
+
+    function resetUI(btn, pollStatus, progressWrapper) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
+        pollStatus.style.display = 'none';
+        progressWrapper.style.display = 'none';
+    }
+</script>
+
+    <!-- <script>
     // ⚠️ STEP 1: CONFIGURE YOUR REPOSITORY PARTICULARS HERE
     const GITHUB_USERNAME = "My-Memory-2008"; 
     const REPO_NAME = "Saveetha-RoomFree-Checker";             
@@ -377,6 +600,6 @@
             } catch(e){}
         }, 10000); 
     }
-</script>
+</script> -->
 </body>
 </html>
