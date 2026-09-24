@@ -237,9 +237,9 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Install Node Playwright Dependency
+    - name: Install Node Playwright & SharpDependency
       run: |
-        npm install playwright
+        npm install playwright sharp
 
     - name: Install Playwright Chromium System Dependencies
       run: |
