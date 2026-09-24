@@ -864,6 +864,7 @@ async function scrapeRoomSchedules() {
 
                 return {
                     roomNumber,
+                    link: url, // ✅ Saves the URL to the database
                     currentStatus: isFree ? "Free" : "Occupied",
                     upcomingTimings: isFree ? `Verified empty at ${timeStr}` : `Active session at ${timeStr}`
                 };
