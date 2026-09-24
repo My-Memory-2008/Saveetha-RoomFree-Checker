@@ -141,6 +141,157 @@
 
 
 
+// // scripts/analyze_rooms.js
+// const fs = require('fs');
+// const path = require('path');
+// const { chromium } = require('playwright');
+
+// async function captureAndAnalyzeSchedules() {
+//     const jsonPath = path.join(__dirname, '../rooms.json');
+//     const linksFile = path.join(__dirname, '../links.txt');
+//     const screenshotDir = path.join(__dirname, '../room-images');
+//     let db = {};
+
+//     if (!fs.existsSync(linksFile)) {
+//         console.error("Critical Error: links.txt file missing at root repository level.");
+//         return;
+//     }
+
+//     if (!fs.existsSync(screenshotDir)) {
+//         fs.mkdirSync(screenshotDir, { recursive: true });
+//     }
+
+//     const urls = fs.readFileSync(linksFile, 'utf-8')
+//         .split('\n')
+//         .map(line => line.trim())
+//         .filter(line => line.startsWith('http'));
+
+//     console.log(`Loaded ${urls.length} live website links from text registry...`);
+//     if (urls.length === 0) return;
+
+//     // 1. Capture Web Timetables Headlessly via Playwright
+//     console.log("Launching Playwright browser layout tracking...");
+//     const browser = await chromium.launch({ headless: true });
+//     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+//     const page = await context.newPage();
+//     const capturedTargets = [];
+
+//     for (let i = 0; i < urls.length; i++) {
+//         const url = urls[i];
+//         try {
+//             console.log(`Navigating browser to: ${url}`);
+//             await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+            
+//             // Give 5 full seconds for the Saveetha portal and current sessions tab to fully load
+//             await page.waitForTimeout(5000); 
+
+//             // Extract the room number from the <h1> heading cleanly
+//             const h1Text = await page.locator('h1').first().textContent().catch(() => "");
+//             const roomNumber = h1Text.replace(/\D/g, '') || `Location_${i + 1}`;
+//             const imgPath = path.join(screenshotDir, `${roomNumber}.png`);
+
+//             // Take a clear snapshot of the webpage canvas
+//             await page.screenshot({ path: imgPath, fullPage: true });
+//             capturedTargets.push({ room: roomNumber, path: imgPath });
+//             console.log(`Captured clean web layout snapshot for Room: ${roomNumber}`);
+//         } catch (e) {
+//             console.error(`Skipping link ${url} due to loading fault: ${e.message}`);
+//         }
+//     }
+//     await browser.close();
+
+//     if (capturedTargets.length === 0) {
+//         console.log("No screenshots generated successfully. Stopping execution.");
+//         return;
+//     }
+
+//     // 2. Derive Current Indian Standard Time (IST)
+//     const options = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true };
+//     const formattedTimeString = new Date().toLocaleTimeString('en-US', options) + " (Indian Standard Time)";
+
+//     // 3. Send images to the local Ollama Qwen-VL model instance
+//     console.log("Connecting with local Ollama service inference layers...");
+
+//     for (const target of capturedTargets) {
+//         const roomName = target.room;
+//         console.log(`Analyzing [Room ${roomName}] snapshot with qwen2.5-vl...`);
+
+//         try {
+//             // Explicitly instructing the vision model to look for the "No Sessions Found" text block
+//             const prompt = `Analyze this university timetable sheet image layout. Check the 'Current Sessions' tab carefully. If it displays 'No Sessions Found' or says there are no sessions available, it means the room is completely empty and available. The current time is ${formattedTimeString}. Output strictly a raw valid JSON object matching this schema format exactly, with no backticks, no extra text, and no markdown wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "Verified empty at ${formattedTimeString}"}`;
+            
+//             const imageBuffer = fs.readFileSync(target.path);
+//             const base64Image = imageBuffer.toString('base64');
+
+//             const payload = {
+//                 model: "qwen2.5vl", 
+//                 prompt: prompt,
+//                 images: [base64Image],
+//                 stream: false
+//             };
+
+//             const response = await fetch('http://localhost:11434/api/generate', {
+//                 method: 'POST',
+//                 headers: { 'Content-Type': 'application/json' },
+//                 body: JSON.stringify(payload)
+//             });
+
+//             if (!response.ok) {
+//                 throw new Error(`Ollama server responded with status code ${response.status}`);
+//             }
+
+//             const result = await response.json();
+            
+//             if (!result || !result.response) {
+//                 throw new Error("Ollama returned an empty response field data object.");
+//             }
+
+//             let cleanText = result.response.toString().trim();
+
+//             // Stripping any code block formatting code wrapper if Qwen adds them by mistake
+//             if (cleanText.includes("```")) {
+//                 cleanText = cleanText.replace(/```json\s*|```/g, '').trim();
+//             }
+
+//             const parsedJson = JSON.parse(cleanText);
+            
+//             // Force status cleanup to align with our website filtering variables
+//             if (parsedJson.currentStatus.toLowerCase().includes("free") || parsedJson.currentStatus.toLowerCase().includes("no session")) {
+//                 parsedJson.currentStatus = "Free";
+//             } else {
+//                 parsedJson.currentStatus = "Occupied";
+//             }
+
+//             db[roomName] = parsedJson;
+//             console.log(`Processed Room ${roomName} -> Status: ${parsedJson.currentStatus}`);
+//         } catch (e) {
+//             console.error(`Fallback generation triggered for Room ${roomName}: ${e.message}`);
+//             // Resilient fallback output so your page doesn't go blank if an inference timeout happens
+//             db[roomName] = {
+//                 roomNumber: roomName,
+//                 currentStatus: "Free",
+//                 upcomingTimings: `No active classes detected. Checked via live automation at ${formattedTimeString}.`
+//             };
+//         }
+//     }
+
+//     fs.writeFileSync(jsonPath, JSON.stringify(db, null, 2));
+//     console.log("Database processing completed successfully!");
+// }
+
+// captureAndAnalyzeSchedules();
+
+
+
+
+
+
+
+
+
+
+
+
 // scripts/analyze_rooms.js
 const fs = require('fs');
 const path = require('path');
@@ -182,15 +333,13 @@ async function captureAndAnalyzeSchedules() {
             console.log(`Navigating browser to: ${url}`);
             await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
             
-            // Give 5 full seconds for the Saveetha portal and current sessions tab to fully load
-            await page.waitForTimeout(5000); 
+            // Give 3 seconds for the portal to load (reduced from 5s to save time)
+            await page.waitForTimeout(3000); 
 
-            // Extract the room number from the <h1> heading cleanly
             const h1Text = await page.locator('h1').first().textContent().catch(() => "");
             const roomNumber = h1Text.replace(/\D/g, '') || `Location_${i + 1}`;
             const imgPath = path.join(screenshotDir, `${roomNumber}.png`);
 
-            // Take a clear snapshot of the webpage canvas
             await page.screenshot({ path: imgPath, fullPage: true });
             capturedTargets.push({ room: roomNumber, path: imgPath });
             console.log(`Captured clean web layout snapshot for Room: ${roomNumber}`);
@@ -209,22 +358,22 @@ async function captureAndAnalyzeSchedules() {
     const options = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true };
     const formattedTimeString = new Date().toLocaleTimeString('en-US', options) + " (Indian Standard Time)";
 
-    // 3. Send images to the local Ollama Qwen-VL model instance
+    // 3. Send images to the local Ollama SmolVLM-256M model instance
     console.log("Connecting with local Ollama service inference layers...");
 
     for (const target of capturedTargets) {
         const roomName = target.room;
-        console.log(`Analyzing [Room ${roomName}] snapshot with qwen2.5-vl...`);
+        console.log(`Analyzing [Room ${roomName}] snapshot with SmolVLM-256M...`);
 
         try {
-            // Explicitly instructing the vision model to look for the "No Sessions Found" text block
             const prompt = `Analyze this university timetable sheet image layout. Check the 'Current Sessions' tab carefully. If it displays 'No Sessions Found' or says there are no sessions available, it means the room is completely empty and available. The current time is ${formattedTimeString}. Output strictly a raw valid JSON object matching this schema format exactly, with no backticks, no extra text, and no markdown wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free", "upcomingTimings": "Verified empty at ${formattedTimeString}"}`;
             
             const imageBuffer = fs.readFileSync(target.path);
             const base64Image = imageBuffer.toString('base64');
 
             const payload = {
-                model: "qwen2.5vl", 
+                // ✅ UPDATED: Using the ultra-fast SmolVLM 256M model
+                model: "hf.co/HuggingFaceTB/SmolVLM-256M-Instruct", 
                 prompt: prompt,
                 images: [base64Image],
                 stream: false
@@ -248,14 +397,12 @@ async function captureAndAnalyzeSchedules() {
 
             let cleanText = result.response.toString().trim();
 
-            // Stripping any code block formatting code wrapper if Qwen adds them by mistake
             if (cleanText.includes("```")) {
                 cleanText = cleanText.replace(/```json\s*|```/g, '').trim();
             }
 
             const parsedJson = JSON.parse(cleanText);
             
-            // Force status cleanup to align with our website filtering variables
             if (parsedJson.currentStatus.toLowerCase().includes("free") || parsedJson.currentStatus.toLowerCase().includes("no session")) {
                 parsedJson.currentStatus = "Free";
             } else {
@@ -266,7 +413,6 @@ async function captureAndAnalyzeSchedules() {
             console.log(`Processed Room ${roomName} -> Status: ${parsedJson.currentStatus}`);
         } catch (e) {
             console.error(`Fallback generation triggered for Room ${roomName}: ${e.message}`);
-            // Resilient fallback output so your page doesn't go blank if an inference timeout happens
             db[roomName] = {
                 roomNumber: roomName,
                 currentStatus: "Free",
@@ -280,4 +426,3 @@ async function captureAndAnalyzeSchedules() {
 }
 
 captureAndAnalyzeSchedules();
-
