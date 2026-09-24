@@ -2,23 +2,11 @@
   "5453": {
     "roomNumber": "5453",
     "currentStatus": "Free",
-    "upcomingTimings": "No active classes detected. Checked via live automation at 01:11 PM (Indian Standard Time)."
+    "upcomingTimings": "Automation fallback at 01:25 PM IST."
   },
   "5683": {
     "roomNumber": "5683",
     "currentStatus": "Free",
-    "upcomingTimings": [
-      [
-        "Verified empty at 01:11 PM (Indian Standard Time)",
-        "There are no sessions available for this location and scope right now.",
-        "There are no sessions available for this location and scope right now."
-      ],
-      [
-        "No sessions found"
-      ],
-      [
-        "There are no sessions available for this location and scope right now."
-      ]
-    ]
+    "upcomingTimings": "Automation fallback at 01:25 PM IST."
   }
 }
