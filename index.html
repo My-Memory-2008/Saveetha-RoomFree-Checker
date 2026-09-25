@@ -911,7 +911,7 @@
             font-weight: 500;
         }
 
-        /* NEW: Tab Navigation Menu Row */
+        /* Tab Navigation Menu Row Layout */
         .tab-navigation {
             display: flex;
             width: 100%;
@@ -947,7 +947,6 @@
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
-        /* Tab Content Section Controls */
         .tab-content-panel {
             display: none;
             width: 100%;
@@ -957,11 +956,12 @@
         .tab-content-panel.active {
             display: block;
         }
-        .control-panel {
+
+                .control-panel {
             width: 100%;
             max-width: 800px;
             display: flex;
-            flex-direction: column; /* Changed to handle form layouts cleanly */
+            flex-direction: column;
             margin-bottom: 24px;
             gap: 16px;
             background: var(--panel-glass);
@@ -981,7 +981,7 @@
             gap: 16px;
         }
 
-        /* NEW: Future Input Form Layout */
+        /* Search Form Parameter Fields */
         .search-form {
             display: flex;
             gap: 16px;
@@ -1127,14 +1127,6 @@
             animation: spin 0.8s linear infinite;
         }
 
-        footer {
-            width: 100%;
-            text-align: center;
-            font-size: 11px;
-            color: #334155;
-            margin-top: 40px;
-        }
-
         .progress-wrapper {
             width: 100%;
             margin-top: 16px;
@@ -1213,14 +1205,14 @@
 </head>
 <body>
 
-    <!-- Header Content -->
+    <!-- Header Section Content Area -->
     <header>
-        <div class="ai-badge">🤖 Qwen 2.5 VL Engine Registry</div>
+        <div class="ai-badge">🤖 Qwen & SmolVLM Engine Platform</div>
         <h1>Campus Space Navigator</h1>
         <p>Real-time tracking of vacant classroom modules and future session planning.</p>
     </header>
 
-    <!-- NEW: Interactive Tab Switcher Navigation Bar -->
+    <!-- Interactive Tab Switcher Navigation Bar -->
     <div class="tab-navigation">
         <button id="tab-live-btn" class="tab-btn active" onclick="switchTab('live')">
             <span>⚡</span> Live Rooms
@@ -1231,7 +1223,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 1 SECTION: REGULAR LIVE VIEW (UNTOUCHED) -->
+    <!-- TAB 1 SECTION: REGULAR LIVE VIEW MODULE    -->
     <!-- ========================================== -->
     <div id="panel-live" class="tab-content-panel active">
         <div class="control-panel">
@@ -1245,6 +1237,7 @@
                 </div>
             </div>
 
+            <!-- Shimmer Loading Action Progress Tracker -->
             <div id="progress-wrapper" class="progress-wrapper">
                 <div class="progress-track">
                     <div id="progress-fill" class="progress-fill"></div>
@@ -1253,8 +1246,9 @@
             </div>
         </div>
 
+        <!-- Live Display Cards Grid Slot -->
         <div id="rooms-grid" class="grid-container">
-            <!-- Live rooms will load here -->
+            <!-- Rendered dynamically by script engine engines below -->
         </div>
     </div>
     <!-- ========================================== -->
@@ -1286,16 +1280,16 @@
                 </button>
             </div>
 
-            <!-- Future Search Custom Progress Tracking Box -->
+            <!-- Future Search Prediction Custom Progress Box -->
             <div id="future-progress-wrapper" class="progress-wrapper">
                 <div class="progress-track">
                     <div id="future-progress-fill" class="progress-fill"></div>
                 </div>
-                <div id="future-text" class="progress-text">Ready to query...</div>
+                <div id="future-text" class="progress-text">Ready to evaluate custom future slot parameters...</div>
             </div>
         </div>
 
-        <!-- Separate list container specifically for future predictions -->
+        <!-- Separate Isolated List Container specifically for Future Predictive Openings -->
         <div id="future-rooms-grid" class="grid-container">
             <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
                 Select a date and time slot above to evaluate future openings via SmolVLM.
@@ -1307,21 +1301,22 @@
         RoomScanner Registry Engine &bull; Hosted securely on Cloudflare Infrastructure
     </footer>
     <script>
-        // Existing Configuration targets
+        // Repository Target Configuration Metrics (Injected via your manual setups)
         const GITHUB_USERNAME = "My-Memory-2008"; 
         const REPO_NAME = "Saveetha-RoomFree-Checker";             
         const WORKFLOW_FILE = "process-rooms.yml";       
         const FUNCTION_URL = "/trigger"; 
 
-        // New future workflow endpoints
+        // Future predictive workflow pipeline target configurations
         const FUTURE_WORKFLOW_FILE = "predict-future.yml";
         const FUTURE_FUNCTION_URL = "/trigger-future"; 
 
+        // ⚠️ AUTOMATIC INITIALIZER SYNC TO HOOK ELEMENTS IN RUNTIME WINDOWS
         document.addEventListener("DOMContentLoaded", () => {
             loadRoomRegistry();
             loadFutureRoomRegistry();
             
-            // Set the calendar picker to automatically select today's date
+            // Auto-configure the future date input picker selector to fall back to today's date
             const dateInput = document.getElementById('input-date');
             if(dateInput) {
                 const today = new Date();
@@ -1332,7 +1327,7 @@
             }
         });
 
-        // Tab Switching Mechanism Controller
+        // Tab Switching Mechanism Functional Handler Routine
         function switchTab(targetTab) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
@@ -1346,7 +1341,7 @@
             }
         }
 
-        // --- ORIGINAL LIVE LOADING BLOCK (UNTOUCHED) ---
+        // --- DYNAMIC LIVE CACHE POOL LOADER (TAB 1) ---
         async function loadRoomRegistry() {
             const gridContainer = document.getElementById("rooms-grid");
             try {
@@ -1365,18 +1360,31 @@
                     const room = database[key];
                     const card = document.createElement("div");
                     card.className = "room-card";
-                    card.innerHTML = `
-                        <div class="card-header"><div class="room-title">Room \${room.roomNumber}</div><span class="status-badge">● Vacant & Free</span></div>
-                        <div class="schedule-details"><strong>Live Timeline Extraction:</strong><br>\${room.upcomingTimings || "No active lectures or group lab slots detected."}</div>
-                        \${room.link ? `<a href="\${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">🔗 Verify Live Status</a>` : ''}
+                    
+                    let contentString = `
+                        <div class="card-header">
+                            <div class="room-title">Room ${room.roomNumber}</div>
+                            <span class="status-badge">● Vacant & Free</span>
+                        </div>
+                        <div class="schedule-details">
+                            <strong>Live Timeline Extraction:</strong><br>${room.upcomingTimings || "No active lectures or group lab slots detected."}
+                        </div>
                     `;
+                    if (room.link) {
+                        contentString += `
+                            <a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">
+                                🔗 Verify Live Status
+                            </a>
+                        `;
+                    }
+                    card.innerHTML = contentString;
                     gridContainer.appendChild(card);
                 });
             } catch (err) {
                 gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No database found. Click the button above to run your initial workflow vision scan.</div>`;
             }
         }
-        // --- NEW: DYNAMIC FUTURE DATA DESK READER ---
+        // --- DYNAMIC FUTURE PREDICTIONS CACHE LOADER (TAB 2) ---
         async function loadFutureRoomRegistry() {
             const gridContainer = document.getElementById("future-rooms-grid");
             try {
@@ -1396,15 +1404,15 @@
                     const card = document.createElement("div");
                     card.className = "room-card";
                     card.innerHTML = `
-                        <div class="card-header"><div class="room-title">Room \${room.roomNumber}</div><span class="status-badge">● Planned Open</span></div>
-                        <div class="schedule-details"><strong>SmolVLM Prediction:</strong><br>\${room.upcomingTimings || "Verified clear for the selected time window slot."}</div>
+                        <div class="card-header"><div class="room-title">Room ${room.roomNumber}</div><span class="status-badge">● Planned Open</span></div>
+                        <div class="schedule-details"><strong>SmolVLM Prediction:</strong><br>${room.upcomingTimings || "Verified clear for the selected time window slot."}</div>
                     `;
                     gridContainer.appendChild(card);
                 });
             } catch (err) {}
         }
 
-        // --- DYNAMIC FUTURE WORKFLOW DISPATCH ---
+        // --- FUTURE WORKFLOW DISPATCH ACTION CALL TRIGGER ---
         async function triggerFutureAIWorkflow() {
             const dateVal = document.getElementById('input-date').value;
             const timeVal = document.getElementById('input-time').value;
@@ -1436,8 +1444,8 @@
                 });
 
                 if (response.ok) {
-                    progressFill.style.width = '40%';
-                    progressText.innerText = "SmolVLM Workflow active on GitHub... (Takes ~45s)";
+                    progressFill.style.width = '50%';
+                    progressText.innerText = "SmolVLM Active on GitHub! (Takes ~45s)...";
                     
                     let checkAttempts = 0;
                     const checkInterval = setInterval(async () => {
@@ -1448,7 +1456,7 @@
                                 clearInterval(checkInterval);
                                 progressFill.style.width = '100%';
                                 progressFill.classList.add('success');
-                                progressText.innerText = "Future slots extracted! Syncing view blocks...";
+                                progressText.innerText = "Future analysis sync complete! Syncing view blocks...";
                                 progressText.style.color = "var(--accent-emerald)";
                                 setTimeout(() => window.location.reload(), 1500);
                             }
@@ -1472,7 +1480,7 @@
             }
         }
 
-        // --- ORIGINAL LIVE WORKFLOW LOGIC (UNTOUCHED) ---
+        // --- LIVE SCAN WORKFLOW CALL TRIGER SYSTEM (TAB 1) ---
         async function triggerWorkflowAI() {
             const btn = document.getElementById('ai-btn');
             const progressWrapper = document.getElementById('progress-wrapper');
@@ -1517,7 +1525,7 @@
                     const data = await statusRes.json();
                     if (data.runStatus === 'in_progress' || data.runStatus === 'queued') {
                         progressFill.style.width = `${data.progress}%`;
-                        progressText.innerText = `GitHub Action: \${data.currentStep}`;
+                        progressText.innerText = `GitHub Action: ${data.currentStep}`;
                     } 
                     else if (data.runStatus === 'completed' && data.conclusion === 'success') {
                         progressFill.style.width = `90%`;
@@ -1567,3 +1575,4 @@
     </script>
 </body>
 </html>
+
