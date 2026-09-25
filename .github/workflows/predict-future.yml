@@ -48,10 +48,10 @@ jobs:
         done
         echo "Ollama server is up and running!"
 
-    - name: Download SmolVLM Vision Model
+    - name: Download SmolVLM Vision Model (256M)
       run: |
-        # Pulling the high-speed, compact SmolVLM vision model checkpoint
-        ollama pull smolvlm
+        # Pulling the ultra-compact 256M parameter SmolVLM model for fast CPU inference
+        ollama pull smolvlm:256m
     # ... (keep Ollama and Playwright setup steps) ...
 
     - name: Run Playwright Scraping & Node Future Inference Script
