@@ -67,16 +67,14 @@ jobs:
         git config --global user.name "Future Prediction Agent"
         git config --global user.email "actions@github.com"
         
-        # Prevent push rejections if another build happened simultaneously
-        git pull --rebase origin main 
+        # Safely stash any dirty/unstaged changes to prevent rebase errors
+        git stash --include-untracked || true
+        git pull --rebase origin main || true
+        git stash pop || true
         
-        # Only add the JSON and images
-        git add future_rooms.json room-images/ || exit 0
-        
-        # [skip ci] prevents infinite loops if you have other CI tools, 
-        # but Cloudflare Pages will still detect the push and rebuild.
+        # Add only the generated data
+        git add future_rooms.json room-images/
         git commit -m "chore: update future rooms scan [skip ci]" || exit 0
-        
         git push origin main
 
     - name: Upload Captured Screenshots to Artifacts
