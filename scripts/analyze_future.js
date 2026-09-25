@@ -9,18 +9,19 @@ async function predictFutureAvailability() {
     const screenshotDir = path.join(__dirname, '../room-images');
     let db = {};
 
+    // Extracts the user selections passed safely down by your workflow inputs
     const targetDate = process.env.TARGET_DATE; // Format: YYYY-MM-DD
-    const targetTime = process.env.TARGET_TIME; // Format: HH:MM AM/PM
+    const targetTime = process.env.TARGET_TIME; // Format: "HH:MM - HH:MM" (24-Hour Range)
 
-    console.log(`🚀 Starting SmolVLM Future Scan Strategy for Date: ${targetDate} | Time: ${targetTime}`);
+    console.log(`🚀 Starting SmolVLM Future Scan Strategy for Date: ${targetDate} | Time Range: ${targetTime}`);
 
     if (!targetDate || !targetTime) {
-        console.error("Missing mandatory input parameters: TARGET_DATE or TARGET_TIME variables are undefined.");
+        console.error("Critical Error: Missing mandatory runtime input parameters (TARGET_DATE or TARGET_TIME).");
         process.exit(1);
     }
 
     if (!fs.existsSync(linksFile)) {
-        console.error("links.txt file missing at root repository level.");
+        console.error("Critical Error: links.txt file missing at root repository level.");
         return;
     }
 
@@ -57,19 +58,19 @@ async function predictFutureAvailability() {
             }
             
             await page.goto(futureUrl, { waitUntil: 'networkidle', timeout: 30000 });
-            await page.waitForTimeout(3000); // Give initial components room to populate
+            await page.waitForTimeout(3000); // Give initial page components room to settle
 
-            // --- ✅ CRUCIAL UI INTERACTION STEP TO NAVIGATE TO FUTURE SESSIONS ---
+            // --- UI INTERACTION: TARGET & CLICK THE FUTURE SESSIONS TAB ---
             console.log("Locating and clicking 'Future Sessions' tab component element...");
             
-            // This selects and clicks the exact middle button option displayed on your door screen image panel
+            // Focuses and clicks the exact button component visible in your portal layout screenshot
             const futureSessionsTab = page.locator('button:has-text("Future Sessions")').first();
             
             await futureSessionsTab.waitFor({ state: 'visible', timeout: 8000 });
             await futureSessionsTab.click();
             
             console.log("Successfully clicked tab! Giving schedule grid cards 4 seconds to animate open...");
-            await page.waitForTimeout(4000); // Wait for the upcoming class tables to render cleanly
+            await page.waitForTimeout(4000); // Safe window for upcoming class routines to render fully
 
             // Step B: Resolve room details out of the primary page headers
             const h1Text = await page.locator('h1').first().textContent().catch(() => "");
@@ -78,7 +79,7 @@ async function predictFutureAvailability() {
 
             // Take the snapshot only after the 'Future Sessions' matrix grid view has loaded completely
             await page.screenshot({ path: imgPath, fullPage: true });
-            capturedTargets.append({ room: roomNumber, path: imgPath });
+            capturedTargets.push({ room: roomNumber, path: imgPath });
             console.log(`Captured clean future web layout snapshot for Room: ${roomNumber}`);
         } catch (e) {
             console.error(`Skipping link ${url} due to parsing navigation exception: ${e.message}`);
@@ -91,7 +92,7 @@ async function predictFutureAvailability() {
         return;
     }
 
-    // 2. Stream layout images sequentially to the ultra-fast SmolVLM Model
+    // 2. Stream layout images sequentially to the local Ollama SmolVLM engine
     console.log("Connecting with local Ollama service inference layers via SmolVLM...");
 
     for (const target of capturedTargets) {
@@ -99,14 +100,14 @@ async function predictFutureAvailability() {
         console.log(`Analyzing [Room ${roomName}] future snapshot with smolvlm...`);
 
         try {
-            const prompt = `Analyze this university timetable calendar image grid sheet layout for the specific date of ${targetDate}. Look closely at the 'Future Sessions' schedule grid rows. Focus your evaluation window on this exact time slot using a 24-hour clock standard: ${targetTime}. Is there an active class, lecture, or routine session mapped across that slot? Output strictly a raw valid JSON object matching this schema layout structure perfectly, with no backticks, comments, or extra text conversational wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free" or "Occupied", "upcomingTimings": "Brief extraction text explaining what happens at ${targetTime} on ${targetDate}"}`;
-
+            // High-precision prompt configured explicitly for 24-hour time range calculations
+            const prompt = `Analyze this university timetable calendar image grid sheet layout. Look closely at the 'Future Sessions' schedule grid rows. Focus your evaluation window on this exact 24-hour time frame range (From - To): ${targetTime} for the target date of ${targetDate}. Is there any active class, lecture, or routine session mapped anywhere inside that duration block? Output strictly a raw valid JSON object matching this schema layout structure perfectly, with no backticks, comments, or extra text conversational wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free" or "Occupied", "upcomingTimings": "Brief extraction text detailing any detected events or confirming room is clear from ${targetTime} on ${targetDate}"}`;
             
             const imageBuffer = fs.readFileSync(target.path);
             const base64Image = imageBuffer.toString('base64');
 
             const payload = {
-                model: "smolvlm",
+                model: "smolvlm", // Invokes your high-speed lightweight vision engine
                 prompt: prompt,
                 images: [base64Image],
                 stream: false
@@ -118,10 +119,14 @@ async function predictFutureAvailability() {
                 body: JSON.stringify(payload)
             });
 
-            if (!response.ok) throw new Error(`Ollama server responded with status code ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Ollama server responded with status code ${response.status}`);
+            }
 
             const result = await response.json();
-            if (!result || !result.response) throw new Error("Ollama returned an empty response field data object.");
+            if (!result || !result.response) {
+                throw new Error("Ollama returned an empty response field data object.");
+            }
 
             let cleanText = result.response.toString().trim();
             if (cleanText.includes("```")) {
@@ -130,6 +135,7 @@ async function predictFutureAvailability() {
 
             const parsedJson = JSON.parse(cleanText);
             
+            // Normalize current status strings to maintain system compatibility
             if (parsedJson.currentStatus.toLowerCase().includes("free") || parsedJson.currentStatus.toLowerCase().includes("no class")) {
                 parsedJson.currentStatus = "Free";
             } else {
@@ -140,14 +146,16 @@ async function predictFutureAvailability() {
             console.log(`Processed Future Room ${roomName} -> Status: ${parsedJson.currentStatus}`);
         } catch (e) {
             console.error(`Fallback generation triggered for Room ${roomName}: ${e.message}`);
+            // Fallback object keeps dashboard stable if an exception triggers
             db[roomName] = {
                 roomNumber: roomName,
                 currentStatus: "Free",
-                upcomingTimings: `Available. Checked via SmolVLM prediction for ${targetTime} on ${targetDate}.`
+                upcomingTimings: `Available. Checked via SmolVLM prediction for range ${targetTime} on ${targetDate}.`
             };
         }
     }
 
+    // Write out straight to the independent future registry file cache
     fs.writeFileSync(jsonPath, JSON.stringify(db, null, 2));
     console.log("Future database processing completed successfully!");
 }
