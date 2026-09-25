@@ -8,14 +8,22 @@ const TARGET_TIME_RANGE = process.env.TARGET_TIME; // e.g., "13:00 - 16:00"
 
 console.log(`🚀 Starting Future Session Scan for Date: ${TARGET_DATE} | Time Range: ${TARGET_TIME_RANGE}`);
 
-// Parse time range
-const [startTime, endTime] = TARGET_TIME_RANGE.split('-').map(t => t.trim());
+// 🔄 CHANGED: Read from rooms.json instead of a missing room-links.txt
+const registryPath = path.join(__dirname, '../rooms.json');
+let roomLinks = [];
+let database = {};
 
-// Load the registry of room links
-const registryPath = path.join(__dirname, '../room-links.txt');
-const roomLinks = fs.readFileSync(registryPath, 'utf8').split('\n').filter(line => line.trim());
-
-console.log(`Loaded ${roomLinks.length} room links from registry...`);
+try {
+    const rawData = fs.readFileSync(registryPath, 'utf8');
+    database = JSON.parse(rawData);
+    // Extract all valid links from the existing rooms.json database
+    roomLinks = Object.values(database).map(room => room.link).filter(link => link);
+    console.log(`✅ Loaded ${roomLinks.length} room links from rooms.json...`);
+} catch (error) {
+    console.error("❌ Failed to read rooms.json.");
+    console.error("💡 Fix: Make sure your Live Scan workflow has run at least once and committed 'rooms.json' to the repository.");
+    process.exit(1);
+}
 
 // Results storage
 const futureRoomsData = {};
@@ -23,7 +31,7 @@ const futureRoomsData = {};
 (async () => {
     const browser = await chromium.launch({ 
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Required for GitHub Actions
     });
     
     const context = await browser.newContext({
@@ -32,77 +40,79 @@ const futureRoomsData = {};
     
     let processedCount = 0;
     
+    // Ensure screenshot directory exists
+    const screenshotDir = path.join(__dirname, '../room-images');
+    if (!fs.existsSync(screenshotDir)) {
+        fs.mkdirSync(screenshotDir, { recursive: true });
+    }
+
     for (const link of roomLinks) {
         processedCount++;
-        console.log(`\n[${processedCount}/${roomLinks.length}] Processing: ${link.substring(0, 80)}...`);
+        const roomData = Object.values(database).find(r => r.link === link);
+        const roomNumber = roomData ? roomData.roomNumber : `Room ${processedCount}`;
+        
+        console.log(`\n[${processedCount}/${roomLinks.length}] Processing: ${roomNumber}`);
         
         try {
             const page = await context.newPage();
             
-            // 🎯 KEY CHANGE: Append ?scope=future to directly access future sessions
+            // 🎯 YOUR TRICK: Append ?scope=future to directly access future sessions
             const futureUrl = `${link}?scope=future`;
-            console.log(`   → Navigating to future sessions: ${futureUrl.substring(0, 100)}...`);
             
             await page.goto(futureUrl, { 
-                waitUntil: 'networkidle',
+                waitUntil: 'domcontentloaded', // Faster and more reliable than 'networkidle'
                 timeout: 15000 
             });
             
-            // Wait for future sessions to load
-            await page.waitForSelector('button:has-text("Future Sessions")', { 
-                state: 'attached',
-                timeout: 5000 
-            }).catch(() => {
-                console.log('   ⚠️ Future Sessions tab not found, but continuing...');
-            });
+            // Wait a moment for the future sessions UI to render
+            await page.waitForTimeout(1500);
             
-            // Small delay to ensure content is loaded
-            await page.waitForTimeout(2000);
-            
-            // Take screenshot for AI analysis
-            const screenshotPath = path.join(__dirname, '../room-images', `future-${processedCount}.png`);
+            // Take screenshot for debugging/AI (optional but recommended)
+            const screenshotPath = path.join(screenshotDir, `future-${roomNumber}.png`);
             await page.screenshot({ path: screenshotPath, fullPage: false });
-            console.log(`   ✓ Screenshot saved: ${screenshotPath}`);
             
             // Extract visible text content for analysis
             const pageContent = await page.evaluate(() => {
                 return document.body.innerText;
             });
             
-            // Extract room number from URL or page
-            const roomNumber = extractRoomNumber(link, pageContent);
+            // Simple text-based analysis for the target date
+            const dateStr = TARGET_DATE; // e.g., "2026-09-25"
+            const hasDate = pageContent.includes(dateStr) || pageContent.includes(dateStr.replace(/-/g, '/'));
             
-            // Check if there are any sessions for the target date
-            const hasSessions = pageContent.toLowerCase().includes(TARGET_DATE.toLowerCase().replace(/-/g, '')) || 
-                               pageContent.toLowerCase().includes('future') ||
-                               pageContent.toLowerCase().includes('upcoming');
-            
-            // Check if the time range appears in the content
-            const hasTimeSlot = pageContent.includes(startTime) || pageContent.includes(endTime);
-            
-            // Determine if room is FREE or OCCUPIED
-            // If no sessions found for the target date/time, it's FREE
             let status = "FREE";
             let upcomingTimings = `No sessions scheduled for ${TARGET_DATE} during ${TARGET_TIME_RANGE}`;
             
-            if (hasSessions && hasTimeSlot) {
-                status = "OCCUPIED";
-                upcomingTimings = `Has sessions on ${TARGET_DATE} around ${TARGET_TIME_RANGE}`;
-            } else if (hasSessions) {
-                // Extract actual session info if available
-                const sessionInfo = extractSessionInfo(pageContent, TARGET_DATE);
-                if (sessionInfo) {
-                    upcomingTimings = sessionInfo;
-                    // Check if it conflicts with our target time
-                    if (timeSlotsConflict(sessionInfo, startTime, endTime)) {
-                        status = "OCCUPIED";
+            if (hasDate) {
+                // Try to extract the specific time slot mentioned near the date
+                const lines = pageContent.split('\n');
+                let foundSession = false;
+                let sessionText = "";
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].toLowerCase();
+                    if (line.includes(dateStr.toLowerCase()) || line.includes(dateStr.replace(/-/g, '/').toLowerCase())) {
+                        // Check if this line or nearby lines contain time info
+                        const contextLines = lines.slice(Math.max(0, i - 2), i + 3).join(' ');
+                        if (contextLines.includes('am') || contextLines.includes('pm') || /\d{1,2}:\d{2}/.test(contextLines)) {
+                            foundSession = true;
+                            sessionText = contextLines.trim().replace(/\s+/g, ' ').substring(0, 120);
+                            break;
+                        }
                     }
+                }
+                
+                if (foundSession) {
+                    status = "OCCUPIED";
+                    upcomingTimings = `Session found: ${sessionText}`;
+                } else {
+                    upcomingTimings = `Date found, but no specific time slot detected in text.`;
                 }
             }
             
             // Store result
-            futureRoomsData[`room-${processedCount}`] = {
-                roomNumber: roomNumber || `Room ${processedCount}`,
+            futureRoomsData[`room-${roomNumber}`] = {
+                roomNumber: roomNumber,
                 currentStatus: status,
                 upcomingTimings: upcomingTimings,
                 link: link,
@@ -111,16 +121,15 @@ const futureRoomsData = {};
                 targetTimeRange: TARGET_TIME_RANGE
             };
             
-            console.log(`   → Status: ${status} | ${upcomingTimings.substring(0, 60)}...`);
+            console.log(`   → Status: ${status}`);
             
             await page.close();
             
         } catch (error) {
-            console.error(`   ✗ Error processing ${link}:`, error.message);
+            console.error(`   ✗ Error processing ${roomNumber}:`, error.message);
             
-            // Still record the room even if there was an error
-            futureRoomsData[`room-${processedCount}`] = {
-                roomNumber: `Room ${processedCount}`,
+            futureRoomsData[`room-${roomNumber}`] = {
+                roomNumber: roomNumber,
                 currentStatus: "UNKNOWN",
                 upcomingTimings: `Error scanning: ${error.message}`,
                 link: link,
@@ -134,61 +143,9 @@ const futureRoomsData = {};
     // Save results to JSON
     const outputPath = path.join(__dirname, '../future_rooms.json');
     fs.writeFileSync(outputPath, JSON.stringify(futureRoomsData, null, 2));
+    
+    const freeCount = Object.values(futureRoomsData).filter(r => r.currentStatus === 'FREE').length;
     console.log(`\n✅ Future rooms analysis complete! Results saved to: ${outputPath}`);
     console.log(`📊 Total rooms scanned: ${processedCount}`);
-    console.log(`📊 Free rooms: ${Object.values(futureRoomsData).filter(r => r.currentStatus === 'FREE').length}`);
-    console.log(`📊 Occupied rooms: ${Object.values(futureRoomsData).filter(r => r.currentStatus === 'OCCUPIED').length}`);
-    
+    console.log(`📊 Free rooms: ${freeCount}`);
 })();
-
-// Helper function to extract room number
-function extractRoomNumber(url, content) {
-    // Try to extract from URL pattern
-    const urlMatch = url.match(/locations\/(\d+)/);
-    if (urlMatch) return `Location ${urlMatch[1]}`;
-    
-    // Try to extract from page content
-    const contentMatch = content.match(/Room\s*(\d+)/i);
-    if (contentMatch) return `Room ${contentMatch[1]}`;
-    
-    return null;
-}
-
-// Helper function to extract session information
-function extractSessionInfo(content, targetDate) {
-    // Look for date patterns and session info
-    const datePattern = new RegExp(`${targetDate.replace(/-/g, '\\s*[-/]?\\s*')}[^\\n]*`, 'i');
-    const match = content.match(datePattern);
-    
-    if (match) {
-        // Extract time if present
-        const timeMatch = match[0].match(/(\d{1,2}:\d{2}\s*(?:AM|PM)?\s*[-–]\s*\d{1,2}:\d{2}\s*(?:AM|PM)?)/i);
-        if (timeMatch) {
-            return `${targetDate} | ${timeMatch[1]}`;
-        }
-        return `${targetDate} | Session scheduled`;
-    }
-    
-    return null;
-}
-
-// Helper function to check if time slots conflict
-function timeSlotsConflict(sessionInfo, targetStart, targetEnd) {
-    // Simple string-based check - can be enhanced with proper time parsing
-    const sessionLower = sessionInfo.toLowerCase();
-    const targetStartHour = parseInt(targetStart.split(':')[0]);
-    const targetEndHour = parseInt(targetEnd.split(':')[0]);
-    
-    // Check if any hour digits in the session info overlap with target range
-    const hoursInSession = sessionLower.match(/(\d{1,2})(?::\d{2})?\s*(?:AM|PM)?/gi);
-    if (hoursInSession) {
-        for (const hour of hoursInSession) {
-            const sessionHour = parseInt(hour);
-            if (sessionHour >= targetStartHour && sessionHour <= targetEndHour) {
-                return true;
-            }
-        }
-    }
-    
-    return false;
-}
