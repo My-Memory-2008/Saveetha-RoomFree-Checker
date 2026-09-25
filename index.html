@@ -1257,18 +1257,22 @@
     <div id="panel-future" class="tab-content-panel">
         <div class="control-panel">
             
-            <!-- UPDATED 24-HOUR SEARCH FORM DECK -->
+             <!-- UPDATED FROM & TO TIMINGS 24-HOUR SEARCH FORM DECK -->
             <div class="search-form">
                 <div class="form-group">
                     <label for="input-date">Select Date</label>
                     <input type="date" id="input-date" class="form-input">
                 </div>
-                <div class="form-group">
-                    <label for="input-time">Select Time (24-Hour Clock)</label>
-                    <!-- Fix: Swapped select dropdown for a high-accuracy native time input picker -->
-                    <input type="time" id="input-time" class="form-input" value="08:30">
+                <div class="form-group" style="flex: 1; min-width: 130px;">
+                    <label for="input-time-from">From Time</label>
+                    <input type="time" id="input-time-from" class="form-input" value="08:30">
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 130px;">
+                    <label for="input-time-to">To Time</label>
+                    <input type="time" id="input-time-to" class="form-input" value="09:30">
                 </div>
             </div>
+
 
             
             <div class="control-row" style="margin-top: 8px;">
@@ -1411,71 +1415,83 @@
 
         // --- FUTURE WORKFLOW DISPATCH ACTION CALL TRIGGER ---
         async function triggerFutureAIWorkflow() {
-            const dateVal = document.getElementById('input-date').value;
-            const timeVal = document.getElementById('input-time').value;
+    const dateVal = document.getElementById('input-date').value;
+    const timeFromVal = document.getElementById('input-time-from').value;
+    const timeToVal = document.getElementById('input-time-to').value;
+    
+    if(!dateVal || !timeFromVal || !timeToVal) { 
+        alert("Please pick a valid date, from-time, and to-time target."); 
+        return; 
+    }
+
+    // Combine both selections into a clean 24-hour time-range window string
+    const combinedTimeRange = `${timeFromVal} - ${timeToVal}`;
+
+    const btn = document.getElementById('future-search-btn');
+    const progressWrapper = document.getElementById('future-progress-wrapper');
+    const progressFill = document.getElementById('future-progress-fill');
+    const progressText = document.getElementById('future-text');
+
+    btn.disabled = true;
+    progressWrapper.style.display = 'flex';
+    progressFill.style.width = '0%';
+    progressFill.classList.remove('success');
+    progressText.innerText = "Dispatching SmolVLM prediction request...";
+    btn.innerHTML = `<span>⏳</span> Processing...`;
+
+    try {
+        const response = await fetch(FUTURE_FUNCTION_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                GITHUB_USERNAME, 
+                REPO_NAME, 
+                WORKFLOW_FILE: FUTURE_WORKFLOW_FILE,
+                inputs: { target_date: dateVal, target_time: combinedTimeRange } // Sends range
+            })
+        });
+
+        const data = await response.json().catch(() => ({ error: "Invalid server response layout." }));
+
+        if (response.ok) {
+            progressFill.style.width = '50%';
+            progressText.innerText = `SmolVLM Active on GitHub! Checking slots for ${combinedTimeRange}... (Takes ~45s)`;
             
-            if(!dateVal) { alert("Please pick a valid calendar day target."); return; }
-
-            const btn = document.getElementById('future-search-btn');
-            const progressWrapper = document.getElementById('future-progress-wrapper');
-            const progressFill = document.getElementById('future-progress-fill');
-            const progressText = document.getElementById('future-text');
-
-            btn.disabled = true;
-            progressWrapper.style.display = 'flex';
-            progressFill.style.width = '0%';
-            progressFill.classList.remove('success');
-            progressText.innerText = "Dispatching SmolVLM prediction request...";
-            btn.innerHTML = `<span>⏳</span> Processing...`;
-
-            try {
-                const response = await fetch(FUTURE_FUNCTION_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        GITHUB_USERNAME, 
-                        REPO_NAME, 
-                        WORKFLOW_FILE: FUTURE_WORKFLOW_FILE,
-                        inputs: { target_date: dateVal, target_time: timeVal } 
-                    })
-                });
-
-                if (response.ok) {
-                    progressFill.style.width = '50%';
-                    progressText.innerText = "SmolVLM Active on GitHub! (Takes ~45s)...";
-                    
-                    let checkAttempts = 0;
-                    const checkInterval = setInterval(async () => {
-                        checkAttempts++;
-                        try {
-                            const res = await fetch(`future_rooms.json?nocache=${new Date().getTime()}`, { cache: "no-store" });
-                            if (res.ok) {
-                                clearInterval(checkInterval);
-                                progressFill.style.width = '100%';
-                                progressFill.classList.add('success');
-                                progressText.innerText = "Future analysis sync complete! Syncing view blocks...";
-                                progressText.style.color = "var(--accent-emerald)";
-                                setTimeout(() => window.location.reload(), 1500);
-                            }
-                        } catch(e) {}
-                        if(checkAttempts > 30) {
-                            clearInterval(checkInterval);
-                            progressText.innerText = "Build took too long. Refresh grid manually.";
-                            btn.disabled = false;
-                            btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
-                        }
-                    }, 5000);
-                } else {
-                    alert("Failed to spawn future workspace checker agent.");
+            let checkAttempts = 0;
+            const checkInterval = setInterval(async () => {
+                checkAttempts++;
+                try {
+                    const res = await fetch(`future_rooms.json?nocache=${new Date().getTime()}`, { cache: "no-store" });
+                    if (res.ok) {
+                        clearInterval(checkInterval);
+                        progressFill.style.width = '100%';
+                        progressFill.classList.add('success');
+                        progressText.innerText = "Future analysis sync complete! Syncing view blocks...";
+                        progressText.style.color = "var(--accent-emerald)";
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
+                } catch(e) {}
+                if(checkAttempts > 30) {
+                    clearInterval(checkInterval);
+                    progressText.innerText = "Build took too long. Refresh grid manually.";
                     btn.disabled = false;
                     btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
                 }
-            } catch (err) {
-                alert("Network communication exception: " + err.message);
-                btn.disabled = false;
-                btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
-            }
+            }, 5000);
+        } else {
+            alert("Failed to spawn future workspace checker agent: " + (data.error || "Route or authorization block."));
+            btn.disabled = false;
+            btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
+            progressWrapper.style.display = 'none';
         }
+    } catch (err) {
+        alert("Network communication exception: " + err.message);
+        btn.disabled = false;
+        btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
+        progressWrapper.style.display = 'none';
+    }
+}
+
 
         // --- LIVE SCAN WORKFLOW CALL TRIGER SYSTEM (TAB 1) ---
         async function triggerWorkflowAI() {
