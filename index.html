@@ -1256,23 +1256,20 @@
     <!-- ========================================== -->
     <div id="panel-future" class="tab-content-panel">
         <div class="control-panel">
+            
+            <!-- UPDATED 24-HOUR SEARCH FORM DECK -->
             <div class="search-form">
                 <div class="form-group">
                     <label for="input-date">Select Date</label>
                     <input type="date" id="input-date" class="form-input">
                 </div>
                 <div class="form-group">
-                    <label for="input-time">Select Time Slot</label>
-                    <select id="input-time" class="form-input">
-                        <option value="08:30 AM">08:30 AM - 09:30 AM</option>
-                        <option value="09:30 AM">09:30 AM - 10:30 AM</option>
-                        <option value="10:45 AM">10:45 AM - 11:45 AM</option>
-                        <option value="11:45 AM">11:45 AM - 12:45 PM</option>
-                        <option value="01:30 PM">01:30 PM - 02:30 PM</option>
-                        <option value="02:30 PM">02:30 PM - 03:30 PM</option>
-                    </select>
+                    <label for="input-time">Select Time (24-Hour Clock)</label>
+                    <!-- Fix: Swapped select dropdown for a high-accuracy native time input picker -->
+                    <input type="time" id="input-time" class="form-input" value="08:30">
                 </div>
             </div>
+
             
             <div class="control-row" style="margin-top: 8px;">
                 <button id="future-search-btn" onclick="triggerFutureAIWorkflow()" class="btn-ai" style="width: 100%;">
