@@ -1,0 +1,92 @@
+name: Predict Future Room Openings via SmolVLM
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: 'Selected Target Date (YYYY-MM-DD)'
+        required: true
+        type: string
+      target_time:
+        description: 'Selected Time Slot Window (HH:MM AM/PM)'
+        required: true
+        type: string
+
+jobs:
+  run-future-inference:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout Repository Codebase
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Node Playwright Dependency
+      run: |
+        npm install playwright
+
+    - name: Install Playwright Chromium System Dependencies
+      run: |
+        npx playwright install chromium --with-deps
+
+    - name: Install Ollama Core Engine
+      run: |
+        curl -fsSL https://ollama.com | sh
+
+    - name: Start Ollama Server
+      run: |
+        ollama serve &
+        echo "Waiting for Ollama server to boot..."
+        until curl -s http://127.0.0.1:11434 > /dev/null; do
+          sleep 1
+        done
+        echo "Ollama server is up and running!"
+
+    - name: Download SmolVLM Vision Model
+      run: |
+        # Pulling the high-speed, compact SmolVLM vision model checkpoint
+        ollama pull smolvlm
+
+    - name: Run Playwright Scraping & Node Future Inference Script
+      env:
+        TARGET_DATE: ${{ inputs.target_date }}
+        TARGET_TIME: ${{ inputs.target_time }}
+      run: |
+        node scripts/analyze_future.js
+
+    - name: Inject Secret Token into Website Code
+      env:
+        SECRET_KEY: ${{ secrets.MY_GITHUB_TOKEN }}
+      run: |
+        node -e "
+          const fs = require('fs');
+          ['index.html', 'future.html'].forEach(file => {
+            if (fs.existsSync(file)) {
+              let text = fs.readFileSync(file, 'utf8');
+              text = text.replace('TOKEN_SECRET_PLACEHOLDER_KEY', process.env.SECRET_KEY);
+              fs.writeFileSync(file, text, 'utf8');
+            }
+          });
+        "
+
+    - name: Commit and Save Fresh Future Openings Snapshot
+      run: |
+        git config --global user.name "Future Prediction Agent"
+        git config --global user.email "actions@github.com"
+        git add future_rooms.json index.html future.html || exit 0
+        git commit -m "Automated future room scrape and SmolVLM compile [Form Triggerededed]" || exit 0
+        git push
+
+    - name: Upload Captured Screenshots to Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: future-room-screenshots
+        path: room-images/
+        retention-days: 2
