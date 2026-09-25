@@ -66,10 +66,18 @@ jobs:
       run: |
         git config --global user.name "Future Prediction Agent"
         git config --global user.email "actions@github.com"
-        # ONLY commit the generated data, not the HTML files
+        
+        # Prevent push rejections if another build happened simultaneously
+        git pull --rebase origin main 
+        
+        # Only add the JSON and images
         git add future_rooms.json room-images/ || exit 0
-        git commit -m "Automated future room scrape and SmolVLM compile" || exit 0
-        git push
+        
+        # [skip ci] prevents infinite loops if you have other CI tools, 
+        # but Cloudflare Pages will still detect the push and rebuild.
+        git commit -m "chore: update future rooms scan [skip ci]" || exit 0
+        
+        git push origin main
 
     - name: Upload Captured Screenshots to Artifacts
       if: always()
