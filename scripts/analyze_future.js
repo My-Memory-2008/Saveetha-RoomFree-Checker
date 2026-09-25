@@ -1,168 +1,194 @@
-// scripts/analyze_future.js
+const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
-const { chromium } = require('playwright');
 
-async function predictFutureAvailability() {
-    const jsonPath = path.join(__dirname, '../future_rooms.json');
-    const linksFile = path.join(__dirname, '../links.txt');
-    const screenshotDir = path.join(__dirname, '../room-images');
-    let db = {};
+// Get environment variables from GitHub Actions
+const TARGET_DATE = process.env.TARGET_DATE; // e.g., "2026-09-25"
+const TARGET_TIME_RANGE = process.env.TARGET_TIME; // e.g., "13:00 - 16:00"
 
-    // Extracts the user selections passed safely down by your workflow inputs
-    const targetDate = process.env.TARGET_DATE; // Format: YYYY-MM-DD
-    const targetTime = process.env.TARGET_TIME; // Format: "HH:MM - HH:MM" (24-Hour Range)
+console.log(`🚀 Starting Future Session Scan for Date: ${TARGET_DATE} | Time Range: ${TARGET_TIME_RANGE}`);
 
-    console.log(`🚀 Starting SmolVLM Future Scan Strategy for Date: ${targetDate} | Time Range: ${targetTime}`);
+// Parse time range
+const [startTime, endTime] = TARGET_TIME_RANGE.split('-').map(t => t.trim());
 
-    if (!targetDate || !targetTime) {
-        console.error("Critical Error: Missing mandatory runtime input parameters (TARGET_DATE or TARGET_TIME).");
-        process.exit(1);
-    }
+// Load the registry of room links
+const registryPath = path.join(__dirname, '../room-links.txt');
+const roomLinks = fs.readFileSync(registryPath, 'utf8').split('\n').filter(line => line.trim());
 
-    if (!fs.existsSync(linksFile)) {
-        console.error("Critical Error: links.txt file missing at root repository level.");
-        return;
-    }
+console.log(`Loaded ${roomLinks.length} room links from registry...`);
 
-    if (!fs.existsSync(screenshotDir)) {
-        fs.mkdirSync(screenshotDir, { recursive: true });
-    }
+// Results storage
+const futureRoomsData = {};
 
-    const urls = fs.readFileSync(linksFile, 'utf-8')
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.startsWith('http'));
-
-    console.log(`Loaded ${urls.length} live website links from text registry...`);
-    if (urls.length === 0) return;
-
-    // 1. Capture Web Timetables Headlessly via Playwright
-    console.log("Launching Playwright browser layout tracking...");
-    const browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
-    const page = await context.newPage();
-    const capturedTargets = [];
-
-    for (let i = 0; i < urls.length; i++) {
-        const url = urls[i];
+(async () => {
+    const browser = await chromium.launch({ 
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    
+    const context = await browser.newContext({
+        viewport: { width: 1280, height: 720 }
+    });
+    
+    let processedCount = 0;
+    
+    for (const link of roomLinks) {
+        processedCount++;
+        console.log(`\n[${processedCount}/${roomLinks.length}] Processing: ${link.substring(0, 80)}...`);
+        
         try {
-            console.log(`Navigating browser to base target portal: ${url}`);
+            const page = await context.newPage();
             
-            // Step A: Append the dynamic date query directly to the URL route parameters
-            let futureUrl = url;
-            if (url.includes('?')) {
-                futureUrl += `&date=${targetDate}`;
-            } else {
-                futureUrl += `?date=${targetDate}`;
+            // 🎯 KEY CHANGE: Append ?scope=future to directly access future sessions
+            const futureUrl = `${link}?scope=future`;
+            console.log(`   → Navigating to future sessions: ${futureUrl.substring(0, 100)}...`);
+            
+            await page.goto(futureUrl, { 
+                waitUntil: 'networkidle',
+                timeout: 15000 
+            });
+            
+            // Wait for future sessions to load
+            await page.waitForSelector('button:has-text("Future Sessions")', { 
+                state: 'attached',
+                timeout: 5000 
+            }).catch(() => {
+                console.log('   ⚠️ Future Sessions tab not found, but continuing...');
+            });
+            
+            // Small delay to ensure content is loaded
+            await page.waitForTimeout(2000);
+            
+            // Take screenshot for AI analysis
+            const screenshotPath = path.join(__dirname, '../room-images', `future-${processedCount}.png`);
+            await page.screenshot({ path: screenshotPath, fullPage: false });
+            console.log(`   ✓ Screenshot saved: ${screenshotPath}`);
+            
+            // Extract visible text content for analysis
+            const pageContent = await page.evaluate(() => {
+                return document.body.innerText;
+            });
+            
+            // Extract room number from URL or page
+            const roomNumber = extractRoomNumber(link, pageContent);
+            
+            // Check if there are any sessions for the target date
+            const hasSessions = pageContent.toLowerCase().includes(TARGET_DATE.toLowerCase().replace(/-/g, '')) || 
+                               pageContent.toLowerCase().includes('future') ||
+                               pageContent.toLowerCase().includes('upcoming');
+            
+            // Check if the time range appears in the content
+            const hasTimeSlot = pageContent.includes(startTime) || pageContent.includes(endTime);
+            
+            // Determine if room is FREE or OCCUPIED
+            // If no sessions found for the target date/time, it's FREE
+            let status = "FREE";
+            let upcomingTimings = `No sessions scheduled for ${TARGET_DATE} during ${TARGET_TIME_RANGE}`;
+            
+            if (hasSessions && hasTimeSlot) {
+                status = "OCCUPIED";
+                upcomingTimings = `Has sessions on ${TARGET_DATE} around ${TARGET_TIME_RANGE}`;
+            } else if (hasSessions) {
+                // Extract actual session info if available
+                const sessionInfo = extractSessionInfo(pageContent, TARGET_DATE);
+                if (sessionInfo) {
+                    upcomingTimings = sessionInfo;
+                    // Check if it conflicts with our target time
+                    if (timeSlotsConflict(sessionInfo, startTime, endTime)) {
+                        status = "OCCUPIED";
+                    }
+                }
             }
             
-            await page.goto(futureUrl, { waitUntil: 'networkidle', timeout: 30000 });
-            await page.waitForTimeout(3000); // Give initial page components room to settle
-
-            // --- UI INTERACTION: TARGET & CLICK THE FUTURE SESSIONS TAB ---
-            console.log("Locating and clicking 'Future Sessions' tab component element...");
+            // Store result
+            futureRoomsData[`room-${processedCount}`] = {
+                roomNumber: roomNumber || `Room ${processedCount}`,
+                currentStatus: status,
+                upcomingTimings: upcomingTimings,
+                link: link,
+                scannedAt: new Date().toISOString(),
+                targetDate: TARGET_DATE,
+                targetTimeRange: TARGET_TIME_RANGE
+            };
             
-            // Focuses and clicks the exact button component visible in your portal layout screenshot
-            const futureSessionsTab = page.locator('button:has-text("Future Sessions")').first();
+            console.log(`   → Status: ${status} | ${upcomingTimings.substring(0, 60)}...`);
             
-            await futureSessionsTab.waitFor({ state: 'visible', timeout: 8000 });
-            await futureSessionsTab.click();
+            await page.close();
             
-            console.log("Successfully clicked tab! Giving schedule grid cards 4 seconds to animate open...");
-            await page.waitForTimeout(4000); // Safe window for upcoming class routines to render fully
-
-            // Step B: Resolve room details out of the primary page headers
-            const h1Text = await page.locator('h1').first().textContent().catch(() => "");
-            const roomNumber = h1Text.replace(/\D/g, '') || `Location_${i + 1}`;
-            const imgPath = path.join(screenshotDir, `future_${roomNumber}.png`);
-
-            // Take the snapshot only after the 'Future Sessions' matrix grid view has loaded completely
-            await page.screenshot({ path: imgPath, fullPage: true });
-            capturedTargets.push({ room: roomNumber, path: imgPath });
-            console.log(`Captured clean future web layout snapshot for Room: ${roomNumber}`);
-        } catch (e) {
-            console.error(`Skipping link ${url} due to parsing navigation exception: ${e.message}`);
+        } catch (error) {
+            console.error(`   ✗ Error processing ${link}:`, error.message);
+            
+            // Still record the room even if there was an error
+            futureRoomsData[`room-${processedCount}`] = {
+                roomNumber: `Room ${processedCount}`,
+                currentStatus: "UNKNOWN",
+                upcomingTimings: `Error scanning: ${error.message}`,
+                link: link,
+                scannedAt: new Date().toISOString()
+            };
         }
     }
+    
     await browser.close();
+    
+    // Save results to JSON
+    const outputPath = path.join(__dirname, '../future_rooms.json');
+    fs.writeFileSync(outputPath, JSON.stringify(futureRoomsData, null, 2));
+    console.log(`\n✅ Future rooms analysis complete! Results saved to: ${outputPath}`);
+    console.log(`📊 Total rooms scanned: ${processedCount}`);
+    console.log(`📊 Free rooms: ${Object.values(futureRoomsData).filter(r => r.currentStatus === 'FREE').length}`);
+    console.log(`📊 Occupied rooms: ${Object.values(futureRoomsData).filter(r => r.currentStatus === 'OCCUPIED').length}`);
+    
+})();
 
-    if (capturedTargets.length === 0) {
-        console.log("No future timetable matrices snapped. Terminating runtime task.");
-        return;
-    }
-
-    // 2. Stream layout images sequentially to the local Ollama SmolVLM engine
-    console.log("Connecting with local Ollama service inference layers via SmolVLM...");
-
-    for (const target of capturedTargets) {
-        const roomName = target.room;
-        console.log(`Analyzing [Room ${roomName}] future snapshot with smolvlm...`);
-
-        try {
-            // High-precision prompt configured explicitly for 24-hour time range calculations
-            const prompt = `Analyze this university timetable calendar image grid sheet layout. Look closely at the 'Future Sessions' schedule grid rows. Focus your evaluation window on this exact 24-hour time frame range (From - To): ${targetTime} for the target date of ${targetDate}. Is there any active class, lecture, or routine session mapped anywhere inside that duration block? Output strictly a raw valid JSON object matching this schema layout structure perfectly, with no backticks, comments, or extra text conversational wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free" or "Occupied", "upcomingTimings": "Brief extraction text detailing any detected events or confirming room is clear from ${targetTime} on ${targetDate}"}`;
-            
-            const imageBuffer = fs.readFileSync(target.path);
-            const base64Image = imageBuffer.toString('base64');
-
-            const payload = {
-                model: "smolvlm", // Invokes your high-speed lightweight vision engine
-                prompt: prompt,
-                images: [base64Image],
-                stream: false
-            };
-
-           const response = await fetch("http://127.0.0.1:11434/api/generate", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    model: "moondream", // <-- Changed from "smolvlm:256m"
-    prompt: "Analyze this classroom schedule screenshot. Extract the room number, time slots, and state clearly if it is FREE or OCCUPIED during the requested time window.",
-    images: [base64ImageString], // Your playwright screenshot in base64
-    stream: false
-  })
-});
-
-            if (!response.ok) {
-                throw new Error(`Ollama server responded with status code ${response.status}`);
-            }
-
-            const result = await response.json();
-            if (!result || !result.response) {
-                throw new Error("Ollama returned an empty response field data object.");
-            }
-
-            let cleanText = result.response.toString().trim();
-            if (cleanText.includes("```")) {
-                cleanText = cleanText.replace(/```json\s*|```/g, '').trim();
-            }
-
-            const parsedJson = JSON.parse(cleanText);
-            
-            // Normalize current status strings to maintain system compatibility
-            if (parsedJson.currentStatus.toLowerCase().includes("free") || parsedJson.currentStatus.toLowerCase().includes("no class")) {
-                parsedJson.currentStatus = "Free";
-            } else {
-                parsedJson.currentStatus = "Occupied";
-            }
-
-            db[roomName] = parsedJson;
-            console.log(`Processed Future Room ${roomName} -> Status: ${parsedJson.currentStatus}`);
-        } catch (e) {
-            console.error(`Fallback generation triggered for Room ${roomName}: ${e.message}`);
-            // Fallback object keeps dashboard stable if an exception triggers
-            db[roomName] = {
-                roomNumber: roomName,
-                currentStatus: "Free",
-                upcomingTimings: `Available. Checked via SmolVLM prediction for range ${targetTime} on ${targetDate}.`
-            };
-        }
-    }
-
-    // Write out straight to the independent future registry file cache
-    fs.writeFileSync(jsonPath, JSON.stringify(db, null, 2));
-    console.log("Future database processing completed successfully!");
+// Helper function to extract room number
+function extractRoomNumber(url, content) {
+    // Try to extract from URL pattern
+    const urlMatch = url.match(/locations\/(\d+)/);
+    if (urlMatch) return `Location ${urlMatch[1]}`;
+    
+    // Try to extract from page content
+    const contentMatch = content.match(/Room\s*(\d+)/i);
+    if (contentMatch) return `Room ${contentMatch[1]}`;
+    
+    return null;
 }
 
-predictFutureAvailability();
+// Helper function to extract session information
+function extractSessionInfo(content, targetDate) {
+    // Look for date patterns and session info
+    const datePattern = new RegExp(`${targetDate.replace(/-/g, '\\s*[-/]?\\s*')}[^\\n]*`, 'i');
+    const match = content.match(datePattern);
+    
+    if (match) {
+        // Extract time if present
+        const timeMatch = match[0].match(/(\d{1,2}:\d{2}\s*(?:AM|PM)?\s*[-–]\s*\d{1,2}:\d{2}\s*(?:AM|PM)?)/i);
+        if (timeMatch) {
+            return `${targetDate} | ${timeMatch[1]}`;
+        }
+        return `${targetDate} | Session scheduled`;
+    }
+    
+    return null;
+}
+
+// Helper function to check if time slots conflict
+function timeSlotsConflict(sessionInfo, targetStart, targetEnd) {
+    // Simple string-based check - can be enhanced with proper time parsing
+    const sessionLower = sessionInfo.toLowerCase();
+    const targetStartHour = parseInt(targetStart.split(':')[0]);
+    const targetEndHour = parseInt(targetEnd.split(':')[0]);
+    
+    // Check if any hour digits in the session info overlap with target range
+    const hoursInSession = sessionLower.match(/(\d{1,2})(?::\d{2})?\s*(?:AM|PM)?/gi);
+    if (hoursInSession) {
+        for (const hour of hoursInSession) {
+            const sessionHour = parseInt(hour);
+            if (sessionHour >= targetStartHour && sessionHour <= targetEndHour) {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
