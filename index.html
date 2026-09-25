@@ -1303,8 +1303,7 @@
     </footer>
 
 
-
-        <script>
+    <script>
         // Repository Target Configuration Metrics
         const GITHUB_USERNAME = "My-Memory-2008"; 
         const REPO_NAME = "Saveetha-RoomFree-Checker";             
@@ -1326,6 +1325,17 @@
                 const day = String(today.getDate()).padStart(2, '0');
                 dateInput.value = `${year}-${month}-${day}`;
             }
+
+            //  RESTORE PROGRESS BAR IF PAGE WAS RELOADED DURING SCAN
+            const savedState = JSON.parse(localStorage.getItem('futureScanState') || '{}');
+            if (savedState.active) {
+                const progressWrapper = document.getElementById('future-progress-wrapper');
+                const btn = document.getElementById('future-search-btn');
+                progressWrapper.style.display = 'flex';
+                btn.disabled = true;
+                btn.innerHTML = `<span>⏳</span> Processing...`;
+                startFutureProgressPolling(savedState.date, savedState.time);
+            }
         });
 
         // Tab Switching Mechanism
@@ -1342,7 +1352,7 @@
             }
         }
 
-        // --- LIVE SCAN LOGIC (UNCHANGED) ---
+        // --- LIVE SCAN LOGIC ---
         async function loadRoomRegistry() {
             const gridContainer = document.getElementById("rooms-grid");
             try {
@@ -1392,7 +1402,7 @@
             progressFill.style.width = '0%';
             progressFill.classList.remove('success');
             progressText.innerText = "Triggering GitHub Action...";
-            btn.innerHTML = `<span>⏳</span> Processing...`;
+            btn.innerHTML = `<span></span> Processing...`;
 
             try {
                 const response = await fetch(FUNCTION_URL, {
@@ -1492,15 +1502,31 @@
                 const database = await response.json();
                 const rooms = Object.keys(database);
                 
+                if (rooms.length === 0) {
+                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No data available.</div>`;
+                    return;
+                }
+
+                //  GET LAST CHECKED TIME FROM THE FIRST ROOM
+                const firstRoom = database[rooms[0]];
+                const lastChecked = firstRoom.scannedAt ? new Date(firstRoom.scannedAt).toLocaleString() : 'Unknown';
+                
+                // Inject Last Checked Header
+                const headerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; margin-bottom: 10px; color: var(--accent-amber); font-size: 13px; font-weight: 600;">
+                        🕒 Last Scanned: ${lastChecked}
+                    </div>
+                `;
+
                 // Filter for FREE rooms
                 const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
 
                 if (freeRooms.length === 0) {
-                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No vacancies found for the scanned time window. All classrooms have active sessions.</div>`;
+                    gridContainer.innerHTML = headerHTML + `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No vacancies found for the scanned time window. All classrooms have active sessions.</div>`;
                     return;
                 }
                 
-                gridContainer.innerHTML = "";
+                gridContainer.innerHTML = headerHTML;
                 freeRooms.forEach(key => {
                     const room = database[key];
                     const card = document.createElement("div");
@@ -1514,6 +1540,7 @@
                             <strong>Target:</strong> ${room.targetDate} | ${room.targetTimeRange}<br>
                             <strong>Status:</strong> ${room.upcomingTimings}
                         </div>
+                        ${room.link ? `<a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">🔗 View Room Schedule</a>` : ''}
                     `;
                     gridContainer.appendChild(card);
                 });
@@ -1538,6 +1565,14 @@
             const progressFill = document.getElementById('future-progress-fill');
             const progressText = document.getElementById('future-text');
 
+            // 🎯 SAVE STATE TO LOCALSTORAGE SO IT SURVIVES RELOADS
+            localStorage.setItem('futureScanState', JSON.stringify({ 
+                active: true, 
+                date: dateVal, 
+                time: combinedTimeRange,
+                startedAt: Date.now()
+            }));
+
             btn.disabled = true;
             progressWrapper.style.display = 'flex';
             progressFill.style.width = '5%';
@@ -1561,7 +1596,6 @@
                 const data = await response.json().catch(() => ({ error: "Invalid server response layout." }));
 
                 if (response.ok && data.success) {
-                    // Start polling the ACTUAL GitHub Actions status
                     startFutureProgressPolling(dateVal, combinedTimeRange);
                 } else {
                     alert("Failed to spawn future workspace checker agent: " + (data.error || data.details || "Route or authorization block."));
@@ -1573,7 +1607,7 @@
             }
         }
 
-        // 🎯 LIVE PROGRESS POLLING (Syncs with GitHub Actions Speed)
+        // 🎯 LIVE PROGRESS POLLING (Survives Reloads)
         function startFutureProgressPolling(targetDate, targetTime) {
             const progressFill = document.getElementById('future-progress-fill');
             const progressText = document.getElementById('future-text');
@@ -1582,7 +1616,6 @@
             const interval = setInterval(async () => {
                 attempts++;
                 try {
-                    // Poll the Cloudflare function that checks GitHub Actions API
                     const statusRes = await fetch(`/future-status?t=${new Date().getTime()}`, { cache: "no-store" });
                     const data = await statusRes.json();
 
@@ -1591,7 +1624,6 @@
                         progressText.innerText = "GitHub Actions: Queued on runner...";
                     } 
                     else if (data.status === 'in_progress') {
-                        // This is where it spends most of its time (Installing Ollama, Playwright, Scanning)
                         progressFill.style.width = '50%';
                         progressText.innerText = "GitHub Actions: Actively scanning rooms with AI... (This takes 30-60s)";
                     } 
@@ -1599,7 +1631,6 @@
                         progressFill.style.width = '80%';
                         progressText.innerText = "GitHub finished! Waiting for Cloudflare to rebuild the site...";
                         clearInterval(interval);
-                        // Now poll the actual JSON file to ensure Cloudflare has rebuilt it
                         startFutureDataPolling(targetDate);
                     }
                     else if (data.status === 'completed' && data.conclusion !== 'success') {
@@ -1612,15 +1643,15 @@
                     console.log("Status polling error:", e); 
                 }
                 
-                if (attempts > 120) { // 10 minutes max timeout
+                // 10 minute timeout
+                if (attempts > 120) { 
                     clearInterval(interval); 
                     progressText.innerText = "Timed out. Please refresh manually."; 
                     resetFutureUI(); 
                 }
-            }, 5000); // Check every 5 seconds
+            }, 5000); 
         }
 
-        // 🎯 DATA POLLING (Waits for Cloudflare to actually serve the new JSON)
         function startFutureDataPolling(targetDate) {
             const progressFill = document.getElementById('future-progress-fill');
             const progressText = document.getElementById('future-text');
@@ -1638,7 +1669,6 @@
                         const data = await res.json();
                         const firstRoom = Object.values(data)[0];
                         
-                        // 🎯 SMART CHECK: Only reload if the JSON actually contains our requested date
                         if (firstRoom && firstRoom.targetDate === targetDate) {
                             clearInterval(interval);
                             progressFill.style.width = '100%';
@@ -1646,6 +1676,8 @@
                             progressText.innerText = "Future analysis sync complete! Updating dashboard...";
                             progressText.style.color = "var(--accent-emerald)";
                             
+                            //  CLEAR SAVED STATE BEFORE RELOADING
+                            localStorage.removeItem('futureScanState');
                             setTimeout(() => window.location.reload(), 1000);
                             return;
                         }
@@ -1654,7 +1686,7 @@
                     console.log("Data polling... waiting for Cloudflare rebuild.");
                 }
                 
-                if (attempts > 60) { // 5 minutes max wait for rebuild
+                if (attempts > 60) { 
                     clearInterval(interval); 
                     progressText.innerText = "Rebuild took too long. Please refresh manually."; 
                     resetFutureUI(); 
@@ -1663,15 +1695,18 @@
         }
 
         function resetFutureUI() {
+            // 🎯 CLEAR SAVED STATE ON FAILURE/TIMEOUT
+            localStorage.removeItem('futureScanState');
+            
             const btn = document.getElementById('future-search-btn');
             const progressWrapper = document.getElementById('future-progress-wrapper');
             btn.disabled = false;
-            btn.innerHTML = `<span></span> Run Future SmolVLM Analysis`;
+            btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
             progressWrapper.style.display = 'none';
         }
     </script>
 
-
+    
     
 
 
