@@ -99,7 +99,8 @@ async function predictFutureAvailability() {
         console.log(`Analyzing [Room ${roomName}] future snapshot with smolvlm...`);
 
         try {
-            const prompt = `Analyze this university timetable calendar image grid sheet layout. Look closely at the 'Future Sessions' schedule grid blocks to find the requested time slot window: ${targetTime} for the target date of ${targetDate}. Is there an active class, lecture, or routine session mapped across that slot? Output strictly a raw valid JSON object matching this schema layout structure perfectly, with no backticks, comments, or extra text conversational wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free" or "Occupied", "upcomingTimings": "Brief extraction text explaining what happens at ${targetTime} on ${targetDate}"}`;
+            const prompt = `Analyze this university timetable calendar image grid sheet layout for the specific date of ${targetDate}. Look closely at the 'Future Sessions' schedule grid rows. Focus your evaluation window on this exact time slot using a 24-hour clock standard: ${targetTime}. Is there an active class, lecture, or routine session mapped across that slot? Output strictly a raw valid JSON object matching this schema layout structure perfectly, with no backticks, comments, or extra text conversational wrappers: {"roomNumber": "${roomName}", "currentStatus": "Free" or "Occupied", "upcomingTimings": "Brief extraction text explaining what happens at ${targetTime} on ${targetDate}"}`;
+
             
             const imageBuffer = fs.readFileSync(target.path);
             const base64Image = imageBuffer.toString('base64');
