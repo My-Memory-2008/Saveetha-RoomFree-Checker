@@ -74,7 +74,9 @@ jobs:
         
         # Add only the generated data
         git add future_rooms.json room-images/
-        git commit -m "chore: update future rooms scan [skip ci]" || exit 0
+        
+        # ️ CRITICAL FIX: Removed [skip ci] so Cloudflare Pages actually rebuilds the site!
+        git commit -m "chore: update future rooms scan" || exit 0
         git push origin main
 
     - name: Upload Captured Screenshots to Artifacts
