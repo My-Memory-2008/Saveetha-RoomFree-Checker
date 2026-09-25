@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -302,27 +302,17 @@
 <body>
 
     <!-- Header Content -->
-    <header>
+   <!-- <header>
         <div class="ai-badge">🤖 Qwen 2.5 VL Engine Registry</div>
         <h1>Available Spaces Dashboard</h1>
         <p>Real-time tracking of vacant classroom modules containing no active portal schedules.</p>
-    </header>
+    </header> -->
 
-    <!-- Master Button Controls Area -->
-    <!-- <div class="control-panel">
-        <button id="ai-btn" onclick="triggerWorkflowAI()" class="btn-ai">
-            <span></span> Scan & Check Live Rooms
-        </button>
-        
-        <div id="polling-status" class="polling-status">
-            <div class="spinner"></div>
-            <span id="polling-text">Waking up GitHub Action Runner...</span>
-        </div>
-</div> -->
+    
 
 
         <!-- Master Button Controls Area -->
-<div class="control-panel">
+<!-- <div class="control-panel">
     <button id="ai-btn" onclick="triggerWorkflowAI()" class="btn-ai">
         <span>🤖</span> Scan & Check Live Rooms
     </button>
@@ -333,27 +323,27 @@
     </div>
 
     <!-- ✅ ADD THIS NEW PROGRESS BAR SECTION -->
-    <div id="progress-wrapper" class="progress-wrapper">
+  <!--  <div id="progress-wrapper" class="progress-wrapper">
         <div class="progress-track">
             <div id="progress-fill" class="progress-fill"></div>
         </div>
         <div id="progress-text" class="progress-text">Initializing AI sequence...</div>
     </div>
-</div>
+</div> -->
         
     
 
     <!-- Active Cards Grid -->
-    <div id="rooms-grid" class="grid-container">
+    <!-- <div id="rooms-grid" class="grid-container">
         <!-- Rendered dynamically by javascript engines below -->
-    </div>
+  <!--  </div>
 
     <footer>
         RoomScanner Registry Engine &bull; Hosted securely on Cloudflare Infrastructure
-    </footer>
+    </footer> -->
 
 
-    <script>
+    <!-- <script>
     // ⚠️ STEP 1: CONFIGURE YOUR REPOSITORY PARTICULARS HERE
     const GITHUB_USERNAME = "My-Memory-2008"; 
     const REPO_NAME = "Saveetha-RoomFree-Checker";             
@@ -520,7 +510,7 @@
         btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
         progressWrapper.style.display = 'none';
     }
-</script>
+</script> -->
 
 
     
@@ -812,5 +802,768 @@
         }, 10000); 
     }
 </script> -->
+<!-- </body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Availability Hub - AI Scan Registry</title>
+    
+    <style>
+        /* Modern Native CSS Theme Variables */
+        :root {
+            --bg-dark: #030712;
+            --panel-glass: rgba(17, 24, 39, 0.7);
+            --border-glow: rgba(99, 102, 241, 0.15);
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-emerald: #10b981;
+            --accent-rose: #ef4444;
+            --accent-indigo: #6366f1;
+            --accent-amber: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Top Ambient Glow Lighting Layer */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1300px;
+            height: 380px;
+            background: radial-gradient(circle at top, rgba(99, 102, 241, 0.15) 0%, rgba(16, 185, 129, 0.02) 65%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        header {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            background: rgba(99, 102, 241, 0.08);
+            color: #a5b4fc;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            animation: pulse-glow 2.5s infinite ease-in-out;
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #ffffff 0%, #d1d5db 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* NEW: Tab Navigation Menu Row */
+        .tab-navigation {
+            display: flex;
+            width: 100%;
+            max-width: 800px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            gap: 6px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-indigo);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Tab Content Section Controls */
+        .tab-content-panel {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .tab-content-panel.active {
+            display: block;
+        }
+        .control-panel {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column; /* Changed to handle form layouts cleanly */
+            margin-bottom: 24px;
+            gap: 16px;
+            background: var(--panel-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 16px;
+        }
+
+        /* NEW: Future Input Form Layout */
+        .search-form {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-indigo);
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-ai:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
+        }
+
+        .btn-ai:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .grid-container {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
+        }
+
+        .room-card {
+            background: var(--panel-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .schedule-details {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.25);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .polling-status {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--accent-amber);
+            font-weight: 600;
+            width: 100%;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(245, 158, 11, 0.2);
+            border-top-color: var(--accent-amber);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        footer {
+            width: 100%;
+            text-align: center;
+            font-size: 11px;
+            color: #334155;
+            margin-top: 40px;
+        }
+
+        .progress-wrapper {
+            width: 100%;
+            margin-top: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+            background-size: 200% 100%;
+            border-radius: 99px;
+            transition: width 0.3s ease;
+            animation: shimmer 2s linear infinite;
+        }
+
+        .progress-fill.success {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            animation: none;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .verify-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .verify-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Content -->
+    <header>
+        <div class="ai-badge">🤖 Qwen 2.5 VL Engine Registry</div>
+        <h1>Campus Space Navigator</h1>
+        <p>Real-time tracking of vacant classroom modules and future session planning.</p>
+    </header>
+
+    <!-- NEW: Interactive Tab Switcher Navigation Bar -->
+    <div class="tab-navigation">
+        <button id="tab-live-btn" class="tab-btn active" onclick="switchTab('live')">
+            <span>⚡</span> Live Rooms
+        </button>
+        <button id="tab-future-btn" class="tab-btn" onclick="switchTab('future')">
+            <span>🔮</span> Search Future Slots
+        </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 1 SECTION: REGULAR LIVE VIEW (UNTOUCHED) -->
+    <!-- ========================================== -->
+    <div id="panel-live" class="tab-content-panel active">
+        <div class="control-panel">
+            <div class="control-row">
+                <button id="ai-btn" onclick="triggerWorkflowAI()" class="btn-ai">
+                    <span>🤖</span> Scan & Check Live Rooms
+                </button>
+                <div id="polling-status" class="polling-status">
+                    <div class="spinner"></div>
+                    <span id="polling-text">Waking up GitHub Action Runner...</span>
+                </div>
+            </div>
+
+            <div id="progress-wrapper" class="progress-wrapper">
+                <div class="progress-track">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <div id="progress-text" class="progress-text">Initializing AI sequence...</div>
+            </div>
+        </div>
+
+        <div id="rooms-grid" class="grid-container">
+            <!-- Live rooms will load here -->
+        </div>
+    </div>
+    <!-- ========================================== -->
+    <!-- TAB 2 SECTION: FUTURE PLANNER SEARCH VIEW  -->
+    <!-- ========================================== -->
+    <div id="panel-future" class="tab-content-panel">
+        <div class="control-panel">
+            <div class="search-form">
+                <div class="form-group">
+                    <label for="input-date">Select Date</label>
+                    <input type="date" id="input-date" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="input-time">Select Time Slot</label>
+                    <select id="input-time" class="form-input">
+                        <option value="08:30 AM">08:30 AM - 09:30 AM</option>
+                        <option value="09:30 AM">09:30 AM - 10:30 AM</option>
+                        <option value="10:45 AM">10:45 AM - 11:45 AM</option>
+                        <option value="11:45 AM">11:45 AM - 12:45 PM</option>
+                        <option value="01:30 PM">01:30 PM - 02:30 PM</option>
+                        <option value="02:30 PM">02:30 PM - 03:30 PM</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="control-row" style="margin-top: 8px;">
+                <button id="future-search-btn" onclick="triggerFutureAIWorkflow()" class="btn-ai" style="width: 100%;">
+                    <span>🔮</span> Run Future SmolVLM Analysis
+                </button>
+            </div>
+
+            <!-- Future Search Custom Progress Tracking Box -->
+            <div id="future-progress-wrapper" class="progress-wrapper">
+                <div class="progress-track">
+                    <div id="future-progress-fill" class="progress-fill"></div>
+                </div>
+                <div id="future-text" class="progress-text">Ready to query...</div>
+            </div>
+        </div>
+
+        <!-- Separate list container specifically for future predictions -->
+        <div id="future-rooms-grid" class="grid-container">
+            <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                Select a date and time slot above to evaluate future openings via SmolVLM.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        RoomScanner Registry Engine &bull; Hosted securely on Cloudflare Infrastructure
+    </footer>
+    <script>
+        // Existing Configuration targets
+        const GITHUB_USERNAME = "My-Memory-2008"; 
+        const REPO_NAME = "Saveetha-RoomFree-Checker";             
+        const WORKFLOW_FILE = "process-rooms.yml";       
+        const FUNCTION_URL = "/trigger"; 
+
+        // New future workflow endpoints
+        const FUTURE_WORKFLOW_FILE = "predict-future.yml";
+        const FUTURE_FUNCTION_URL = "/trigger-future"; 
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadRoomRegistry();
+            loadFutureRoomRegistry();
+            
+            // Set the calendar picker to automatically select today's date
+            const dateInput = document.getElementById('input-date');
+            if(dateInput) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                dateInput.value = `${year}-${month}-${day}`;
+            }
+        });
+
+        // Tab Switching Mechanism Controller
+        function switchTab(targetTab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
+
+            if(targetTab === 'live') {
+                document.getElementById('tab-live-btn').classList.add('active');
+                document.getElementById('panel-live').classList.add('active');
+            } else {
+                document.getElementById('tab-future-btn').classList.add('active');
+                document.getElementById('panel-future').classList.add('active');
+            }
+        }
+
+        // --- ORIGINAL LIVE LOADING BLOCK (UNTOUCHED) ---
+        async function loadRoomRegistry() {
+            const gridContainer = document.getElementById("rooms-grid");
+            try {
+                const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+                if (!response.ok) throw new Error();
+                const database = await response.json();
+                const rooms = Object.keys(database);
+                const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
+
+                if (freeRooms.length === 0) {
+                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">All monitored rooms are currently reported as occupied, or the database file is blank.</div>`;
+                    return;
+                }
+                gridContainer.innerHTML = "";
+                freeRooms.forEach(key => {
+                    const room = database[key];
+                    const card = document.createElement("div");
+                    card.className = "room-card";
+                    card.innerHTML = `
+                        <div class="card-header"><div class="room-title">Room \${room.roomNumber}</div><span class="status-badge">● Vacant & Free</span></div>
+                        <div class="schedule-details"><strong>Live Timeline Extraction:</strong><br>\${room.upcomingTimings || "No active lectures or group lab slots detected."}</div>
+                        \${room.link ? `<a href="\${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">🔗 Verify Live Status</a>` : ''}
+                    `;
+                    gridContainer.appendChild(card);
+                });
+            } catch (err) {
+                gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No database found. Click the button above to run your initial workflow vision scan.</div>`;
+            }
+        }
+        // --- NEW: DYNAMIC FUTURE DATA DESK READER ---
+        async function loadFutureRoomRegistry() {
+            const gridContainer = document.getElementById("future-rooms-grid");
+            try {
+                const response = await fetch(`future_rooms.json?t=${new Date().getTime()}`);
+                if (!response.ok) return; 
+                const database = await response.json();
+                const rooms = Object.keys(database);
+                const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
+
+                if (freeRooms.length === 0) {
+                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No vacancies found for your chosen slot window. Every classroom contains an active session layout.</div>`;
+                    return;
+                }
+                gridContainer.innerHTML = "";
+                freeRooms.forEach(key => {
+                    const room = database[key];
+                    const card = document.createElement("div");
+                    card.className = "room-card";
+                    card.innerHTML = `
+                        <div class="card-header"><div class="room-title">Room \${room.roomNumber}</div><span class="status-badge">● Planned Open</span></div>
+                        <div class="schedule-details"><strong>SmolVLM Prediction:</strong><br>\${room.upcomingTimings || "Verified clear for the selected time window slot."}</div>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+            } catch (err) {}
+        }
+
+        // --- DYNAMIC FUTURE WORKFLOW DISPATCH ---
+        async function triggerFutureAIWorkflow() {
+            const dateVal = document.getElementById('input-date').value;
+            const timeVal = document.getElementById('input-time').value;
+            
+            if(!dateVal) { alert("Please pick a valid calendar day target."); return; }
+
+            const btn = document.getElementById('future-search-btn');
+            const progressWrapper = document.getElementById('future-progress-wrapper');
+            const progressFill = document.getElementById('future-progress-fill');
+            const progressText = document.getElementById('future-text');
+
+            btn.disabled = true;
+            progressWrapper.style.display = 'flex';
+            progressFill.style.width = '0%';
+            progressFill.classList.remove('success');
+            progressText.innerText = "Dispatching SmolVLM prediction request...";
+            btn.innerHTML = `<span>⏳</span> Processing...`;
+
+            try {
+                const response = await fetch(FUTURE_FUNCTION_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        GITHUB_USERNAME, 
+                        REPO_NAME, 
+                        WORKFLOW_FILE: FUTURE_WORKFLOW_FILE,
+                        inputs: { target_date: dateVal, target_time: timeVal } 
+                    })
+                });
+
+                if (response.ok) {
+                    progressFill.style.width = '40%';
+                    progressText.innerText = "SmolVLM Workflow active on GitHub... (Takes ~45s)";
+                    
+                    let checkAttempts = 0;
+                    const checkInterval = setInterval(async () => {
+                        checkAttempts++;
+                        try {
+                            const res = await fetch(`future_rooms.json?nocache=${new Date().getTime()}`, { cache: "no-store" });
+                            if (res.ok) {
+                                clearInterval(checkInterval);
+                                progressFill.style.width = '100%';
+                                progressFill.classList.add('success');
+                                progressText.innerText = "Future slots extracted! Syncing view blocks...";
+                                progressText.style.color = "var(--accent-emerald)";
+                                setTimeout(() => window.location.reload(), 1500);
+                            }
+                        } catch(e) {}
+                        if(checkAttempts > 30) {
+                            clearInterval(checkInterval);
+                            progressText.innerText = "Build took too long. Refresh grid manually.";
+                            btn.disabled = false;
+                            btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
+                        }
+                    }, 5000);
+                } else {
+                    alert("Failed to spawn future workspace checker agent.");
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
+                }
+            } catch (err) {
+                alert("Network communication exception: " + err.message);
+                btn.disabled = false;
+                btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
+            }
+        }
+
+        // --- ORIGINAL LIVE WORKFLOW LOGIC (UNTOUCHED) ---
+        async function triggerWorkflowAI() {
+            const btn = document.getElementById('ai-btn');
+            const progressWrapper = document.getElementById('progress-wrapper');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            btn.disabled = true;
+            progressWrapper.style.display = 'flex';
+            progressFill.style.width = '0%';
+            progressFill.classList.remove('success');
+            progressText.innerText = "Triggering GitHub Action...";
+            progressText.style.color = "var(--text-secondary)";
+            btn.innerHTML = `<span>⏳</span> Processing...`;
+
+            try {
+                const response = await fetch(FUNCTION_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ GITHUB_USERNAME, REPO_NAME, WORKFLOW_FILE })
+                });
+
+                if (response.ok) {
+                    startRealTimeProgressPolling();
+                } else {
+                    alert("Failed to trigger workflow.");
+                    resetUI();
+                }
+            } catch (err) {
+                alert("Network Error: " + err.message);
+                resetUI();
+            }
+        }
+
+        function startRealTimeProgressPolling() {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            let attempts = 0;
+            const interval = setInterval(async () => {
+                attempts++;
+                try {
+                    const statusRes = await fetch(`/api/status?t=${new Date().getTime()}`);
+                    const data = await statusRes.json();
+                    if (data.runStatus === 'in_progress' || data.runStatus === 'queued') {
+                        progressFill.style.width = `${data.progress}%`;
+                        progressText.innerText = `GitHub Action: \${data.currentStep}`;
+                    } 
+                    else if (data.runStatus === 'completed' && data.conclusion === 'success') {
+                        progressFill.style.width = `90%`;
+                        progressText.innerText = "GitHub finished! Waiting for Cloudflare site rebuild...";
+                        clearInterval(interval);
+                        startCloudflareRebuildPolling();
+                    }
+                    else if (data.runStatus === 'completed' && data.conclusion !== 'success') {
+                        progressText.innerText = "Workflow failed. Check GitHub Actions tab.";
+                        progressText.style.color = "var(--accent-rose)";
+                        clearInterval(interval);
+                        resetUI();
+                    }
+                } catch (e) { console.log("Polling error:", e); }
+                if (attempts > 60) { clearInterval(interval); progressText.innerText = "Timed out. Please refresh manually."; resetUI(); }
+            }, 5000); 
+        }
+
+        function startCloudflareRebuildPolling() {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            let attempts = 0;
+            const interval = setInterval(async () => {
+                attempts++;
+                try {
+                    const res = await fetch(`rooms.json?nocache=${new Date().getTime()}`, { cache: "no-store" });
+                    if (res.ok) {
+                        clearInterval(interval);
+                        progressFill.style.width = '100%';
+                        progressFill.classList.add('success');
+                        progressText.innerText = "Scan complete! Reloading dashboard...";
+                        progressText.style.color = "var(--accent-emerald)";
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
+                } catch(e) {}
+                if (attempts > 36) { clearInterval(interval); progressText.innerText = "Rebuild timed out. Please refresh manually."; resetUI(); }
+            }, 5000);
+        }
+
+        function resetUI() {
+            const btn = document.getElementById('ai-btn');
+            const progressWrapper = document.getElementById('progress-wrapper');
+            btn.disabled = false;
+            btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
+            progressWrapper.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
