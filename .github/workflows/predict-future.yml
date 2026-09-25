@@ -37,7 +37,7 @@ jobs:
 
     - name: Install Ollama Core Engine
       run: |
-        curl -fsSL https://ollama.com | sh
+        curl -fsSL https://ollama.com/install.sh | sh
 
     - name: Start Ollama Server
       run: |
