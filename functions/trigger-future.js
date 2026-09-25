@@ -28,7 +28,7 @@ export async function onRequest(context) {
             });
         }
 
-        const url = `https://github.com{GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_NAME}/dispatches`;
+        const url = `https://github.com/{GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_NAME}/dispatches`;
 
         // Safely forward the request to GitHub with token masking active
         const githubResponse = await fetch(url, {
