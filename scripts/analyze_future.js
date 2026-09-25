@@ -6,9 +6,9 @@ const path = require('path');
 const TARGET_DATE = process.env.TARGET_DATE; // e.g., "2026-09-25"
 const TARGET_TIME_RANGE = process.env.TARGET_TIME; // e.g., "13:00 - 16:00"
 
-console.log(`🚀 Starting Future Session Scan for Date: ${TARGET_DATE} | Time Range: ${TARGET_TIME_RANGE}`);
+console.log(` Starting AI Vision Scan for Date: ${TARGET_DATE} | Time Range: ${TARGET_TIME_RANGE}`);
 
-// 🔄 CHANGED: Read from rooms.json instead of a missing room-links.txt
+// Read from rooms.json
 const registryPath = path.join(__dirname, '../rooms.json');
 let roomLinks = [];
 let database = {};
@@ -16,103 +16,111 @@ let database = {};
 try {
     const rawData = fs.readFileSync(registryPath, 'utf8');
     database = JSON.parse(rawData);
-    // Extract all valid links from the existing rooms.json database
     roomLinks = Object.values(database).map(room => room.link).filter(link => link);
     console.log(`✅ Loaded ${roomLinks.length} room links from rooms.json...`);
 } catch (error) {
-    console.error("❌ Failed to read rooms.json.");
-    console.error("💡 Fix: Make sure your Live Scan workflow has run at least once and committed 'rooms.json' to the repository.");
+    console.error("❌ Failed to read rooms.json. Make sure the Live Scan has run at least once.");
     process.exit(1);
 }
 
-// Results storage
 const futureRoomsData = {};
 
 (async () => {
     const browser = await chromium.launch({ 
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Required for GitHub Actions
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     
     const context = await browser.newContext({
         viewport: { width: 1280, height: 720 }
     });
     
+    const screenshotDir = path.join(__dirname, '../room-images');
+    if (!fs.existsSync(screenshotDir)) fs.mkdirSync(screenshotDir, { recursive: true });
+
     let processedCount = 0;
     
-    // Ensure screenshot directory exists
-    const screenshotDir = path.join(__dirname, '../room-images');
-    if (!fs.existsSync(screenshotDir)) {
-        fs.mkdirSync(screenshotDir, { recursive: true });
-    }
-
     for (const link of roomLinks) {
         processedCount++;
         const roomData = Object.values(database).find(r => r.link === link);
         const roomNumber = roomData ? roomData.roomNumber : `Room ${processedCount}`;
         
+        // Skip invalid room 503
+        if (roomNumber === "503") {
+            console.log(`   → Skipping invalid room: ${roomNumber}`);
+            continue; 
+        }
+
         console.log(`\n[${processedCount}/${roomLinks.length}] Processing: ${roomNumber}`);
         
         try {
             const page = await context.newPage();
-            
-            // 🎯 YOUR TRICK: Append ?scope=future to directly access future sessions
             const futureUrl = `${link}?scope=future`;
             
             await page.goto(futureUrl, { 
-                waitUntil: 'domcontentloaded', // Faster and more reliable than 'networkidle'
+                waitUntil: 'domcontentloaded',
                 timeout: 15000 
             });
             
-            // Wait a moment for the future sessions UI to render
+            // Wait for UI to render
             await page.waitForTimeout(1500);
             
-            // Take screenshot for debugging/AI (optional but recommended)
+            // 1. TAKE SCREENSHOT
             const screenshotPath = path.join(screenshotDir, `future-${roomNumber}.png`);
             await page.screenshot({ path: screenshotPath, fullPage: false });
             
-            // Extract visible text content for analysis
-            const pageContent = await page.evaluate(() => {
-                return document.body.innerText;
+            // 2. CONVERT TO BASE64 FOR OLLAMA
+            const base64Image = fs.readFileSync(screenshotPath, { encoding: 'base64' });
+            
+            // 3. SEND TO OLLAMA (Moondream) FOR VISION ANALYSIS
+            console.log(`   🤖 Sending screenshot to Moondream AI...`);
+            
+            const ollamaResponse = await fetch('http://127.0.0.1:11434/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'moondream',
+                    prompt: `Look at this university classroom schedule screenshot.
+Target Date to check: ${TARGET_DATE}
+Target Time Window: ${TARGET_TIME_RANGE}
+
+Analyze the image and extract:
+1. The Room Number.
+2. Is there ANY class, lecture, or exam scheduled exactly on the Target Date during the Target Time Window?
+
+You MUST reply ONLY with a valid JSON object (no markdown, no backticks, no extra text) in this exact format:
+{"room": "Room Number", "has_class": true or false, "details": "Brief summary of the schedule for that date"}`,
+                    images: [base64Image],
+                    stream: false
+                })
             });
+
+            if (!ollamaResponse.ok) {
+                throw new Error(`Ollama API failed with status ${ollamaResponse.status}`);
+            }
+
+            const aiData = await ollamaResponse.json();
+            let aiText = aiData.response;
             
-            // Simple text-based analysis for the target date
-            const dateStr = TARGET_DATE; // e.g., "2026-09-25"
-            const hasDate = pageContent.includes(dateStr) || pageContent.includes(dateStr.replace(/-/g, '/'));
+            // 4. PARSE AI RESPONSE (Handle potential markdown formatting from AI)
+            aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
+            const jsonMatch = aiText.match(/\{[\s\S]*?\}/);
             
-            let status = "FREE";
-            let upcomingTimings = `No sessions scheduled for ${TARGET_DATE} during ${TARGET_TIME_RANGE}`;
-            
-            if (hasDate) {
-                // Try to extract the specific time slot mentioned near the date
-                const lines = pageContent.split('\n');
-                let foundSession = false;
-                let sessionText = "";
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].toLowerCase();
-                    if (line.includes(dateStr.toLowerCase()) || line.includes(dateStr.replace(/-/g, '/').toLowerCase())) {
-                        // Check if this line or nearby lines contain time info
-                        const contextLines = lines.slice(Math.max(0, i - 2), i + 3).join(' ');
-                        if (contextLines.includes('am') || contextLines.includes('pm') || /\d{1,2}:\d{2}/.test(contextLines)) {
-                            foundSession = true;
-                            sessionText = contextLines.trim().replace(/\s+/g, ' ').substring(0, 120);
-                            break;
-                        }
-                    }
-                }
-                
-                if (foundSession) {
-                    status = "OCCUPIED";
-                    upcomingTimings = `Session found: ${sessionText}`;
-                } else {
-                    upcomingTimings = `Date found, but no specific time slot detected in text.`;
+            let parsedAI = { room: roomNumber, has_class: false, details: "AI parsing failed" };
+            if (jsonMatch) {
+                try { 
+                    parsedAI = JSON.parse(jsonMatch[0]); 
+                } catch(e) { 
+                    console.log(`   ⚠️ AI JSON parse error for ${roomNumber}`);
                 }
             }
-            
-            // Store result
+
+            // 5. DETERMINE STATUS
+            const status = parsedAI.has_class ? "OCCUPIED" : "FREE";
+            const upcomingTimings = parsedAI.details || (parsedAI.has_class ? "Class scheduled during target window." : "No classes found for target window.");
+
             futureRoomsData[`room-${roomNumber}`] = {
-                roomNumber: roomNumber,
+                roomNumber: parsedAI.room || roomNumber,
                 currentStatus: status,
                 upcomingTimings: upcomingTimings,
                 link: link,
@@ -121,17 +129,16 @@ const futureRoomsData = {};
                 targetTimeRange: TARGET_TIME_RANGE
             };
             
-            console.log(`   → Status: ${status}`);
+            console.log(`   → AI Verdict: ${status} | ${upcomingTimings.substring(0, 50)}...`);
             
             await page.close();
             
         } catch (error) {
             console.error(`   ✗ Error processing ${roomNumber}:`, error.message);
-            
             futureRoomsData[`room-${roomNumber}`] = {
                 roomNumber: roomNumber,
                 currentStatus: "UNKNOWN",
-                upcomingTimings: `Error scanning: ${error.message}`,
+                upcomingTimings: `Error: ${error.message}`,
                 link: link,
                 scannedAt: new Date().toISOString()
             };
@@ -140,12 +147,12 @@ const futureRoomsData = {};
     
     await browser.close();
     
-    // Save results to JSON
+    // Save final JSON
     const outputPath = path.join(__dirname, '../future_rooms.json');
     fs.writeFileSync(outputPath, JSON.stringify(futureRoomsData, null, 2));
     
     const freeCount = Object.values(futureRoomsData).filter(r => r.currentStatus === 'FREE').length;
-    console.log(`\n✅ Future rooms analysis complete! Results saved to: ${outputPath}`);
+    console.log(`\n✅ AI Vision analysis complete! Results saved to: ${outputPath}`);
     console.log(`📊 Total rooms scanned: ${processedCount}`);
     console.log(`📊 Free rooms: ${freeCount}`);
 })();
