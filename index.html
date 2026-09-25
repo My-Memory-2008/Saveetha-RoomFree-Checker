@@ -1303,6 +1303,7 @@
     </footer>
 
 
+
     <script>
         // Repository Target Configuration Metrics
         const GITHUB_USERNAME = "My-Memory-2008"; 
@@ -1312,7 +1313,7 @@
         const FUTURE_WORKFLOW_FILE = "predict-future.yml";
         const FUTURE_FUNCTION_URL = "/trigger-future"; 
 
-        // ️ AUTOMATIC INITIALIZER
+        // AUTOMATIC INITIALIZER
         document.addEventListener("DOMContentLoaded", () => {
             loadRoomRegistry();
             loadFutureRoomRegistry();
@@ -1326,7 +1327,7 @@
                 dateInput.value = `${year}-${month}-${day}`;
             }
 
-            //  RESTORE PROGRESS BAR IF PAGE WAS RELOADED DURING SCAN
+            // RESTORE PROGRESS BAR IF PAGE WAS RELOADED DURING SCAN
             const savedState = JSON.parse(localStorage.getItem('futureScanState') || '{}');
             if (savedState.active) {
                 const progressWrapper = document.getElementById('future-progress-wrapper');
@@ -1352,7 +1353,7 @@
             }
         }
 
-        // --- LIVE SCAN LOGIC ---
+        // --- LIVE SCAN LOGIC (UNCHANGED) ---
         async function loadRoomRegistry() {
             const gridContainer = document.getElementById("rooms-grid");
             try {
@@ -1402,7 +1403,7 @@
             progressFill.style.width = '0%';
             progressFill.classList.remove('success');
             progressText.innerText = "Triggering GitHub Action...";
-            btn.innerHTML = `<span></span> Processing...`;
+            btn.innerHTML = `<span>⏳</span> Processing...`;
 
             try {
                 const response = await fetch(FUNCTION_URL, {
@@ -1483,7 +1484,7 @@
         }
 
         // ==========================================
-        // --- FUTURE SCAN LOGIC (FULLY UPDATED) ---
+        // --- FUTURE SCAN LOGIC (REAL-TIME SYNC) ---
         // ==========================================
 
         async function loadFutureRoomRegistry() {
@@ -1507,18 +1508,15 @@
                     return;
                 }
 
-                //  GET LAST CHECKED TIME FROM THE FIRST ROOM
                 const firstRoom = database[rooms[0]];
                 const lastChecked = firstRoom.scannedAt ? new Date(firstRoom.scannedAt).toLocaleString() : 'Unknown';
                 
-                // Inject Last Checked Header
                 const headerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; margin-bottom: 10px; color: var(--accent-amber); font-size: 13px; font-weight: 600;">
                         🕒 Last Scanned: ${lastChecked}
                     </div>
                 `;
 
-                // Filter for FREE rooms
                 const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
 
                 if (freeRooms.length === 0) {
@@ -1565,7 +1563,6 @@
             const progressFill = document.getElementById('future-progress-fill');
             const progressText = document.getElementById('future-text');
 
-            // 🎯 SAVE STATE TO LOCALSTORAGE SO IT SURVIVES RELOADS
             localStorage.setItem('futureScanState', JSON.stringify({ 
                 active: true, 
                 date: dateVal, 
@@ -1575,9 +1572,9 @@
 
             btn.disabled = true;
             progressWrapper.style.display = 'flex';
-            progressFill.style.width = '5%';
+            progressFill.style.width = '0%';
             progressFill.classList.remove('success');
-            progressText.innerText = "Dispatching SmolVLM prediction request...";
+            progressText.innerText = "Dispatching to GitHub Actions...";
             progressText.style.color = "var(--accent-amber)";
             btn.innerHTML = `<span>⏳</span> Processing...`;
 
@@ -1596,6 +1593,7 @@
                 const data = await response.json().catch(() => ({ error: "Invalid server response layout." }));
 
                 if (response.ok && data.success) {
+                    // Start polling the REAL GitHub Actions steps
                     startFutureProgressPolling(dateVal, combinedTimeRange);
                 } else {
                     alert("Failed to spawn future workspace checker agent: " + (data.error || data.details || "Route or authorization block."));
@@ -1607,11 +1605,12 @@
             }
         }
 
-        // 🎯 LIVE PROGRESS POLLING (Survives Reloads)
+        // 🎯 REAL-TIME STEP POLLING
         function startFutureProgressPolling(targetDate, targetTime) {
             const progressFill = document.getElementById('future-progress-fill');
             const progressText = document.getElementById('future-text');
             let attempts = 0;
+            let smoothAnimation = null;
             
             const interval = setInterval(async () => {
                 attempts++;
@@ -1620,20 +1619,42 @@
                     const data = await statusRes.json();
 
                     if (data.status === 'queued') {
-                        progressFill.style.width = '15%';
-                        progressText.innerText = "GitHub Actions: Queued on runner...";
+                        progressFill.style.width = `${data.progress}%`;
+                        progressText.innerText = data.step;
                     } 
                     else if (data.status === 'in_progress') {
-                        progressFill.style.width = '50%';
-                        progressText.innerText = "GitHub Actions: Actively scanning rooms with AI... (This takes 30-60s)";
+                        // Set the bar to the exact step percentage
+                        progressFill.style.width = `${data.progress}%`;
+                        progressText.innerText = `GitHub Actions: ${data.step}`;
+
+                        // If it's the long AI step, start a smooth micro-animation so it doesn't look stuck
+                        if (data.isLongStep) {
+                            if (!smoothAnimation) {
+                                let currentP = data.progress;
+                                smoothAnimation = setInterval(() => {
+                                    if (currentP < 85) {
+                                        currentP += 0.5;
+                                        progressFill.style.width = `${currentP}%`;
+                                    }
+                                }, 1000);
+                            }
+                        } else {
+                            // Stop micro-animation if we moved past the long step
+                            if (smoothAnimation) {
+                                clearInterval(smoothAnimation);
+                                smoothAnimation = null;
+                            }
+                        }
                     } 
                     else if (data.status === 'completed' && data.conclusion === 'success') {
-                        progressFill.style.width = '80%';
+                        if (smoothAnimation) clearInterval(smoothAnimation);
+                        progressFill.style.width = '90%';
                         progressText.innerText = "GitHub finished! Waiting for Cloudflare to rebuild the site...";
                         clearInterval(interval);
                         startFutureDataPolling(targetDate);
                     }
                     else if (data.status === 'completed' && data.conclusion !== 'success') {
+                        if (smoothAnimation) clearInterval(smoothAnimation);
                         progressText.innerText = "Workflow failed. Check GitHub Actions tab.";
                         progressText.style.color = "var(--accent-rose)";
                         clearInterval(interval);
@@ -1643,13 +1664,13 @@
                     console.log("Status polling error:", e); 
                 }
                 
-                // 10 minute timeout
-                if (attempts > 120) { 
+                if (attempts > 180) { // 15 minute timeout
                     clearInterval(interval); 
+                    if (smoothAnimation) clearInterval(smoothAnimation);
                     progressText.innerText = "Timed out. Please refresh manually."; 
                     resetFutureUI(); 
                 }
-            }, 5000); 
+            }, 3000); // Check every 3 seconds
         }
 
         function startFutureDataPolling(targetDate) {
@@ -1676,7 +1697,6 @@
                             progressText.innerText = "Future analysis sync complete! Updating dashboard...";
                             progressText.style.color = "var(--accent-emerald)";
                             
-                            //  CLEAR SAVED STATE BEFORE RELOADING
                             localStorage.removeItem('futureScanState');
                             setTimeout(() => window.location.reload(), 1000);
                             return;
@@ -1691,13 +1711,11 @@
                     progressText.innerText = "Rebuild took too long. Please refresh manually."; 
                     resetFutureUI(); 
                 }
-            }, 5000);
+            }, 3000);
         }
 
         function resetFutureUI() {
-            // 🎯 CLEAR SAVED STATE ON FAILURE/TIMEOUT
             localStorage.removeItem('futureScanState');
-            
             const btn = document.getElementById('future-search-btn');
             const progressWrapper = document.getElementById('future-progress-wrapper');
             btn.disabled = false;
