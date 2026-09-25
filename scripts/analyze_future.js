@@ -113,11 +113,16 @@ async function predictFutureAvailability() {
                 stream: false
             };
 
-            const response = await fetch('http://localhost:11434/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+           const response = await fetch("http://127.0.0.1:11434/api/generate", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    model: "moondream", // <-- Changed from "smolvlm:256m"
+    prompt: "Analyze this classroom schedule screenshot. Extract the room number, time slots, and state clearly if it is FREE or OCCUPIED during the requested time window.",
+    images: [base64ImageString], // Your playwright screenshot in base64
+    stream: false
+  })
+});
 
             if (!response.ok) {
                 throw new Error(`Ollama server responded with status code ${response.status}`);
