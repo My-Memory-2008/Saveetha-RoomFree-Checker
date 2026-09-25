@@ -1414,7 +1414,10 @@
         }
 
         // --- FUTURE WORKFLOW DISPATCH ACTION CALL TRIGGER ---
-        async function triggerFutureAIWorkflow() {
+
+
+        // --- FUTURE WORKFLOW DISPATCH ACTION CALL TRIGGER ---
+async function triggerFutureAIWorkflow() {
     const dateVal = document.getElementById('input-date').value;
     const timeFromVal = document.getElementById('input-time-from').value;
     const timeToVal = document.getElementById('input-time-to').value;
@@ -1424,7 +1427,7 @@
         return; 
     }
 
-    // Combine both selections into a clean 24-hour time-range window string
+    // Combine both selections into a clean time-range window string
     const combinedTimeRange = `${timeFromVal} - ${timeToVal}`;
 
     const btn = document.getElementById('future-search-btn');
@@ -1432,54 +1435,77 @@
     const progressFill = document.getElementById('future-progress-fill');
     const progressText = document.getElementById('future-text');
 
+    // UI Loading State
     btn.disabled = true;
     progressWrapper.style.display = 'flex';
-    progressFill.style.width = '0%';
+    progressFill.style.width = '10%';
     progressFill.classList.remove('success');
-    progressText.innerText = "Dispatching SmolVLM prediction request...";
+    progressText.innerText = "Dispatching SmolVLM 256M prediction request...";
+    progressText.style.color = "var(--accent-amber)";
     btn.innerHTML = `<span>⏳</span> Processing...`;
 
     try {
-        const response = await fetch(FUTURE_FUNCTION_URL, {
+        const response = await fetch('/trigger-future', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
-                GITHUB_USERNAME, 
-                REPO_NAME, 
-                WORKFLOW_FILE: FUTURE_WORKFLOW_FILE,
-                inputs: { target_date: dateVal, target_time: combinedTimeRange } // Sends range
+                GITHUB_USERNAME: "My-Memory-2008", 
+                REPO_NAME: "Saveetha-RoomFree-Checker",             
+                WORKFLOW_FILE: "predict-future.yml", // Ensure this matches your actual workflow filename
+                inputs: { 
+                    target_date: dateVal, 
+                    target_time: combinedTimeRange 
+                }
             })
         });
 
         const data = await response.json().catch(() => ({ error: "Invalid server response layout." }));
 
-        if (response.ok) {
-            progressFill.style.width = '50%';
-            progressText.innerText = `SmolVLM Active on GitHub! Checking slots for ${combinedTimeRange}... (Takes ~45s)`;
+        if (response.ok && data.success) {
+            progressFill.style.width = '40%';
+            progressText.innerText = `SmolVLM Active on GitHub! Analyzing slots for ${combinedTimeRange}... (Takes ~30-60s)`;
             
             let checkAttempts = 0;
+            const maxAttempts = 40; // 40 attempts * 5 seconds = ~3.3 minutes max wait
+            
             const checkInterval = setInterval(async () => {
                 checkAttempts++;
+                progressFill.style.width = `${40 + (checkAttempts * 1.5)}%`; // Visual progress creep
+                
                 try {
-                    const res = await fetch(`future_rooms.json?nocache=${new Date().getTime()}`, { cache: "no-store" });
+                    // Aggressive cache-busting for Cloudflare Pages
+                    const res = await fetch(`future_rooms.json?t=${new Date().getTime()}`, { 
+                        cache: "no-store",
+                        headers: { "Cache-Control": "no-cache, no-store, must-revalidate" }
+                    });
+                    
                     if (res.ok) {
+                        const jsonData = await res.json();
+                        // Optional: Check if the JSON actually has data or a "last_updated" field to confirm it's fresh
                         clearInterval(checkInterval);
                         progressFill.style.width = '100%';
                         progressFill.classList.add('success');
-                        progressText.innerText = "Future analysis sync complete! Syncing view blocks...";
+                        progressText.innerText = "Future analysis sync complete! Updating dashboard...";
                         progressText.style.color = "var(--accent-emerald)";
-                        setTimeout(() => window.location.reload(), 1500);
+                        
+                        // Reload to show new cards
+                        setTimeout(() => window.location.reload(), 1000);
                     }
-                } catch(e) {}
-                if(checkAttempts > 30) {
+                } catch(e) {
+                    console.log("Polling... waiting for GitHub commit to reflect on Cloudflare.");
+                }
+                
+                if(checkAttempts >= maxAttempts) {
                     clearInterval(checkInterval);
-                    progressText.innerText = "Build took too long. Refresh grid manually.";
+                    progressText.innerText = "Analysis took longer than expected. The workflow may still be running. Refresh manually in a minute.";
+                    progressText.style.color = "var(--accent-rose)";
                     btn.disabled = false;
                     btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
                 }
-            }, 5000);
+            }, 5000); // Check every 5 seconds
+            
         } else {
-            alert("Failed to spawn future workspace checker agent: " + (data.error || "Route or authorization block."));
+            alert("Failed to spawn future workspace checker agent: " + (data.error || data.details || "Route or authorization block."));
             btn.disabled = false;
             btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
             progressWrapper.style.display = 'none';
@@ -1492,6 +1518,8 @@
     }
 }
 
+
+        
 
         // --- LIVE SCAN WORKFLOW CALL TRIGER SYSTEM (TAB 1) ---
         async function triggerWorkflowAI() {
