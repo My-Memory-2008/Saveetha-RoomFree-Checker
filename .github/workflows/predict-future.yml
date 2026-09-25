@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       target_time:
-        description: 'Selected Time Slot Window (HH:MM AM/PM)'
+        description: 'Selected Time Slot Window (HH:MM - HH:MM)' # Changed from AM/PM
         required: true
         type: string
 
@@ -52,6 +52,7 @@ jobs:
       run: |
         # Pulling the high-speed, compact SmolVLM vision model checkpoint
         ollama pull smolvlm
+    # ... (keep Ollama and Playwright setup steps) ...
 
     - name: Run Playwright Scraping & Node Future Inference Script
       env:
@@ -60,27 +61,13 @@ jobs:
       run: |
         node scripts/analyze_future.js
 
-    - name: Inject Secret Token into Website Code
-      env:
-        SECRET_KEY: ${{ secrets.MY_GITHUB_TOKEN }}
-      run: |
-        node -e "
-          const fs = require('fs');
-          ['index.html', 'future.html'].forEach(file => {
-            if (fs.existsSync(file)) {
-              let text = fs.readFileSync(file, 'utf8');
-              text = text.replace('TOKEN_SECRET_PLACEHOLDER_KEY', process.env.SECRET_KEY);
-              fs.writeFileSync(file, text, 'utf8');
-            }
-          });
-        "
-
     - name: Commit and Save Fresh Future Openings Snapshot
       run: |
         git config --global user.name "Future Prediction Agent"
         git config --global user.email "actions@github.com"
-        git add future_rooms.json index.html future.html || exit 0
-        git commit -m "Automated future room scrape and SmolVLM compile [Form Triggerededed]" || exit 0
+        # ONLY commit the generated data, not the HTML files
+        git add future_rooms.json room-images/ || exit 0
+        git commit -m "Automated future room scrape and SmolVLM compile" || exit 0
         git push
 
     - name: Upload Captured Screenshots to Artifacts
