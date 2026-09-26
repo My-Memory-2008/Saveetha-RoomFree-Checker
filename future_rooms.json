@@ -1,1244 +1,1244 @@
 {
   "room-5683": {
     "roomNumber": "5683",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 5683 on September 26, 2016, which includes a lecture and an exam.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/174/DIjLC3y2StMs9zOp52QZseF6o6uNvnka2MwhYQoATYpBEFxY/",
-    "scannedAt": "2026-09-26T03:29:56.907Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:46:47.574Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5453": {
     "roomNumber": "5453",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window. The schedule includes times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/154/u2R83SFmjTQF6YNdfVd7RSKEDOXv2XZbQMDrcmhHt4Z6m68H/",
-    "scannedAt": "2026-09-26T03:22:12.068Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:08:36.586Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5611": {
     "roomNumber": "5611",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/144/z3roCHqxaJgu0kZQm3hndscwL2LYTUoyfMjC5kmgSiHdx4NR/",
-    "scannedAt": "2026-09-26T03:22:34.608Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:10:31.992Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5612": {
     "roomNumber": "5612",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/143/YzcR8Uwfbc2xqIQIVHI267BZLbpz4Xawm0TDAD2Rfw9WrJha/",
-    "scannedAt": "2026-09-26T03:22:57.433Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:12:27.217Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5613": {
     "roomNumber": "5613",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/142/9LgI8SaKpO0N0atvN483tVR9kkKaM8ICnpc8cAjCkFHGwrAA/",
-    "scannedAt": "2026-09-26T03:23:20.375Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:14:21.338Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5731": {
     "roomNumber": "5731",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the event, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/172/MKhADTAe8sUy1DIS2nd60QzlPozBUamoNKmoLRLaREXKHp17/",
-    "scannedAt": "2026-09-26T03:23:43.097Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:16:15.588Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5732": {
     "roomNumber": "5732",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the English Language Lab on May 22, 2023, which includes a class for English Engineers, a lecture, and an exam. The schedule is for the upcoming week, and the class is at 10:00 am.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/171/RRGdzDlqRnxnkSXiFBe0P73PoqjOAKQFKkO8loKrMJcuHlrL/",
-    "scannedAt": "2026-09-26T03:24:06.992Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:18:10.486Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5831": {
     "roomNumber": "5831",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 583-Career Laboratory on October 26, 2020, from 10:00 to 16:00. The class is scheduled to be held in Room 583.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/170/R4z6Ar4qFbkCAY4bmWGZD3s7ijr7FX2DQRLMrFoABa7lFCbr/",
-    "scannedAt": "2026-09-26T03:24:30.612Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:20:05.107Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5851": {
     "roomNumber": "5851",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the event, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/193/ysmWvrO3PuePXQQ23HOdWVuGLsZuv2T1Hp7oMD7hYwNuQ4bs/",
-    "scannedAt": "2026-09-26T03:24:53.018Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:21:59.372Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5852": {
     "roomNumber": "5852",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class of the day, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/169/qjy5zUy8ykYEzSzqOnGlxVZFIeo6UthSG62oeRWRnu1ItkFT/",
-    "scannedAt": "2026-09-26T03:25:15.330Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:23:52.791Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5853": {
     "roomNumber": "5853",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 583 on the date of 2026-09-26, from 13:00 to 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/168/sR03OGjQFs7UPL8Rcs8I4uSfVKW2u2YrEca9aAMSdoyf9RDG/",
-    "scannedAt": "2026-09-26T03:25:38.261Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:25:46.167Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5854": {
     "roomNumber": "5854",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 584 on the date of 2026-09-26, which includes a lecture at 13:00 and an exam at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/167/Kc7bHukCjHTIsksqkGxjctOnXmE7IfEZiQMRA2EDoPOw6lVL/",
-    "scannedAt": "2026-09-26T03:26:01.399Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:27:39.841Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5872": {
     "roomNumber": "5872",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 5872 on the date 2026-09-26, which includes a lecture at 13:00 and an exam at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/166/og3ABKZhef5vXzkP58oYEcrmuYWdFyB7UId2G86CERyUXMAi/",
-    "scannedAt": "2026-09-26T03:26:24.960Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:29:34.340Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5873": {
     "roomNumber": "5873",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 5873 on the date 2026-09-26, which includes a lecture at 13:00 and an exam at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/165/oIbLgQSGJKbpq8AGKlikW18eAVPNKR0lcEJGps0D7pC2WHjF/",
-    "scannedAt": "2026-09-26T03:26:47.767Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:31:29.155Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5874": {
     "roomNumber": "5874",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 5874 on the date 2026-09-26 shows that there is a class at 13:00 and a lecture at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/164/Ig5q9ymZcV2RdUpuSv4YvDeIyUWIEImYlhFhZREFG3lp0slJ/",
-    "scannedAt": "2026-09-26T03:27:10.656Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:33:23.114Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5654": {
     "roomNumber": "5654",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class LECS-3202, which is scheduled for September 26, 2020, from 1:00 to 4:00 PM. The class is being taught by an instructor, and it is a programming course. The course is currently available for participation, and the instructor has not yet posted any lecture slides. The course is scheduled to take place at the end of the week, from September 26 to October 26, 2020.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/177/RdsbnKoMTT3kC4No42cFS0sCzQ5QHTuRUr9zb3IfcFjAENW2/",
-    "scannedAt": "2026-09-26T03:27:36.857Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:35:17.248Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5652": {
     "roomNumber": "5652",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 562 on the date 2026-09-26 shows that there is a class at 13:00-16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/140/vd9xL4PndkImoGrHV8mMBmb4OMLXdBau37adgGOF09qNYiWF/",
-    "scannedAt": "2026-09-26T03:27:59.863Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:37:11.867Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5651": {
     "roomNumber": "5651",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/141/tDrCQHXV15ReVA2LB6mYLtw8fx16jRk9gkKEL725rY3kCnEb/",
-    "scannedAt": "2026-09-26T03:28:22.016Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:39:06.133Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5451": {
     "roomNumber": "5451",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/156/LhAHfkw10z8lv8WexxLnRrQrMR165n5VToIWigOSdVYWSUdK/",
-    "scannedAt": "2026-09-26T03:28:44.528Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:41:00.099Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5452": {
     "roomNumber": "5452",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/155/DKhLBOP7pbf1eZoK8stBtKwFQIJgMiqEYHfUGqKgQLhti5J6/",
-    "scannedAt": "2026-09-26T03:29:06.810Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:42:54.037Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5454": {
     "roomNumber": "5454",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the event, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/153/IIafzcqAqlDfY93rs1P728oY8JXDr09ymtlIxRkfkuDv4jcj/",
-    "scannedAt": "2026-09-26T03:29:29.357Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:44:49.394Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5684": {
     "roomNumber": "5684",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 564 on the date of 2026-09-26, which includes a lecture at 13:00 and an exam at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/173/kXUfptQjq4HhiVCjKR8xX7Sc6MDjy5pvVnNyVn9TKtythkCE/",
-    "scannedAt": "2026-09-26T03:29:52.979Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:46:44.034Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5682": {
     "roomNumber": "5682",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/175/BXCDSnmyvzxYEe42EvGBYEAqAOvLGJ5wKOX2wM3WSnJz8bUL/",
-    "scannedAt": "2026-09-26T03:30:19.685Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:48:41.866Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5681": {
     "roomNumber": "5681",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 5681 on the date of 2026-09-26, which includes a lecture at 13:00 and an exam at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/176/gmlBGgIZTcdYUrODCACbQJXCkQs4wtSc238I5lmPF35Z28Hs/",
-    "scannedAt": "2026-09-26T03:30:42.820Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:50:35.769Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5481": {
     "roomNumber": "5481",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/152/vd4isL5hhn9Jc3kKX1jIuXIH5345ooaMR1o015W6bpiZH8JE/",
-    "scannedAt": "2026-09-26T03:31:04.959Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:52:30.690Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5482": {
     "roomNumber": "5482",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/151/6OyDy5sMsPCRAHEZ8dQeIYTovF5Xr31X8cI9sw1a5TCOCfaO/",
-    "scannedAt": "2026-09-26T03:31:27.488Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:54:24.267Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5483": {
     "roomNumber": "5483",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/150/CVsROhzBRQ82w2ztkZqgrykA8HgpFSK2tew0DWJ0eBvhycJI/",
-    "scannedAt": "2026-09-26T03:31:49.864Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:56:17.649Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5372": {
     "roomNumber": "5372",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class LJ133323 on September 2, 2016, at 2:00 PM. The class is called Advanced Java Applications, and it is a Semester Exam. The class is scheduled to take place from 2:00 PM to 4:00 PM.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/158/Coa5dH8RzfAn6HWxlefHy7Dlyf6tMgnydEZik4AWfAw9Tm7M/",
-    "scannedAt": "2026-09-26T03:32:13.907Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T17:58:11.569Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-5371": {
     "roomNumber": "5371",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/120/R6urEcQ9tYJPQpyd8Itdz8Q2N2RVRhOVjLsEfnzMsvadqDbU/",
-    "scannedAt": "2026-09-26T03:32:36.221Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:00:05.602Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6872": {
     "roomNumber": "6872",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for 6872 on 6872-09-26 at 13:00-16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/180/oh0Cj3icMEwx6tvFcfCGRUpsITdCVvic6DDT3hInxz6mxz8U/",
-    "scannedAt": "2026-09-26T03:32:58.549Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:01:59.943Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6873": {
     "roomNumber": "6873",
     "currentStatus": "FREE",
-    "upcomingTimings": "AI parsing failed",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/179/rjrfNwBBws5ZEos1ry1FB8ME8HhOOG9dLLoDCgpqe6myrqXZ/",
-    "scannedAt": "2026-09-26T03:34:40.264Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:03:53.922Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6683": {
     "roomNumber": "6683",
     "currentStatus": "FREE",
-    "upcomingTimings": "AI parsing failed",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/181/ay2UlucGtrKxSpD7eFmpdUweBILhJ5cQe32YtwfRKTkCzCYr/",
-    "scannedAt": "2026-09-26T03:36:22.383Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:05:47.556Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6682": {
     "roomNumber": "6682",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 66222, which is a course on fundamentals of cryptography, is scheduled for a lecture at 10:00 on September 26, 2023. The lecture is scheduled to start at 10:00 and will last for approximately 1 hour. The class is currently scheduled to take place on September 26, 2023, at 10:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/182/Eja5j4MkxqSmhXyf8GhsP6IjhY40k5FYG8KlMqg3laiwzPJk/",
-    "scannedAt": "2026-09-26T03:36:47.801Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:07:40.986Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6681": {
     "roomNumber": "6681",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 661 on September 26, 2023, at 10:00 AM, with a lecture and an exam scheduled for that day.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/183/flFEQcpD3qNfP6gaoPcvzkdpC42729Y2vkPrvsoVj4kQv4xh/",
-    "scannedAt": "2026-09-26T03:37:11.355Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:09:34.234Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6331": {
     "roomNumber": "6331",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 633 on the date 631-09-26, with a time window of 13:00 - 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/163/QolDx0gRmK96vYxvtMs5hhD55TLzFSvv2Uh1uSKxPHnlPmsh/",
-    "scannedAt": "2026-09-26T03:37:34.703Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:11:27.245Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6332": {
     "roomNumber": "6332",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 63322 on the date of 2026-09-26, which includes a lecture at 13:00 and an exam at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/162/KbvhgCuCgzuPYOXkgdyJbAdN7Ke86i5cKX7iOUcYDzh8jC4v/",
-    "scannedAt": "2026-09-26T03:37:58.189Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:13:20.621Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6412": {
     "roomNumber": "6412",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the meeting, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/191/74rWxMqLQ6nCr7VFOB0xVXy0mcih60923BHTciwkFTW4WGA8/",
-    "scannedAt": "2026-09-26T03:38:20.530Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:15:14.024Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6411": {
     "roomNumber": "6411",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the Artificial Intelligence class for Accounting Process Automation, scheduled for September 26, 2020, from 10:00 to 15:00, with a Q&A session at the end.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/159/ZnPlss0g6IeCqFOtZpRNGfj0i3ckI9IIJocJ7eW69VaqSZrp/",
-    "scannedAt": "2026-09-26T03:38:44.250Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:17:07.137Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6511": {
     "roomNumber": "6511",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 651 on September 26, 2020, which includes a lecture and an exam, is shown here. The class is scheduled to start at 13:00 and end at 16:00. The lecture is scheduled for 15:00, and the exam is scheduled for 10:00. The class is currently in session, and the instructor is present. The class is not yet approved for the upcoming session.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/187/cMSdTSAao7vLATHK83GAfQalcnMHZHQVOEou14uPWh4yWhqd/",
-    "scannedAt": "2026-09-26T03:39:10.598Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:19:00.271Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6512": {
     "roomNumber": "6512",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 651A2 on September 26, 2020, which includes a lecture and an exam, is shown here. The class is scheduled to start at 13:00 and end at 16:00. The lecture is scheduled for 15:00, and the exam is scheduled for 16:00. The class is currently in session, and the lecture and the exam have been approved.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/186/YSn5TPTOTtr4EbWv33b77NkNw3OpFMWhHPcrdab1Vu41vuwf/",
-    "scannedAt": "2026-09-26T03:39:36.722Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:20:54.178Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6612": {
     "roomNumber": "6612",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "A class is scheduled for the date and time shown in the screenshot. The class is titled 'Data Science with Python' and is scheduled for 2:00 PM to 4:00 PM. The class is held in Room 662. The class is being held on September 26th, 2020. The class is being held at 10:00 AM. The class is being held in Room 662. The class is being held at 10:00 AM.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/185/Bym5Kdi6oeabMmqIKpRE1iYiqpaXFqNgivkzVK7QrCp5Ya8N/",
-    "scannedAt": "2026-09-26T03:40:03.900Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:22:47.932Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6454": {
     "roomNumber": "6454",
     "currentStatus": "FREE",
-    "upcomingTimings": "AI parsing failed",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/188/tKYmJ3gEygvPHX3pZ9yOb6aOqvDjCchckkDVPIoyjNLq85Wi/",
-    "scannedAt": "2026-09-26T03:41:46.629Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:24:41.731Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6453": {
     "roomNumber": "6453",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 6453 on the date of 2026-09-26 at 12:00 PM. There is no class currently scheduled at this time.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/189/rZBO5XsbhdefOKxVZvmBNH7TIKIDpN9JaqnvicuO4Ftc1HqI/",
-    "scannedAt": "2026-09-26T03:42:09.817Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:26:36.556Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-6451": {
     "roomNumber": "6451",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 6451 on the date of 2026-09-26, from 13:00 to 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/190/gWvPbpo56eb70CfRMoT829W35mfIvwjjrt7DxhjZmj2OJ5sg/",
-    "scannedAt": "2026-09-26T03:42:32.371Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:28:31.550Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4331": {
     "roomNumber": "4331",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/113/y1BLBB8Q4kR8UcLW7BXtVngY4wpOejHzeUxUe5VKyyUm0Jf0/",
-    "scannedAt": "2026-09-26T03:42:54.358Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:30:24.901Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4332": {
     "roomNumber": "4332",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class LEC-4444 on September 2, 2016, at 2:00 PM. The class is scheduled to be held in Room 4332, and the instructor is available to answer questions. The class is scheduled to last for 2 hours, and the exam is scheduled to take place at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/112/CLN6MaQz1rjBW7oDhVkN07S3Lg0xYLhDmQTMfyBI0ZFcbY4Y/",
-    "scannedAt": "2026-09-26T03:43:19.016Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:32:18.820Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4414": {
     "roomNumber": "4414",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for 441 on the date of 2026-09-26 at 13:00-16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/106/lXUa4xQCtE8yWMhwsDuuSN0w1W6tbqEYsf4IYcyJdwl1Jvry/",
-    "scannedAt": "2026-09-26T03:43:41.539Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:34:12.918Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4413": {
     "roomNumber": "4413",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00-16:00 on Friday, June 9, 2023.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/107/47HLSO14eCAqdJbargd6FoSn7RgEXlZ8cR75h845Fa0TQsL1/",
-    "scannedAt": "2026-09-26T03:44:04.312Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:36:06.828Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4412": {
     "roomNumber": "4412",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00-16:00 on May 26, 2062.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/108/ZfajX0ufa3ReGUlKHJzTkx5KEJPene3oLkp6ITwK54OT0Vnf/",
-    "scannedAt": "2026-09-26T03:44:27.150Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:38:00.543Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4411": {
     "roomNumber": "4411",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00 - 16:00 on June 9, 2026.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/109/Shu0SNcSTPRwVgHrTbjhhVQzkNpO0kPwnauPgcD9JLHsB4MA/",
-    "scannedAt": "2026-09-26T03:44:49.209Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:39:53.827Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4511": {
     "roomNumber": "4511",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/138/wJPiq2GLUWmZGxZILUhLml68vPsSjGVkMuEmd0WuI1gVKZOC/",
-    "scannedAt": "2026-09-26T03:45:11.148Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:41:47.058Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4512": {
     "roomNumber": "4512",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 452 on September 26, 2020, which includes a webinar at 2:00 PM and a seminar at 2:30 PM.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/137/aweRfRwcm65emluiDROKXuhHgjs14krLHWUmplnd5DyktIEQ/",
-    "scannedAt": "2026-09-26T03:45:34.155Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:43:40.723Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4611": {
     "roomNumber": "4611",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00-16:00 on June 4, 2016. The class is called Future Sessions.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/194/lh51ErLDyuGfppalS4TWr6gF3fwwuHOYasakLN36V7fMfRfI/",
-    "scannedAt": "2026-09-26T03:45:56.787Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:45:34.742Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4612": {
     "roomNumber": "4612",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00-16:00 on September 26, 2062.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/134/QNYvNj0qAtx4cgkKspoYtr27if3j5xTXnlwTCJOxCNiPfMGQ/",
-    "scannedAt": "2026-09-26T03:46:19.334Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:47:28.721Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4613": {
     "roomNumber": "4613",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00-16:00 on Friday, June 6, 2023. The class is called Future Sessions.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/133/nDUlO7tvUE8B0RB8TXlUkEhsTVQJs4wQ99E76d6EpWgeWQpF/",
-    "scannedAt": "2026-09-26T03:46:42.479Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:49:22.673Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4614": {
     "roomNumber": "4614",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00-16:00 on September 26, 2062.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/132/DOchXJ3V22VtqEERkdg1baw1DXlMxmOOGN7i3wLRpmoNJ2ZP/",
-    "scannedAt": "2026-09-26T03:47:05.195Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:51:16.451Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4542": {
     "roomNumber": "4542",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 452 on the date 2026-09-26 at 10:00 AM. The class is currently not available for this session.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/195/3gxCI7OJUtgIoxzgKsgEccwSL9ozzT9ZdQP6X0OhgO4aB1Pc/",
-    "scannedAt": "2026-09-26T03:47:28.831Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:53:10.073Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4541": {
     "roomNumber": "4541",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 4541 on the date of 2026-09-26 at 10:00 AM. The class is currently scheduled for a lecture at 10:00 AM.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/196/lRzZkoJ4J6em5u3D65pS6HzxVUY9mI9EIGRfGiTHRt4ww6vD/",
-    "scannedAt": "2026-09-26T03:47:52.856Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:55:03.878Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4731": {
     "roomNumber": "4731",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 471 on the date of 2026-09-26 at 10:00. The class is scheduled to start at 10:00 and end at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/125/rWRfd5nhn3AdzDnTCO9DUVkOCSGa6itHoHKMUxIbg0GBeoxO/",
-    "scannedAt": "2026-09-26T03:48:16.689Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:56:57.085Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4851": {
     "roomNumber": "4851",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 4851, which is scheduled for the day of the week of the week of the month of the year, is shown here. The class is scheduled to start at 13:00 and end at 16:00. The class is currently scheduled for the day of the week of the month of the year, which is Friday. The class is scheduled to last for the next two weeks. The class is not currently in session.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/124/c1gqWZRavBeEeUmrINvwY4mjfXidtnyoxWK8YvpC3jrjM7sQ/",
-    "scannedAt": "2026-09-26T03:48:43.586Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T18:58:51.111Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4852": {
     "roomNumber": "4852",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00 - 16:00 on Friday, June 9, 2023.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/123/sCsIDxQNAp3wqm8ZgyaFrwf9VElQ0EXme6DHHza1f2J09ZlA/",
-    "scannedAt": "2026-09-26T03:49:06.993Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:00:44.917Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4871": {
     "roomNumber": "4871",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 4871, which is scheduled for the day of the week of the week of the month of the year, is shown here. The class is scheduled to start at 13:00 and end at 16:00. There are no other classes scheduled on this day.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/122/rQX3MfRXWbTGcsQgcj9U9U6ia62ULDxbUGBwuaNhGscuSd3q/",
-    "scannedAt": "2026-09-26T03:49:31.664Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:02:38.227Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4654": {
     "roomNumber": "4654",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the drawing room on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/128/VGuGVus0qj7eqTnpeA3cBTEP2VGRfAWYD05M5JOofIiAtNxg/",
-    "scannedAt": "2026-09-26T03:49:53.950Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:04:31.581Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4653": {
     "roomNumber": "4653",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time shown in the screenshot. The class is called Future Sessions, and it is scheduled for 13:00 - 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/129/pXCRYS0Gh2byxbSfWntRpmWT08jNs52RUvUbL5zns5vOZqNF/",
-    "scannedAt": "2026-09-26T03:50:17.434Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:06:24.982Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4652": {
     "roomNumber": "4652",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the Artificial Intelligence course for games is scheduled for September 2, 16:00 to 18:00. The course is currently being offered to students who have registered for the course. The course instructor is available for an appointment at the end of the course. The course is not available for those who have not registered for the course.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/130/GuPbY4p0mNoEMZnUkiEkc9Jj7flwM27Ncc6B0xT3Eg1VMFr0/",
-    "scannedAt": "2026-09-26T03:50:42.564Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:08:18.043Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4651": {
     "roomNumber": "4651",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time shown in the screenshot. The class is called Future Sessions, and it is scheduled for 13:00 - 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/131/1P7QHGvLgnUQdU3mGb0u2rDf37Iwt3BqijoRzgJMwUIVJwGL/",
-    "scannedAt": "2026-09-26T03:51:05.738Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:10:11.165Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4451": {
     "roomNumber": "4451",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/105/A2httL1C90nfVPiAA6TLpuEwqxmrvxMGc0m7hM3YsBtvBEoy/",
-    "scannedAt": "2026-09-26T03:51:28.308Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:12:04.502Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4452": {
     "roomNumber": "4452",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/104/jaFF22NHuEhEeDPhjAs3abxoBMzDKsegSGdWxh2zfcPU2EeA/",
-    "scannedAt": "2026-09-26T03:51:51.055Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:13:57.905Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4453": {
     "roomNumber": "4453",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 4453 on September 13, 2023, which is scheduled for a lecture at 2:00 PM. The class is currently scheduled for a session at 1:00 PM. The class is scheduled for an exam at 2:00 PM. The class is scheduled for a session at 1:00 PM. The class is scheduled for an exam at 2:00 PM.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/103/U7XRhm8nqqxeCbHA0rxxqSM4TxGoHy8obAH2Qjx6oajksPqI/",
-    "scannedAt": "2026-09-26T03:52:16.731Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:15:51.455Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4454": {
     "roomNumber": "4454",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/102/pT8D612dKlMewGQg6RROxD7993nlmsItRmp3MjupGZfeHdY2/",
-    "scannedAt": "2026-09-26T03:52:39.529Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:17:45.192Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4682": {
     "roomNumber": "4682",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time shown in the screenshot. The class is called Future Sessions, and it is scheduled for 13:00 - 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/126/VoFmIrbMODX69HHrTSz67DcDRhMWO8viFfaFqTREq3pJNRod/",
-    "scannedAt": "2026-09-26T03:53:02.740Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:19:38.616Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4681": {
     "roomNumber": "4681",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/127/hOqsgMDmQg2J97ePHvGwYsuhYXfgb0DcQWNrscNKSYLxGdIC/",
-    "scannedAt": "2026-09-26T03:53:25.842Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:21:31.953Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4582": {
     "roomNumber": "4582",
     "currentStatus": "FREE",
-    "upcomingTimings": "AI parsing failed",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/135/hh7qQSf27fuGCnEN2VkoTqeMdyGy1XvLCKxpeNYSVuqOM7Rv/",
-    "scannedAt": "2026-09-26T03:55:07.749Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:23:25.267Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4581": {
     "roomNumber": "4581",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/136/C2beZ2ZHEL5ycgQItCjpXl0Z6qufqYbyzgXQRdZUjDenyOOe/",
-    "scannedAt": "2026-09-26T03:55:30.303Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:25:18.414Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4481": {
     "roomNumber": "4481",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the German language class on September 26th, 16:00, with a future session scheduled for September 26th, 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/101/0ePY0R7mN2TpY2PcOmYSrQleiTNq0QCi2pfh3XSyJEx0Asij/",
-    "scannedAt": "2026-09-26T03:55:53.537Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:27:11.386Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4482": {
     "roomNumber": "4482",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/100/hYPygWXnsatXuhQtCkJjHq43Wgl8WlElE9LlF1wVPAnIgtkl/",
-    "scannedAt": "2026-09-26T03:56:15.952Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:29:04.686Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4483": {
     "roomNumber": "4483",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/139/iQDyTZUGNSjyrvtGIBlDscgT6hmYGcLKSwb3aE3STGVGqMYJ/",
-    "scannedAt": "2026-09-26T03:56:38.419Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:30:57.809Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4372": {
     "roomNumber": "4372",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window. The schedule includes the class name, lecture name, and the start and end times of the class, lecture, or exam. The schedule also includes the room number, and the instructor's name and department name.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/110/87sFGcpUn42Q4Ov80Q1q8u1WmlagUYN0XebKwDmiZM5yMI0M/",
-    "scannedAt": "2026-09-26T03:57:03.096Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:32:51.370Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-4371": {
     "roomNumber": "4371",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/111/zwV3vvRo9s3o0ClgAxBaTdktmNcRABtjogwGi0opbc5riiPD/",
-    "scannedAt": "2026-09-26T03:57:25.638Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:34:44.926Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3483": {
     "roomNumber": "3483",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/98/X8yduK8J1zdRQDzYLIuQpk0hCuTP8ADABWQnuG5rxwnpVlug/",
-    "scannedAt": "2026-09-26T03:57:47.530Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:36:38.098Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3482": {
     "roomNumber": "3482",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/99/7ggHWVJoMteoGSy2eag4DXGkqa4nDXUVWI3ZDaofUJCmGB8z/",
-    "scannedAt": "2026-09-26T03:58:09.639Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:38:31.143Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3481": {
     "roomNumber": "3481",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/70/eICzh79ZbmwlB4ZSLQT7AF6ta6PCjnXP24kVEGuv20PHgLnJ/",
-    "scannedAt": "2026-09-26T03:58:31.990Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:40:24.541Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3682": {
     "roomNumber": "3682",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the Target Date at the Target Time Window. The class is called Future Sessions, and it is scheduled to start at 13:00. The class is currently not available for this session.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/85/qD7TTM1UUMs2CZmi4pCdO9G4Bzpm6m8Idm0SpP4E6CAF4WHR/",
-    "scannedAt": "2026-09-26T03:58:55.557Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:42:17.982Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3683": {
     "roomNumber": "3683",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time shown in the screenshot. The class is at room number 3683 and it is scheduled for the time of 13:00 to 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/86/qGCkOWcdVZmNN1SJ2qvNiVsyK52m3E7BnE295yUw6G4uu76W/",
-    "scannedAt": "2026-09-26T03:59:19.040Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:44:11.138Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3873": {
     "roomNumber": "3873",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the medical instrumentation laboratory on September 2, 2020, which includes a class, a lecture, and an exam.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/116/mQ8RYaYFlX7uGsZLqC7PXZAJfFvmiDJWxbmxKRUkEdMCTWEz/",
-    "scannedAt": "2026-09-26T03:59:41.157Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:46:04.323Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3854": {
     "roomNumber": "3854",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/118/eFuvU17AwYpJkNFsbzYHq8KGqS7vRSps1JAAEChIVcN89SPy/",
-    "scannedAt": "2026-09-26T04:00:03.007Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:47:57.895Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3853": {
     "roomNumber": "3853",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/119/HqjVRZEj30pzF0EoyuA0HPoMidJb7AlOtXeYkJtaNejssZLK/",
-    "scannedAt": "2026-09-26T04:00:25.047Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:49:52.621Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3852": {
     "roomNumber": "3852",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/80/HIaWcmVFwkN8P7kBqqNqgHXmRNd5P6IOiiCdzjPbVx8QjUu2/",
-    "scannedAt": "2026-09-26T04:00:47.020Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:51:46.523Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3851": {
     "roomNumber": "3851",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/81/3KeV6mE7xCe1mK0RU5brsrCc3xJwD97cHDlppWL3pXt3DFAZ/",
-    "scannedAt": "2026-09-26T04:01:08.678Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:53:39.546Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3412": {
     "roomNumber": "3412",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time shown in the screenshot. The class is called 'Academic Development Skills' and it is scheduled for 13:00 - 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/74/QQqANhdcjn8M2eQ6ouVzwhw0IETuApP0TpicBGfwUwh8hOfO/",
-    "scannedAt": "2026-09-26T04:01:32.028Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:55:32.610Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3454": {
     "roomNumber": "3454",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/71/YcK0ahmAK8Rlzi0L6XEaO2qhLEnw7CaJWS8gD48I27rQ7mjE/",
-    "scannedAt": "2026-09-26T04:01:53.754Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:57:25.595Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3654": {
     "roomNumber": "3654",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 3654 on the date 2026-09-26 shows that there is a class at 13:00-16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/88/swc1qmZTZIG8iBaoWz3tSMChU6vO6aE4xoOaLLuLzr61ZxGl/",
-    "scannedAt": "2026-09-26T04:02:16.550Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T19:59:18.641Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3653": {
     "roomNumber": "3653",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window. The schedule includes the class name, lecture name, and the start and end times of the class, lecture, or exam.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/89/hdBeRYX9Auz0SZSs3Z0m0QDJRzxpiqP1OdkCqulKvl3MOSUp/",
-    "scannedAt": "2026-09-26T04:02:39.959Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:01:14.056Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3652": {
     "roomNumber": "3652",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 3652 on the date 2026-09-26 shows that there is a class at 13:00-16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/90/qlUHbGFyeC9wCdQv8PNcMePwOSNVa6J1fSNKepwYtaJ1Vt0D/",
-    "scannedAt": "2026-09-26T04:03:02.852Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:03:08.455Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3651": {
     "roomNumber": "3651",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for 3651-power system simulation lab shows that there is a class scheduled for 13:00-16:00 on the Target Date.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/91/f20PNadq1VUXbzCpb4JVzb7ZD0QoCXqE9d67i12F1LaGrMdU/",
-    "scannedAt": "2026-09-26T04:03:26.092Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:05:04.810Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2870": {
     "roomNumber": "2870",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00 - 16:00 on June 9, 2026.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/33/4oHzUJXYDquHlnv1rIH0pB5gu21AjPM3xIrJVSxyttyYbS3X/",
-    "scannedAt": "2026-09-26T04:03:48.622Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:07:00.920Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2871": {
     "roomNumber": "2871",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time shown in the screenshot. The class is called Future Sessions, and it is scheduled for 13:00 - 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/34/it8eHxcIJ16ZVWcLaLEL8v2mF65XFZlPueW6tyClnkUTgI8m/",
-    "scannedAt": "2026-09-26T04:04:11.611Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:08:55.210Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2872": {
     "roomNumber": "2872",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/35/OpqMXNfGsGap7qtYRQgtRLhNlEFsEK8EI1vsLf2jKWBqklMc/",
-    "scannedAt": "2026-09-26T04:04:33.959Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:10:49.727Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2854": {
     "roomNumber": "2854",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/32/pN3kmzQDoH6oInxPDYSzGRHEB1MyRJmheywUHHx5Dt6pf1Aw/",
-    "scannedAt": "2026-09-26T04:04:56.861Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:12:45.091Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2853": {
     "roomNumber": "2853",
     "currentStatus": "FREE",
-    "upcomingTimings": "AI parsing failed",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/31/oFoa0k2pcd9pDFtwksCocdqXLeH90U85IckpXyslsEJZCvzm/",
-    "scannedAt": "2026-09-26T04:06:38.285Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:14:38.421Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2852": {
     "roomNumber": "2852",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/3/Ih2cE4SBTIAyj38MrdwrMmvev8tgPzUeJUsc2uJVxLfxyeMy/",
-    "scannedAt": "2026-09-26T04:07:00.747Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:16:32.754Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2851": {
     "roomNumber": "2851",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/1/VAGxyxAIqbPutGICwnOLCvzWmBsXOGEyUxlKy3TCpFKz9Abr/",
-    "scannedAt": "2026-09-26T04:07:22.695Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:18:27.592Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2831": {
     "roomNumber": "2831",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/2/ZiGSyDCKB3kUeVe19iQcDPVvxak1oFTKE0SmWBDXAKtbczUg/",
-    "scannedAt": "2026-09-26T04:07:44.910Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:20:23.555Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2732": {
     "roomNumber": "2732",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/30/WuHD3VuTEvkaQlrHL5xI0oupw6I1xilRwMxSuTXbesYISwWS/",
-    "scannedAt": "2026-09-26T04:08:07.068Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:22:19.613Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2731": {
     "roomNumber": "2731",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class of the day, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/5/XJWWN80RaFZF2nLFFYZAyDWYda88OsXSNjwF8RvaUynCejv0/",
-    "scannedAt": "2026-09-26T04:08:29.102Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:24:15.759Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2512": {
     "roomNumber": "2512",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/19/0MEiGoppAxuqj7CvTM9youzxUgbWbPp99xZXvSOdAQ7YA0ch/",
-    "scannedAt": "2026-09-26T04:08:51.060Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:26:11.955Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2511": {
     "roomNumber": "2511",
     "currentStatus": "FREE",
-    "upcomingTimings": "AI parsing failed",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/18/EO6I3z8IwF4mERj56zx9rxbi2GeGHcbWJXLF5soLpNnvoNkc/",
-    "scannedAt": "2026-09-26T04:10:03.118Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:28:07.892Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2411": {
     "roomNumber": "2411",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/10/MmhxiPHrxkgDZ5aibwWaluR5x9bRRHev97Ll9qcwo7C2OmRY/",
-    "scannedAt": "2026-09-26T04:10:25.986Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:30:03.832Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2412": {
     "roomNumber": "2412",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the date of the exam, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/11/rz8w9OeKHBdIwWq9y1OXbbokJ1OIasKOQJ0sJ6S9LDfxe7ky/",
-    "scannedAt": "2026-09-26T04:10:47.653Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:31:59.822Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2332": {
     "roomNumber": "2332",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class on the target date, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/7/tfNlA3vrKfBcm7qYikuOdaKEOHrxpJJIKDdZh0R9BVYgwkHJ/",
-    "scannedAt": "2026-09-26T04:11:09.306Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:33:55.703Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2331": {
     "roomNumber": "2331",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the academic session of the semester of the year of the class, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/6/OgDchTSYrorun9a5iYUUlHv24y2I8CcTeVN7kGmut7YQmh8N/",
-    "scannedAt": "2026-09-26T04:11:31.400Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:35:51.874Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2451": {
     "roomNumber": "2451",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/12/gV0ZqQ6g8X0qKEaynqdtwOmc4YDcoQgHeXFHsyIeqNoLpcHS/",
-    "scannedAt": "2026-09-26T04:11:53.808Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:37:47.445Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2452": {
     "roomNumber": "2452",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00 - 16:00 on September 26, 2023.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/13/5zwpw9xwQCa19o5e2RGYqbValsmLVTRxsXGdJ5nhmX5uxhCy/",
-    "scannedAt": "2026-09-26T04:12:16.627Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:39:42.663Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2453": {
     "roomNumber": "2453",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "A class is scheduled for the day of the week of the Target Date, from 13:00 to 16:00. The class is called 'Programming Fundamentals of C++' and is being taught by an instructor named 'T. Subramaniaman'. The class is scheduled for the day of the week of the Target Date, from 13:00 to 16:00. The class is being held at the room number 24533. The class is being held on the Target Date, from 13:00 to 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/14/Jv8q9xoMAws6c5NQIHHzyXCYdoLUbohUzp84LMrKnPifMIdf/",
-    "scannedAt": "2026-09-26T04:12:43.550Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:41:38.141Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2454": {
     "roomNumber": "2454",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/15/RGU1Q1rTjE90XIZs2Ji51DHQis9gdptgQmmbB3AoCrXVe1AZ/",
-    "scannedAt": "2026-09-26T04:13:05.495Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:43:33.874Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2653": {
     "roomNumber": "2653",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "A class is scheduled for the date and time shown in the screenshot. The class is Computer Architecture, and it is scheduled for 6:00 PM to 8:00 PM. The class is being taught by an instructor named Melurgan N. TST1030. The class is currently approved for participation.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/26/FZExDc0poZXilTqx88LebBlbmUIgMWIg5CvBX8hHPQyxBwA8/",
-    "scannedAt": "2026-09-26T04:13:29.643Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:45:29.072Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2652": {
     "roomNumber": "2652",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/25/WDQAOAq6huSQ0ngKfM2L7qSvLuDj51cTltuTDBW8Wi8Ku01D/",
-    "scannedAt": "2026-09-26T04:13:51.522Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:47:23.609Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2651": {
     "roomNumber": "2651",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "There is a class scheduled for the date and time of 13:00-16:00 on September 26, 2021.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/24/mdrO7YGHukNqrZNlV6yXqJ2aEFzFrIBPgNuZiXkqxwl0VfBI/",
-    "scannedAt": "2026-09-26T04:14:13.406Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:49:17.475Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2683": {
     "roomNumber": "2683",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class of interest on the date and time shown in the screenshot. The class is scheduled to start at 13:00 and end at 16:00. The class is being offered by the department of computer science.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/29/L8Uhv2gjyX1PfSzkIy6uYo8ph2uomeAM7t9Af4dFCMnTcsXN/",
-    "scannedAt": "2026-09-26T04:14:36.623Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:51:11.267Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2682": {
     "roomNumber": "2682",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class of the day, including times if visible.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/28/LFAtm2rRr6nRFarrNBaPuR4iDDHB1PMiRg4LKqXutuST40lF/",
-    "scannedAt": "2026-09-26T04:14:57.863Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:53:05.119Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2681": {
     "roomNumber": "2681",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/27/vRvFRswQ2vi05zMUrCqDMsSgyFc92CEPHZ2bG6Z6FTDxEVoB/",
-    "scannedAt": "2026-09-26T04:15:19.533Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:54:59.058Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2582": {
     "roomNumber": "2582",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "A class is scheduled for the day of the week of the Target Date, from 10:00 to 16:00. The class is in Computer Architecture.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/21/yoDG0Ql7uHXYbhChOLhZYWSljDTXKQ7cSfNSPeu0wYzjw0B3/",
-    "scannedAt": "2026-09-26T04:15:41.503Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:56:53.059Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2581": {
     "roomNumber": "2581",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/20/69aBDgkfQzIWwB2ssNMWQKSpzvXYZlDSDy6dUTl2JPbgzbjx/",
-    "scannedAt": "2026-09-26T04:16:03.408Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T20:58:47.174Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2481": {
     "roomNumber": "2481",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "A class is scheduled for the day of the week of the Target Date, from 12:00 to 16:00. The class is called Computer Architecture, and it is being taught by a teacher named Staff. The class is scheduled to take place on the Target Date, from 13:00 to 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/16/sZMl5HdaK9hyGPP9g833lavUzaVfEYg4RCZfXDFhotVTCPMG/",
-    "scannedAt": "2026-09-26T04:16:28.026Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:00:41.363Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2482": {
     "roomNumber": "2482",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class HCLT Tech Training on September 14, 2020, from 10:00 to 16:00. The class is scheduled to take place at the room 2482.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/17/gog9J4l3LdoBcaW8VH2D9KoCdlTgVsJLbPGSkNxtfQm1F52W/",
-    "scannedAt": "2026-09-26T04:16:51.484Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:02:34.816Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2372": {
     "roomNumber": "2372",
     "currentStatus": "FREE",
-    "upcomingTimings": "AI parsing failed",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/9/qE0pn7peYXWylmsiyUIOJgIOOOalp1CVfUQnmspw94AEUMX1/",
-    "scannedAt": "2026-09-26T04:17:16.866Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:04:28.619Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-2371": {
     "roomNumber": "2371",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/8/3B54Zxl4F5FN6TmIlJIt9JS5voHnzNCjoizZezTobO9nWHG8/",
-    "scannedAt": "2026-09-26T04:17:38.346Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:06:23.635Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1454": {
     "roomNumber": "1454",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam scheduled on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/54/S3QU5tjjYmCBqibSJXIcehmu9NygfGOr3F5gsY4M0BzoRzni/",
-    "scannedAt": "2026-09-26T04:17:59.921Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:08:17.510Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1453": {
     "roomNumber": "1453",
     "currentStatus": "FREE",
-    "upcomingTimings": "AI parsing failed",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/53/Fhpo9q0n3PeS43olWOoboEJ1cWdzrWpxgszEzV5gYuM5Wjil/",
-    "scannedAt": "2026-09-26T04:19:40.346Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:10:11.737Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1511": {
     "roomNumber": "1511",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class Econ Hardware Training on September 26, 2020, from 10:00 to 15:00, with a total of 15 participants.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/57/P0r5oTlP0I33vUv1d1H12NpnuC7bbtUDGWfmvSEAUzRORQtG/",
-    "scannedAt": "2026-09-26T04:20:02.894Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:12:07.975Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1512": {
     "roomNumber": "1512",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 151 is shown below. The class is scheduled to start at 13:00 and end at 16:00. There are no other classes scheduled during this time period.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/58/RlDvX8ZMAbinUOukWF7smfVZLZz6hCnd2VPNExdO02tI2g6U/",
-    "scannedAt": "2026-09-26T04:20:25.769Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:14:04.381Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1651": {
     "roomNumber": "1651",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 165.1 on the date 2026-09-26, which includes a lecture at 13:00 and an exam at 16:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/60/ikYpp6IRg828bRNEdsBt3A6LDx1Kqh9O236KG5SGnbscBIz3/",
-    "scannedAt": "2026-09-26T04:20:48.497Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:16:00.376Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1653": {
     "roomNumber": "1653",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "A class is scheduled for the day of the week of the Target Date, from 10:00 to 16:00. The class is called 'Fundamentals of Web Application Development' and is being taught by an instructor named 'Averi Katz'. The class is scheduled to take place on September 30, 2023, at 10:00. The class is approved for attendance, and the instructor has provided the details of the class, including the room number, the date, and the time.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/61/tQG7tIAjgFe1OX0sYQMLd4WIfq6x5g8p33RaohLRR0sH9e3T/",
-    "scannedAt": "2026-09-26T04:21:14.587Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:17:54.136Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1654": {
     "roomNumber": "1654",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 16544 on the date 2026-09-26, which includes a lecture at 1:00 and an exam at 2:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/62/euye5fYf2NdyP3D7eye5JdRwQUuHHT8tqJA14urb0hzc8YU0/",
-    "scannedAt": "2026-09-26T04:21:37.585Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:19:47.914Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1873": {
     "roomNumber": "1873",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/68/v7F5BC01IbZ39OPPObTSpQ6jgzF3hLtiz1dPZV1ZgjCdpTDD/",
-    "scannedAt": "2026-09-26T04:21:59.542Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:21:41.629Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-1872": {
     "roomNumber": "1872",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class, lecture, or exam on the Target Date during the Target Time Window.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/67/Jk8WsfFcw2M3rIoYaPtL5mVulSElzco6vIQo0H33zTFw8RJt/",
-    "scannedAt": "2026-09-26T04:22:21.173Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:23:35.303Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-0411": {
     "roomNumber": "0411",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "The schedule for the class 441 on the date of 2026-09-26 at 10:00 AM. The class is scheduled to last for 2 hours. The class is held in Room 441.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/4/ZfujMRZm8XKzKUHWwPpDj8bcq3YVLrMmhJexjiSrbyZQTS2n/",
-    "scannedAt": "2026-09-26T04:22:44.282Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:25:30.395Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   },
   "room-3411": {
     "roomNumber": "3411",
-    "currentStatus": "OCCUPIED",
-    "upcomingTimings": "A class is scheduled for the day of the week of the Target Date, from 12:00 to 16:00. The class is titled German Language A Basic, and it is being held on the Target Date at the Target Time Window of 13:00 to 14:00.",
+    "currentStatus": "FREE",
+    "upcomingTimings": "No classes scheduled for this date.",
     "link": "https://learner.saveetha.in/general/locations/75/jpqEL59QzvurpQf0CTzGOns6oYC5cEPN2q35rkr4FTMgokwZ/",
-    "scannedAt": "2026-09-26T04:23:07.969Z",
-    "targetDate": "2026-09-26",
-    "targetTimeRange": "13:00 - 16:00"
+    "scannedAt": "2026-09-26T21:27:23.814Z",
+    "targetDate": "2026-09-28",
+    "targetTimeRange": "09:00 - 12:00"
   }
 }
