@@ -48,12 +48,19 @@ jobs:
         done
         echo "Ollama server is up and running!"
 
-    - name: Download Compact Vision Model (Moondream)
-      run: |
-        echo "Pulling moondream (highly optimized for fast CPU inference)..."
-        ollama pull moondream
-        echo "Model downloaded successfully!"
+    # - name: Download Compact Vision Model (Moondream)
+    #   run: |
+    #     echo "Pulling moondream (highly optimized for fast CPU inference)..."
+    #     ollama pull moondream
+    #     echo "Model downloaded successfully!"
     # ... (keep Ollama and Playwright setup steps) ...
+
+
+    - name: Download Qwen 2.5 VL Vision Model (3B)
+      run: |
+        echo "Pulling Qwen 2.5 VL 3B for high-accuracy OCR..."
+        ollama pull qwen2.5vl:3b
+        echo "Model downloaded successfully!"
 
     - name: Run Playwright Scraping & Node Future Inference Script
       env:
