@@ -1304,7 +1304,447 @@
 
 
 
-    <script>
+
+
+
+        <script>
+        // Repository Target Configuration Metrics
+        const GITHUB_USERNAME = "My-Memory-2008"; 
+        const REPO_NAME = "Saveetha-RoomFree-Checker";             
+        const WORKFLOW_FILE = "process-rooms.yml";       
+        const FUNCTION_URL = "/trigger"; 
+        const FUTURE_WORKFLOW_FILE = "predict-future.yml";
+        const FUTURE_FUNCTION_URL = "/trigger-future"; 
+
+        // AUTOMATIC INITIALIZER
+        document.addEventListener("DOMContentLoaded", () => {
+            loadRoomRegistry();
+            loadFutureRoomRegistry();
+            
+            const dateInput = document.getElementById('input-date');
+            if(dateInput) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                dateInput.value = `${year}-${month}-${day}`;
+            }
+
+            // RESTORE PROGRESS BAR IF PAGE WAS RELOADED DURING SCAN
+            const savedState = JSON.parse(localStorage.getItem('futureScanState') || '{}');
+            if (savedState.active) {
+                const progressWrapper = document.getElementById('future-progress-wrapper');
+                const btn = document.getElementById('future-search-btn');
+                progressWrapper.style.display = 'flex';
+                btn.disabled = true;
+                btn.innerHTML = `<span></span> Processing...`;
+                startFutureProgressPolling(savedState.date, savedState.time);
+            }
+        });
+
+        // Tab Switching Mechanism
+        function switchTab(targetTab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
+
+            if(targetTab === 'live') {
+                document.getElementById('tab-live-btn').classList.add('active');
+                document.getElementById('panel-live').classList.add('active');
+            } else {
+                document.getElementById('tab-future-btn').classList.add('active');
+                document.getElementById('panel-future').classList.add('active');
+            }
+        }
+
+        // --- LIVE SCAN LOGIC ---
+        async function loadRoomRegistry() {
+            const gridContainer = document.getElementById("rooms-grid");
+            try {
+                const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+                if (!response.ok) throw new Error();
+                const database = await response.json();
+                const rooms = Object.keys(database);
+                const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
+
+                if (freeRooms.length === 0) {
+                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">All monitored rooms are currently reported as occupied.</div>`;
+                    return;
+                }
+                gridContainer.innerHTML = "";
+                freeRooms.forEach(key => {
+                    const room = database[key];
+                    const card = document.createElement("div");
+                    card.className = "room-card";
+                    let contentString = `
+                        <div class="card-header">
+                            <div class="room-title">Room ${room.roomNumber}</div>
+                            <span class="status-badge">● Vacant & Free</span>
+                        </div>
+                        <div class="schedule-details">
+                            <strong>Live Timeline Extraction:</strong><br>${room.upcomingTimings || "No active lectures detected."}
+                        </div>
+                    `;
+                    if (room.link) {
+                        contentString += `<a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">🔗 Verify Live Status</a>`;
+                    }
+                    card.innerHTML = contentString;
+                    gridContainer.appendChild(card);
+                });
+            } catch (err) {
+                gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No database found. Click the button above to run your initial workflow vision scan.</div>`;
+            }
+        }
+
+        async function triggerWorkflowAI() {
+            const btn = document.getElementById('ai-btn');
+            const progressWrapper = document.getElementById('progress-wrapper');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            btn.disabled = true;
+            progressWrapper.style.display = 'flex';
+            progressFill.style.width = '0%';
+            progressFill.classList.remove('success');
+            progressText.innerText = "Triggering GitHub Action...";
+            btn.innerHTML = `<span></span> Processing...`;
+
+            try {
+                const response = await fetch(FUNCTION_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ GITHUB_USERNAME, REPO_NAME, WORKFLOW_FILE })
+                });
+
+                if (response.ok) {
+                    startRealTimeProgressPolling();
+                } else {
+                    alert("Failed to trigger workflow.");
+                    resetUI();
+                }
+            } catch (err) {
+                alert("Network Error: " + err.message);
+                resetUI();
+            }
+        }
+
+        function startRealTimeProgressPolling() {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            let attempts = 0;
+            const interval = setInterval(async () => {
+                attempts++;
+                try {
+                    const statusRes = await fetch(`/api/status?t=${new Date().getTime()}`);
+                    const data = await statusRes.json();
+                    if (data.runStatus === 'in_progress' || data.runStatus === 'queued') {
+                        progressFill.style.width = `${data.progress}%`;
+                        progressText.innerText = `GitHub Action: ${data.currentStep}`;
+                    } 
+                    else if (data.runStatus === 'completed' && data.conclusion === 'success') {
+                        progressFill.style.width = `90%`;
+                        progressText.innerText = "GitHub finished! Waiting for Cloudflare site rebuild...";
+                        clearInterval(interval);
+                        startCloudflareRebuildPolling();
+                    }
+                    else if (data.runStatus === 'completed' && data.conclusion !== 'success') {
+                        progressText.innerText = "Workflow failed. Check GitHub Actions tab.";
+                        progressText.style.color = "var(--accent-rose)";
+                        clearInterval(interval);
+                        resetUI();
+                    }
+                } catch (e) { console.log("Polling error:", e); }
+                if (attempts > 60) { clearInterval(interval); progressText.innerText = "Timed out. Please refresh manually."; resetUI(); }
+            }, 5000); 
+        }
+
+        function startCloudflareRebuildPolling() {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            let attempts = 0;
+            const interval = setInterval(async () => {
+                attempts++;
+                try {
+                    const res = await fetch(`rooms.json?nocache=${new Date().getTime()}`, { cache: "no-store" });
+                    if (res.ok) {
+                        clearInterval(interval);
+                        progressFill.style.width = '100%';
+                        progressFill.classList.add('success');
+                        progressText.innerText = "Scan complete! Reloading dashboard...";
+                        progressText.style.color = "var(--accent-emerald)";
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
+                } catch(e) {}
+                if (attempts > 36) { clearInterval(interval); progressText.innerText = "Rebuild timed out. Please refresh manually."; resetUI(); }
+            }, 5000);
+        }
+
+        function resetUI() {
+            const btn = document.getElementById('ai-btn');
+            const progressWrapper = document.getElementById('progress-wrapper');
+            btn.disabled = false;
+            btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
+            progressWrapper.style.display = 'none';
+        }
+
+        // ==========================================
+        // --- FUTURE SCAN LOGIC (QWEN 2.5 VL) ---
+        // ==========================================
+
+        async function loadFutureRoomRegistry() {
+            const gridContainer = document.getElementById("future-rooms-grid");
+            try {
+                const response = await fetch(`future_rooms.json?t=${new Date().getTime()}`, {
+                    cache: "no-store",
+                    headers: { "Cache-Control": "no-cache, no-store, must-revalidate" }
+                });
+                
+                if (!response.ok) {
+                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No future scan data found. Run a scan first.</div>`;
+                    return; 
+                }
+                
+                const database = await response.json();
+                const rooms = Object.keys(database);
+                
+                if (rooms.length === 0) {
+                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No data available.</div>`;
+                    return;
+                }
+
+                const firstRoom = database[rooms[0]];
+                const lastChecked = firstRoom.scannedAt ? new Date(firstRoom.scannedAt).toLocaleString() : 'Unknown';
+                
+                const headerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; margin-bottom: 10px; color: var(--accent-amber); font-size: 13px; font-weight: 600;">
+                        🕒 Last Scanned: ${lastChecked}
+                    </div>
+                `;
+
+                const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
+
+                if (freeRooms.length === 0) {
+                    gridContainer.innerHTML = headerHTML + `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No vacancies found for the scanned time window. All classrooms have active sessions.</div>`;
+                    return;
+                }
+                
+                gridContainer.innerHTML = headerHTML;
+                freeRooms.forEach(key => {
+                    const room = database[key];
+                    const card = document.createElement("div");
+                    card.className = "room-card";
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div class="room-title">${room.roomNumber}</div>
+                            <span class="status-badge">● Planned Open</span>
+                        </div>
+                        <div class="schedule-details">
+                            <strong>Target:</strong> ${room.targetDate} | ${room.targetTimeRange}<br>
+                            <strong>Status:</strong> ${room.upcomingTimings}
+                        </div>
+                        ${room.link ? `<a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">🔗 View Room Schedule</a>` : ''}
+                    `;
+                    gridContainer.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Failed to load future rooms:", err);
+            }
+        }
+
+        async function triggerFutureAIWorkflow() {
+            const dateVal = document.getElementById('input-date').value;
+            const timeFromVal = document.getElementById('input-time-from').value;
+            const timeToVal = document.getElementById('input-time-to').value;
+            
+            if(!dateVal || !timeFromVal || !timeToVal) { 
+                alert("Please pick a valid date, from-time, and to-time target."); 
+                return; 
+            }
+
+            const combinedTimeRange = `${timeFromVal} - ${timeToVal}`;
+            const btn = document.getElementById('future-search-btn');
+            const progressWrapper = document.getElementById('future-progress-wrapper');
+            const progressFill = document.getElementById('future-progress-fill');
+            const progressText = document.getElementById('future-text');
+
+            localStorage.setItem('futureScanState', JSON.stringify({ 
+                active: true, 
+                date: dateVal, 
+                time: combinedTimeRange,
+                startedAt: Date.now()
+            }));
+
+            btn.disabled = true;
+            progressWrapper.style.display = 'flex';
+            progressFill.style.width = '0%';
+            progressFill.classList.remove('success');
+            progressText.innerText = "Dispatching to GitHub Actions...";
+            progressText.style.color = "var(--accent-amber)";
+            btn.innerHTML = `<span></span> Processing...`;
+
+            try {
+                const response = await fetch(FUTURE_FUNCTION_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        GITHUB_USERNAME, 
+                        REPO_NAME, 
+                        WORKFLOW_FILE: FUTURE_WORKFLOW_FILE,
+                        inputs: { target_date: dateVal, target_time: combinedTimeRange }
+                    })
+                });
+
+                const data = await response.json().catch(() => ({ error: "Invalid server response layout." }));
+
+                if (response.ok && data.success) {
+                    startFutureProgressPolling(dateVal, combinedTimeRange);
+                } else {
+                    alert("Failed to spawn future workspace checker agent: " + (data.error || data.details || "Route or authorization block."));
+                    resetFutureUI();
+                }
+            } catch (err) {
+                alert("Network communication exception: " + err.message);
+                resetFutureUI();
+            }
+        }
+
+        //  TIME-BASED SMOOTH PROGRESS POLLING
+        function startFutureProgressPolling(targetDate, targetTime) {
+            const progressFill = document.getElementById('future-progress-fill');
+            const progressText = document.getElementById('future-text');
+            let attempts = 0;
+            
+            const interval = setInterval(async () => {
+                attempts++;
+                try {
+                    const statusRes = await fetch(`/future-status?t=${new Date().getTime()}`, { cache: "no-store" });
+                    const data = await statusRes.json();
+
+                    if (data.status === 'queued') {
+                        progressFill.style.width = `${data.progress}%`;
+                        progressText.innerText = data.step;
+                    } 
+                    else if (data.status === 'in_progress') {
+                        if (data.isLongStep && data.started_at) {
+                            // SMOOTH TIME-BASED PROGRESS FOR THE LONG AI STEP
+                            const startTime = new Date(data.started_at).getTime();
+                            const now = Date.now();
+                            const elapsedSeconds = (now - startTime) / 1000;
+                            
+                            // We expect the AI step to take about 300 seconds (5 minutes) for 39 rooms
+                            const expectedDuration = 300; 
+                            const stepProgress = Math.min(elapsedSeconds / expectedDuration, 1);
+                            
+                            // Map this to the 40% - 85% range on the progress bar
+                            const smoothProgress = 40 + (stepProgress * 45);
+                            
+                            progressFill.style.width = `${smoothProgress}%`;
+                            
+                            if (stepProgress < 0.2) progressText.innerText = "GitHub Actions: Installing Qwen 2.5 VL & launching browser...";
+                            else if (stepProgress < 0.5) progressText.innerText = "GitHub Actions: AI is analyzing room screenshots...";
+                            else if (stepProgress < 0.8) progressText.innerText = "GitHub Actions: Compiling schedule data...";
+                            else progressText.innerText = "GitHub Actions: Finalizing results...";
+                            
+                        } else {
+                            progressFill.style.width = `${data.progress}%`;
+                            progressText.innerText = `GitHub Actions: ${data.step}`;
+                        }
+                    } 
+                    else if (data.status === 'completed' && data.conclusion === 'success') {
+                        progressFill.style.width = '90%';
+                        progressText.innerText = "GitHub finished! Waiting for Cloudflare to rebuild the site...";
+                        clearInterval(interval);
+                        startFutureDataPolling(targetDate);
+                    }
+                    else if (data.status === 'completed' && data.conclusion !== 'success') {
+                        progressText.innerText = "Workflow failed. Check GitHub Actions tab.";
+                        progressText.style.color = "var(--accent-rose)";
+                        clearInterval(interval);
+                        resetFutureUI();
+                    }
+                } catch (e) { 
+                    console.log("Status polling error:", e); 
+                }
+                
+                if (attempts > 240) { // 12 minute timeout
+                    clearInterval(interval); 
+                    progressText.innerText = "Timed out. Please refresh manually."; 
+                    resetFutureUI(); 
+                }
+            }, 2000); // Check every 2 seconds for smoother updates
+        }
+
+        function startFutureDataPolling(targetDate) {
+            const progressFill = document.getElementById('future-progress-fill');
+            const progressText = document.getElementById('future-text');
+            let attempts = 0;
+            
+            const interval = setInterval(async () => {
+                attempts++;
+                try {
+                    const cacheBuster = new Date().getTime();
+                    const res = await fetch(`future_rooms.json?nocache=${cacheBuster}`, { 
+                        method: 'GET',
+                        cache: "no-store",
+                        headers: { 
+                            "Cache-Control": "no-cache, no-store, must-revalidate",
+                            "Pragma": "no-cache",
+                            "Expires": "0"
+                        }
+                    });
+                    
+                    if (res.ok) {
+                        const data = await res.json();
+                        const rooms = Object.values(data);
+                        
+                        if (rooms.length > 0) {
+                            const firstRoom = rooms[0];
+                            if (firstRoom.targetDate === targetDate) {
+                                clearInterval(interval);
+                                progressFill.style.width = '100%';
+                                progressFill.classList.add('success');
+                                progressText.innerText = "Future analysis sync complete! Updating dashboard...";
+                                progressText.style.color = "var(--accent-emerald)";
+                                
+                                localStorage.removeItem('futureScanState');
+                                setTimeout(() => window.location.reload(), 1000);
+                                return;
+                            } else {
+                                console.log(`Waiting for rebuild... Current JSON date: ${firstRoom.targetDate}, Expected: ${targetDate}`);
+                            }
+                        }
+                    }
+                } catch(e) {
+                    console.log("Data polling... waiting for Cloudflare rebuild.");
+                }
+                
+                if (attempts > 120) { 
+                    clearInterval(interval); 
+                    progressText.innerText = "Rebuild took too long. Please refresh manually."; 
+                    resetFutureUI(); 
+                }
+            }, 3000);
+        }
+
+        function resetFutureUI() {
+            localStorage.removeItem('futureScanState');
+            const btn = document.getElementById('future-search-btn');
+            const progressWrapper = document.getElementById('future-progress-wrapper');
+            btn.disabled = false;
+            btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
+            progressWrapper.style.display = 'none';
+        }
+    </script>
+
+    
+
+
+
+
+
+
+    
+
+    <!-- <script>
         // Repository Target Configuration Metrics
         const GITHUB_USERNAME = "My-Memory-2008"; 
         const REPO_NAME = "Saveetha-RoomFree-Checker";             
@@ -1724,7 +2164,7 @@
         }
     </script>
 
-    
+     -->
     
 
 
