@@ -1307,7 +1307,7 @@
 
 
 
-        <script>
+    <script>
         // Repository Target Configuration Metrics
         const GITHUB_USERNAME = "My-Memory-2008"; 
         const REPO_NAME = "Saveetha-RoomFree-Checker";             
@@ -1335,10 +1335,12 @@
             if (savedState.active) {
                 const progressWrapper = document.getElementById('future-progress-wrapper');
                 const btn = document.getElementById('future-search-btn');
-                progressWrapper.style.display = 'flex';
-                btn.disabled = true;
-                btn.innerHTML = `<span></span> Processing...`;
-                startFutureProgressPolling(savedState.date, savedState.time);
+                if(progressWrapper && btn) {
+                    progressWrapper.style.display = 'flex';
+                    btn.disabled = true;
+                    btn.innerHTML = `<span>⏳</span> Processing...`;
+                    startFutureProgressPolling(savedState.date, savedState.time);
+                }
             }
         });
 
@@ -1356,7 +1358,7 @@
             }
         }
 
-        // --- LIVE SCAN LOGIC ---
+        // --- LIVE SCAN LOGIC (UNCHANGED & WORKING) ---
         async function loadRoomRegistry() {
             const gridContainer = document.getElementById("rooms-grid");
             try {
@@ -1406,7 +1408,7 @@
             progressFill.style.width = '0%';
             progressFill.classList.remove('success');
             progressText.innerText = "Triggering GitHub Action...";
-            btn.innerHTML = `<span></span> Processing...`;
+            btn.innerHTML = `<span>⏳</span> Processing...`;
 
             try {
                 const response = await fetch(FUNCTION_URL, {
@@ -1454,7 +1456,7 @@
                     }
                 } catch (e) { console.log("Polling error:", e); }
                 if (attempts > 60) { clearInterval(interval); progressText.innerText = "Timed out. Please refresh manually."; resetUI(); }
-            }, 5000); 
+            }, 4000); 
         }
 
         function startCloudflareRebuildPolling() {
@@ -1475,19 +1477,21 @@
                     }
                 } catch(e) {}
                 if (attempts > 36) { clearInterval(interval); progressText.innerText = "Rebuild timed out. Please refresh manually."; resetUI(); }
-            }, 5000);
+            }, 4000);
         }
 
         function resetUI() {
             const btn = document.getElementById('ai-btn');
             const progressWrapper = document.getElementById('progress-wrapper');
-            btn.disabled = false;
-            btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
-            progressWrapper.style.display = 'none';
+            if(btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<span>🤖</span> Scan & Check Live Rooms`;
+            }
+            if(progressWrapper) progressWrapper.style.display = 'none';
         }
 
         // ==========================================
-        // --- FUTURE SCAN LOGIC (QWEN 2.5 VL) ---
+        // --- FUTURE SCAN LOGIC (SIMPLIFIED & RELIABLE) ---
         // ==========================================
 
         async function loadFutureRoomRegistry() {
@@ -1579,7 +1583,7 @@
             progressFill.classList.remove('success');
             progressText.innerText = "Dispatching to GitHub Actions...";
             progressText.style.color = "var(--accent-amber)";
-            btn.innerHTML = `<span></span> Processing...`;
+            btn.innerHTML = `<span>⏳</span> Processing...`;
 
             try {
                 const response = await fetch(FUTURE_FUNCTION_URL, {
@@ -1607,7 +1611,7 @@
             }
         }
 
-        //  TIME-BASED SMOOTH PROGRESS POLLING
+        // 🎯 RELIABLE STEP-BY-STEP POLLING (Mirrors your working live scan)
         function startFutureProgressPolling(targetDate, targetTime) {
             const progressFill = document.getElementById('future-progress-fill');
             const progressText = document.getElementById('future-text');
@@ -1619,43 +1623,17 @@
                     const statusRes = await fetch(`/future-status?t=${new Date().getTime()}`, { cache: "no-store" });
                     const data = await statusRes.json();
 
-                    if (data.status === 'queued') {
+                    if (data.runStatus === 'in_progress' || data.runStatus === 'queued') {
                         progressFill.style.width = `${data.progress}%`;
-                        progressText.innerText = data.step;
+                        progressText.innerText = `GitHub Action: ${data.currentStep}`;
                     } 
-                    else if (data.status === 'in_progress') {
-                        if (data.isLongStep && data.started_at) {
-                            // SMOOTH TIME-BASED PROGRESS FOR THE LONG AI STEP
-                            const startTime = new Date(data.started_at).getTime();
-                            const now = Date.now();
-                            const elapsedSeconds = (now - startTime) / 1000;
-                            
-                            // We expect the AI step to take about 300 seconds (5 minutes) for 39 rooms
-                            const expectedDuration = 300; 
-                            const stepProgress = Math.min(elapsedSeconds / expectedDuration, 1);
-                            
-                            // Map this to the 40% - 85% range on the progress bar
-                            const smoothProgress = 40 + (stepProgress * 45);
-                            
-                            progressFill.style.width = `${smoothProgress}%`;
-                            
-                            if (stepProgress < 0.2) progressText.innerText = "GitHub Actions: Installing Qwen 2.5 VL & launching browser...";
-                            else if (stepProgress < 0.5) progressText.innerText = "GitHub Actions: AI is analyzing room screenshots...";
-                            else if (stepProgress < 0.8) progressText.innerText = "GitHub Actions: Compiling schedule data...";
-                            else progressText.innerText = "GitHub Actions: Finalizing results...";
-                            
-                        } else {
-                            progressFill.style.width = `${data.progress}%`;
-                            progressText.innerText = `GitHub Actions: ${data.step}`;
-                        }
-                    } 
-                    else if (data.status === 'completed' && data.conclusion === 'success') {
-                        progressFill.style.width = '90%';
-                        progressText.innerText = "GitHub finished! Waiting for Cloudflare to rebuild the site...";
+                    else if (data.runStatus === 'completed' && data.conclusion === 'success') {
+                        progressFill.style.width = `90%`;
+                        progressText.innerText = "GitHub finished! Waiting for Cloudflare site rebuild...";
                         clearInterval(interval);
                         startFutureDataPolling(targetDate);
                     }
-                    else if (data.status === 'completed' && data.conclusion !== 'success') {
+                    else if (data.runStatus === 'completed' && data.conclusion !== 'success') {
                         progressText.innerText = "Workflow failed. Check GitHub Actions tab.";
                         progressText.style.color = "var(--accent-rose)";
                         clearInterval(interval);
@@ -1665,12 +1643,12 @@
                     console.log("Status polling error:", e); 
                 }
                 
-                if (attempts > 240) { // 12 minute timeout
+                if (attempts > 180) { // 12 minute timeout (180 * 4s)
                     clearInterval(interval); 
                     progressText.innerText = "Timed out. Please refresh manually."; 
                     resetFutureUI(); 
                 }
-            }, 2000); // Check every 2 seconds for smoother updates
+            }, 4000); // Check every 4 seconds
         }
 
         function startFutureDataPolling(targetDate) {
@@ -1708,8 +1686,6 @@
                                 localStorage.removeItem('futureScanState');
                                 setTimeout(() => window.location.reload(), 1000);
                                 return;
-                            } else {
-                                console.log(`Waiting for rebuild... Current JSON date: ${firstRoom.targetDate}, Expected: ${targetDate}`);
                             }
                         }
                     }
@@ -1717,27 +1693,27 @@
                     console.log("Data polling... waiting for Cloudflare rebuild.");
                 }
                 
-                if (attempts > 120) { 
+                if (attempts > 90) { // 6 minute max wait for rebuild
                     clearInterval(interval); 
                     progressText.innerText = "Rebuild took too long. Please refresh manually."; 
                     resetFutureUI(); 
                 }
-            }, 3000);
+            }, 4000);
         }
 
         function resetFutureUI() {
             localStorage.removeItem('futureScanState');
             const btn = document.getElementById('future-search-btn');
             const progressWrapper = document.getElementById('future-progress-wrapper');
-            btn.disabled = false;
-            btn.innerHTML = `<span>🔮</span> Run Future SmolVLM Analysis`;
-            progressWrapper.style.display = 'none';
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<span>🔮</span> Run Future Qwen 2.5 VL Analysis`;
+            }
+            if (progressWrapper) {
+                progressWrapper.style.display = 'none';
+            }
         }
     </script>
-
-    
-
-
 
 
 
