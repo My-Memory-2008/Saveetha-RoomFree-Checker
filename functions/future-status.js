@@ -85,92 +85,66 @@
 
 
 
-
 export async function onRequestGet(context) {
+  const token = context.env.GITHUB_TOKEN;
+  const username = "My-Memory-2008"; 
+  const repo = "Saveetha-RoomFree-Checker";             
+  const workflow = "predict-future.yml"; // 🎯 Points to the future workflow
+
+  const headers = {
+    "Authorization": `Bearer ${token}`,
+    "User-Agent": "Saveetha-RoomFree-Checker",
+    "Accept": "application/vnd.github+json"
+  };
+
   try {
-    const token = context.env.GITHUB_TOKEN;
-    const username = "My-Memory-2008"; 
-    const repo = "Saveetha-RoomFree-Checker";
-    const workflow = "predict-future.yml";
-
-    const headers = {
-      "Authorization": `Bearer ${token}`,
-      "Accept": "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28"
-    };
-
     // 1. Get the latest workflow run
     const runsRes = await fetch(`https://api.github.com/repos/${username}/${repo}/actions/workflows/${workflow}/runs?per_page=1`, { headers });
-    if (!runsRes.ok) throw new Error("Failed to fetch runs");
     const runsData = await runsRes.json();
     const latestRun = runsData.workflow_runs[0];
 
     if (!latestRun) {
-      return new Response(JSON.stringify({ status: 'idle', progress: 0, step: 'No runs found' }), { headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ runStatus: 'none', progress: 0, currentStep: 'Waiting to start...' }), { 
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } 
+      });
     }
 
-    // If finished, return 100%
-    if (latestRun.status === 'completed') {
-      return new Response(JSON.stringify({
-        status: 'completed',
-        conclusion: latestRun.conclusion,
-        progress: 100,
-        step: 'Workflow finished'
-      }), { headers: { "Content-Type": "application/json" } });
-    }
-
-    // 2. Get the jobs and steps for the in_progress run
-    const jobsRes = await fetch(latestRun.jobs_url, { headers });
-    if (!jobsRes.ok) throw new Error("Failed to fetch jobs");
+    // 2. Get the specific jobs and steps for this run
+    const jobsRes = await fetch(`${latestRun.jobs_url}?per_page=100`, { headers });
     const jobsData = await jobsRes.json();
-    const job = jobsData.jobs[0];
 
-    // Handle queued state
-    if (!job || job.status === 'queued') {
-      return new Response(JSON.stringify({ 
-        status: 'queued', 
-        progress: 5, 
-        step: 'Waiting for GitHub Runner...', 
-        started_at: latestRun.created_at 
-      }), { headers: { "Content-Type": "application/json" } });
-    }
-
-    // 3. Calculate progress based on completed steps
-    const totalSteps = job.steps.length;
+    let totalSteps = 0;
     let completedSteps = 0;
-    let currentStepName = 'Initializing...';
-    let isLongStep = false;
+    let currentStepName = "Initializing...";
 
-    for (let i = 0; i < totalSteps; i++) {
-      const step = job.steps[i];
-      if (step.status === 'completed') {
-        completedSteps++;
-      } else if (step.status === 'in_progress') {
-        currentStepName = step.name;
-        // Detect the long Node.js AI scanning step
-        if (step.name.toLowerCase().includes('playwright') || step.name.toLowerCase().includes('node')) {
-          isLongStep = true;
+    // Calculate real progress based on completed steps
+    jobsData.jobs.forEach(job => {
+      job.steps.forEach(step => {
+        totalSteps++;
+        if (step.status === 'completed') {
+          completedSteps++;
+        } else if (step.status === 'in_progress') {
+          currentStepName = step.name;
         }
-        break;
-      }
-    }
+      });
+    });
 
-    // Calculate base progress (max 85% to leave room for the long AI step)
-    let progress = Math.floor((completedSteps / totalSteps) * 85);
+    // Calculate percentage (cap at 90% because Cloudflare still needs to rebuild after GitHub finishes)
+    let realProgress = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 90) : 5;
 
     return new Response(JSON.stringify({
-      status: latestRun.status,
-      conclusion: latestRun.conclusion,
-      progress: progress,
-      step: currentStepName,
-      isLongStep: isLongStep,
-      started_at: latestRun.created_at // CRITICAL: Timestamp for smooth frontend animation
-    }), { headers: { "Content-Type": "application/json" } });
+      runStatus: latestRun.status,       // 'queued', 'in_progress', 'completed'
+      conclusion: latestRun.conclusion,  // 'success', 'failure', or null
+      progress: realProgress,
+      currentStep: currentStepName
+    }), { 
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } 
+    });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message, status: 'error', progress: 0, step: 'Polling error' }), { 
+    return new Response(JSON.stringify({ error: error.message }), { 
       status: 500, 
-      headers: { "Content-Type": "application/json" } 
+      headers: { 'Content-Type': 'application/json' } 
     });
   }
 }
