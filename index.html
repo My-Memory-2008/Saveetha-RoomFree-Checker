@@ -1220,6 +1220,9 @@
         <button id="tab-future-btn" class="tab-btn" onclick="switchTab('future')">
             <span>🔮</span> Search Future Slots
         </button>
+        <button id="tab-blueprint-btn" class="tab-btn" onclick="switchTab('blueprint')">
+        <span>🏢</span> Floor Blueprints
+        </button>
     </div>
 
     <!-- ========================================== -->
@@ -1298,6 +1301,72 @@
         </div>
     </div>
 
+
+
+
+    <!-- ========================================== -->
+<!-- TAB 3 SECTION: FLOOR BLUEPRINT VIEWER      -->
+<!-- ========================================== -->
+<div id="panel-blueprint" class="tab-content-panel">
+    <div class="control-panel">
+        <div class="control-row" style="flex-wrap: wrap; gap: 12px;">
+            <div class="form-group" style="min-width: 200px; flex: 1;">
+                <label for="floor-select">Select Floor</label>
+                <select id="floor-select" class="form-input" onchange="loadFloorBlueprint()">
+                    <option value="">-- Choose Floor --</option>
+                    <option value="0">Ground Floor</option>
+                    <option value="1">First Floor</option>
+                    <option value="2">Second Floor</option>
+                    <option value="3">Third Floor</option>
+                    <option value="4">Fourth Floor</option>
+                    <option value="5">Fifth Floor</option>
+                    <option value="6">Sixth Floor</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: flex-end; gap: 8px;">
+                <button id="toggle-view-btn" onclick="toggleBlueprintView()" class="btn-ai" style="display: none; padding: 12px 20px;">
+                    <span>🖼️</span> Show Original Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blueprint Display Area -->
+    <div id="blueprint-container" style="width: 100%; max-width: 1000px; margin: 0 auto; display: none;">
+        <div class="room-card" style="padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+            
+            <!-- Interactive SVG View -->
+            <div id="blueprint-viewer" style="position: relative; width: 100%; min-height: 500px; background: #0f172a;">
+                <!-- SVG renders here -->
+            </div>
+            
+            <!-- Original Image View -->
+            <div id="original-image-viewer" style="display: none; width: 100%; min-height: 500px; background: #0f172a; display: flex; align-items: center; justify-content: center;">
+                <img id="original-floor-img" src="" alt="Original Floor Plan" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px;">
+            </div>
+        </div>
+        
+        <!-- Legend -->
+        <div style="margin-top: 16px; padding: 16px; background: var(--panel-glass); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <h3 style="margin-bottom: 12px; font-size: 14px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Room Legend</h3>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--text-primary);">
+                <div style="display: flex; align-items: center; gap: 8px;"><div style="width: 16px; height: 16px; background: #10b981; border-radius: 4px; border: 1px solid #059669;"></div> Classroom</div>
+                <div style="display: flex; align-items: center; gap: 8px;"><div style="width: 16px; height: 16px; background: #3b82f6; border-radius: 4px; border: 1px solid #2563eb;"></div> Laboratory</div>
+                <div style="display: flex; align-items: center; gap: 8px;"><div style="width: 16px; height: 16px; background: #f59e0b; border-radius: 4px; border: 1px solid #d97706;"></div> Staff / Office</div>
+                <div style="display: flex; align-items: center; gap: 8px;"><div style="width: 16px; height: 16px; background: #8b5cf6; border-radius: 4px; border: 1px solid #7c3aed;"></div> Common Area</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="blueprint-empty" style="width: 100%; max-width: 800px; text-align: center; color: var(--text-secondary); padding: 60px 20px;">
+        <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">🏢</div>
+        <p style="font-size: 15px;">Select a floor above to view the interactive blueprint</p>
+    </div>
+</div>
+
+
+    
     <footer>
         RoomScanner Registry Engine &bull; Hosted securely on Cloudflare Infrastructure
     </footer>
@@ -1713,6 +1782,231 @@
                 progressWrapper.style.display = 'none';
             }
         }
+
+
+
+
+
+
+
+        // ==========================================
+// FLOOR BLUEPRINT DATA (Extracted from PDF)
+// ==========================================
+const floorBlueprints = {
+    0: {
+        name: "Ground Floor",
+        image: "floor-plans/floor-0.png",
+        rooms: [
+            { id: "G812", type: "classroom", x: 150, y: 150, w: 100, h: 70 },
+            { id: "C911", type: "classroom", x: 300, y: 150, w: 100, h: 70 },
+            { id: "O852", type: "staff", x: 450, y: 150, w: 100, h: 70 }
+        ]
+    },
+    1: {
+        name: "First Floor",
+        image: "floor-plans/floor-1.png",
+        rooms: [
+            { id: "201", type: "classroom", x: 100, y: 120, w: 90, h: 60 },
+            { id: "203", type: "classroom", x: 220, y: 120, w: 90, h: 60 },
+            { id: "211", type: "lab", x: 340, y: 120, w: 90, h: 60 },
+            { id: "222", type: "classroom", x: 460, y: 120, w: 90, h: 60 },
+            { id: "233", type: "classroom", x: 580, y: 120, w: 90, h: 60 },
+            { id: "251", type: "lab", x: 100, y: 220, w: 90, h: 60 },
+            { id: "271", type: "classroom", x: 220, y: 220, w: 90, h: 60 },
+            { id: "281", type: "staff", x: 340, y: 220, w: 90, h: 60 }
+        ]
+    },
+    2: {
+        name: "Second Floor",
+        image: "floor-plans/floor-2.png",
+        rooms: [
+            { id: "301", type: "classroom", x: 100, y: 120, w: 90, h: 60 },
+            { id: "311", type: "classroom", x: 220, y: 120, w: 90, h: 60 },
+            { id: "322", type: "lab", x: 340, y: 120, w: 90, h: 60 },
+            { id: "331", type: "classroom", x: 460, y: 120, w: 90, h: 60 },
+            { id: "351", type: "classroom", x: 100, y: 220, w: 90, h: 60 },
+            { id: "371", type: "staff", x: 220, y: 220, w: 90, h: 60 }
+        ]
+    },
+    3: {
+        name: "Third Floor",
+        image: "floor-plans/floor-3.png",
+        rooms: [
+            { id: "322", type: "classroom", x: 150, y: 150, w: 100, h: 70 },
+            { id: "332", type: "lab", x: 280, y: 150, w: 100, h: 70 },
+            { id: "351", type: "classroom", x: 410, y: 150, w: 100, h: 70 },
+            { id: "368", type: "classroom", x: 150, y: 250, w: 100, h: 70 }
+        ]
+    },
+    4: {
+        name: "Fourth Floor",
+        image: "floor-plans/floor-4.png",
+        rooms: [
+            { id: "H18", type: "classroom", x: 120, y: 140, w: 90, h: 60 },
+            { id: "H23", type: "lab", x: 240, y: 140, w: 90, h: 60 },
+            { id: "H24", type: "classroom", x: 360, y: 140, w: 90, h: 60 },
+            { id: "H34", type: "staff", x: 480, y: 140, w: 90, h: 60 },
+            { id: "H81", type: "classroom", x: 120, y: 240, w: 90, h: 60 },
+            { id: "H82", type: "classroom", x: 240, y: 240, w: 90, h: 60 }
+        ]
+    },
+    5: {
+        name: "Fifth Floor",
+        image: "floor-plans/floor-5.png",
+        rooms: [
+            { id: "501", type: "classroom", x: 100, y: 130, w: 90, h: 60 },
+            { id: "503", type: "classroom", x: 220, y: 130, w: 90, h: 60 },
+            { id: "511", type: "lab", x: 340, y: 130, w: 90, h: 60 },
+            { id: "522", type: "classroom", x: 460, y: 130, w: 90, h: 60 },
+            { id: "533", type: "classroom", x: 100, y: 230, w: 90, h: 60 }
+        ]
+    },
+    6: {
+        name: "Sixth Floor",
+        image: "floor-plans/floor-6.png",
+        rooms: [
+            { id: "601", type: "classroom", x: 120, y: 140, w: 90, h: 60 },
+            { id: "623", type: "lab", x: 240, y: 140, w: 90, h: 60 },
+            { id: "671", type: "classroom", x: 360, y: 140, w: 90, h: 60 },
+            { id: "681", type: "staff", x: 480, y: 140, w: 90, h: 60 }
+        ]
+    }
+};
+
+let currentFloor = null;
+let showingOriginal = false;
+
+function loadFloorBlueprint() {
+    const floorNum = document.getElementById('floor-select').value;
+    const container = document.getElementById('blueprint-container');
+    const emptyState = document.getElementById('blueprint-empty');
+    const toggleBtn = document.getElementById('toggle-view-btn');
+    
+    if (!floorNum) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        if(toggleBtn) toggleBtn.style.display = 'none';
+        currentFloor = null;
+        return;
+    }
+    
+    currentFloor = floorBlueprints[floorNum];
+    showingOriginal = false;
+    
+    container.style.display = 'block';
+    emptyState.style.display = 'none';
+    if(toggleBtn) toggleBtn.style.display = 'inline-flex';
+    
+    // Set original image source
+    document.getElementById('original-floor-img').src = currentFloor.image;
+    
+    renderEnhancedBlueprint();
+}
+
+function renderEnhancedBlueprint() {
+    const viewer = document.getElementById('blueprint-viewer');
+    const originalViewer = document.getElementById('original-image-viewer');
+    
+    if (showingOriginal) {
+        viewer.style.display = 'none';
+        originalViewer.style.display = 'flex';
+        return;
+    }
+    
+    viewer.style.display = 'block';
+    originalViewer.style.display = 'none';
+    
+    let svgContent = `
+        <svg width="100%" height="500" viewBox="0 0 800 400" style="background: #0f172a;">
+            <!-- Grid Pattern -->
+            <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="1"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            
+            <!-- Title -->
+            <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#f8fafc" font-family="sans-serif">
+                ${currentFloor.name} Blueprint
+            </text>
+            
+            <!-- Building Outline -->
+            <rect x="50" y="70" width="700" height="280" fill="none" stroke="#334155" stroke-width="2" rx="8"/>
+    `;
+    
+    if (currentFloor.rooms && currentFloor.rooms.length > 0) {
+        currentFloor.rooms.forEach(room => {
+            const color = getRoomColor(room.type);
+            svgContent += `
+                <g>
+                    <rect x="${room.x}" y="${room.y}" width="${room.w}" height="${room.h}" 
+                          fill="${color}" stroke="#0f172a" stroke-width="2" rx="6"
+                          class="room-rect" style="cursor: pointer; transition: all 0.2s; opacity: 0.85;"
+                          onmouseover="this.style.opacity='1'; this.setAttribute('stroke', '#f8fafc')"
+                          onmouseout="this.style.opacity='0.85'; this.setAttribute('stroke', '#0f172a')">
+                        <title>${room.id} (${room.type.charAt(0).toUpperCase() + room.type.slice(1)})</title>
+                    </rect>
+                    <text x="${room.x + room.w/2}" y="${room.y + room.h/2 + 4}" 
+                          text-anchor="middle" dominant-baseline="middle"
+                          font-size="13" font-weight="bold" fill="#ffffff" font-family="sans-serif"
+                          style="pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
+                        ${room.id}
+                    </text>
+                </g>
+            `;
+        });
+    } else {
+        svgContent += `
+            <text x="400" y="200" text-anchor="middle" font-size="16" fill="#64748b" font-family="sans-serif">
+                Room data coming soon. Upload floor plan images to GitHub.
+            </text>
+        `;
+    }
+    
+    svgContent += `</svg>`;
+    viewer.innerHTML = svgContent;
+}
+
+function getRoomColor(type) {
+    const colors = {
+        classroom: '#10b981', // Emerald
+        lab: '#3b82f6',       // Blue
+        staff: '#f59e0b',     // Amber
+        common: '#8b5cf6'     // Violet
+    };
+    return colors[type] || '#64748b';
+}
+
+function toggleBlueprintView() {
+    if (!currentFloor) return;
+    showingOriginal = !showingOriginal;
+    const btn = document.getElementById('toggle-view-btn');
+    
+    if (showingOriginal) {
+        btn.innerHTML = '<span>📐</span> Show Interactive Map';
+    } else {
+        btn.innerHTML = '<span>🖼️</span> Show Original Image';
+    }
+    renderEnhancedBlueprint();
+}
+
+// Update your existing switchTab function to include 'blueprint'
+function switchTab(targetTab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
+
+    if(targetTab === 'live') {
+        document.getElementById('tab-live-btn').classList.add('active');
+        document.getElementById('panel-live').classList.add('active');
+    } else if (targetTab === 'future') {
+        document.getElementById('tab-future-btn').classList.add('active');
+        document.getElementById('panel-future').classList.add('active');
+    } else if (targetTab === 'blueprint') {
+        document.getElementById('tab-blueprint-btn').classList.add('active');
+        document.getElementById('panel-blueprint').classList.add('active');
+    }
+}
     </script>
 
 
