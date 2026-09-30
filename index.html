@@ -1223,6 +1223,9 @@
         <button id="tab-blueprint-btn" class="tab-btn" onclick="switchTab('blueprint')">
         <span>🏢</span> Floor Blueprints
         </button>
+        <button id="tab-directory-btn" class="tab-btn" onclick="switchTab('directory')">
+        <span>🔍</span> Room Directory
+        </button>
     </div>
 
     <!-- ========================================== -->
@@ -1331,6 +1334,29 @@
         </div>
     </div>
 
+
+
+    <!-- ========================================== -->
+<!-- TAB 4 SECTION: ROOM DIRECTORY & SEARCH     -->
+<!-- ========================================== -->
+<div id="panel-directory" class="tab-content-panel">
+    <div class="control-panel">
+        <div class="form-group" style="width: 100%;">
+            <label for="room-search-input">Search Room Number</label>
+            <input type="text" id="room-search-input" class="form-input" placeholder="Type room number to filter (e.g., 5683)..." oninput="filterRoomDirectory()" style="font-size: 16px; padding: 14px;">
+        </div>
+    </div>
+
+    <!-- Directory Grid -->
+    <div id="directory-grid" class="grid-container">
+        <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+            Loading room directory...
+        </div>
+    </div>
+</div>
+
+
+    
     <!-- Blueprint Display Area -->
     <div id="blueprint-container" style="width: 100%; max-width: 1000px; margin: 0 auto; display: none;">
         <div class="room-card" style="padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
@@ -1389,6 +1415,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             loadRoomRegistry();
             loadFutureRoomRegistry();
+            loadRoomDirectory(); 
             
             const dateInput = document.getElementById('input-date');
             if(dateInput) {
@@ -1425,6 +1452,7 @@
                 document.getElementById('tab-future-btn').classList.add('active');
                 document.getElementById('panel-future').classList.add('active');
             }
+            
         }
 
         // --- LIVE SCAN LOGIC (UNCHANGED & WORKING) ---
@@ -2006,6 +2034,116 @@ function switchTab(targetTab) {
         document.getElementById('tab-blueprint-btn').classList.add('active');
         document.getElementById('panel-blueprint').classList.add('active');
     }
+    else if (targetTab === 'directory') {
+        document.getElementById('tab-directory-btn').classList.add('active');
+        document.getElementById('panel-directory').classList.add('active');
+    }
+}
+
+
+
+
+
+
+
+
+// ==========================================
+// ROOM DIRECTORY & SMART IMAGE LOADER
+// ==========================================
+
+let allDirectoryRooms = [];
+
+// 1. Smart Image Loader (Tries png, jpg, jpeg, webp, gif automatically)
+window.loadRoomImage = function(imgElement, roomNumber) {
+    const extensions = ['png', 'jpg', 'jpeg', 'webp', 'gif'];
+    let currentIndex = 0;
+
+    function tryNext() {
+        if (currentIndex < extensions.length) {
+            imgElement.src = `room-directory/${roomNumber}.${extensions[currentIndex]}`;
+            currentIndex++;
+        } else {
+            // All formats failed, hide image and show placeholder
+            imgElement.style.display = 'none';
+            const placeholder = imgElement.parentElement.querySelector('.img-placeholder');
+            if (placeholder) placeholder.style.display = 'flex';
+        }
+    }
+
+    imgElement.onerror = tryNext;
+    tryNext(); 
+};
+
+// 2. Load the directory data from your existing rooms.json
+async function loadRoomDirectory() {
+    const grid = document.getElementById('directory-grid');
+    try {
+        const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+        if (!response.ok) throw new Error();
+        const database = await response.json();
+        const rooms = Object.values(database);
+
+        // Map the rooms to our image paths
+        allDirectoryRooms = rooms.map(r => ({
+            number: r.roomNumber
+        }));
+
+        renderDirectory(allDirectoryRooms);
+    } catch (err) {
+        grid.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">Could not load room list. Please run a Live Scan first.</div>`;
+    }
+}
+
+// 3. Render the grid cards
+function renderDirectory(rooms) {
+    const grid = document.getElementById('directory-grid');
+    
+    if (rooms.length === 0) {
+        grid.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No rooms found matching your search.</div>`;
+        return;
+    }
+    
+    grid.innerHTML = "";
+    rooms.forEach(room => {
+        const card = document.createElement("div");
+        card.className = "room-card";
+        
+        card.innerHTML = `
+            <div class="room-image-container" style="width: 100%; height: 220px; background: rgba(15, 23, 42, 0.6); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px; position: relative;">
+                
+                <!-- Hidden Placeholder -->
+                <div class="img-placeholder" style="display: none; text-align: center; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                    <div style="font-size: 32px; margin-bottom: 8px;">️</div>
+                    <span style="color: var(--text-secondary); font-size: 13px;">Image not uploaded</span>
+                </div>
+
+                <!-- The Image -->
+                <img id="img-${room.number}" alt="Room ${room.number}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+            <div class="card-header">
+                <div class="room-title">Room ${room.number}</div>
+            </div>
+        `;
+        
+        grid.appendChild(card);
+
+        // Trigger the smart loader
+        const imgElement = document.getElementById(`img-${room.number}`);
+        window.loadRoomImage(imgElement, room.number);
+    });
+}
+
+// 4. Filter function for the search bar
+function filterRoomDirectory() {
+    const query = document.getElementById('room-search-input').value.toLowerCase().trim();
+    
+    if (!query) {
+        renderDirectory(allDirectoryRooms);
+        return;
+    }
+    
+    const filtered = allDirectoryRooms.filter(room => room.number.toLowerCase().includes(query));
+    renderDirectory(filtered);
 }
     </script>
 
