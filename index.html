@@ -2048,24 +2048,23 @@ function switchTab(targetTab) {
 
 
 
-
 // ==========================================
-// ROOM DIRECTORY & SMART IMAGE LOADER
+// ROOM DIRECTORY & SMART IMAGE LOADER (FIXED)
 // ==========================================
 
 let allDirectoryRooms = [];
 
-// 1. Smart Image Loader (Tries png, jpg, jpeg, webp, gif automatically)
-window.loadRoomImage = function(imgElement, roomNumber) {
+// 1. Smart Image Loader (Uses the CLEANED filename)
+window.loadRoomImage = function(imgElement, cleanRoomNumber) {
     const extensions = ['png', 'jpg', 'jpeg', 'webp', 'gif'];
     let currentIndex = 0;
 
     function tryNext() {
         if (currentIndex < extensions.length) {
-            imgElement.src = `room-directory/${roomNumber}.${extensions[currentIndex]}`;
+            // Use the cleaned number to perfectly match your uploaded files
+            imgElement.src = `room-directory/${cleanRoomNumber}.${extensions[currentIndex]}`;
             currentIndex++;
         } else {
-            // All formats failed, hide image and show placeholder
             imgElement.style.display = 'none';
             const placeholder = imgElement.parentElement.querySelector('.img-placeholder');
             if (placeholder) placeholder.style.display = 'flex';
@@ -2076,7 +2075,7 @@ window.loadRoomImage = function(imgElement, roomNumber) {
     tryNext(); 
 };
 
-// 2. Load the directory data from your existing rooms.json
+// 2. Load and CLEAN the room numbers
 async function loadRoomDirectory() {
     const grid = document.getElementById('directory-grid');
     try {
@@ -2085,18 +2084,26 @@ async function loadRoomDirectory() {
         const database = await response.json();
         const rooms = Object.values(database);
 
-        // Map the rooms to our image paths
-        allDirectoryRooms = rooms.map(r => ({
-            number: r.roomNumber
-        }));
+        // Map rooms and create a "clean" version of the number for filenames and search
+        allDirectoryRooms = rooms.map(r => {
+            const originalNumber = String(r.roomNumber);
+            // Removes spaces, dashes, and the word "Room" to match your exact filenames
+            const cleanNumber = originalNumber.replace(/[^a-zA-Z0-9]/g, ''); 
+            
+            return {
+                number: originalNumber,
+                cleanNumber: cleanNumber
+            };
+        });
 
+        console.log(" Loaded rooms:", allDirectoryRooms); // Check console to verify
         renderDirectory(allDirectoryRooms);
     } catch (err) {
-        grid.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">Could not load room list. Please run a Live Scan first.</div>`;
+        grid.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">Could not load room list.</div>`;
     }
 }
 
-// 3. Render the grid cards
+// 3. Render the grid
 function renderDirectory(rooms) {
     const grid = document.getElementById('directory-grid');
     
@@ -2113,14 +2120,12 @@ function renderDirectory(rooms) {
         card.innerHTML = `
             <div class="room-image-container" style="width: 100%; height: 220px; background: rgba(15, 23, 42, 0.6); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px; position: relative;">
                 
-                <!-- Hidden Placeholder -->
                 <div class="img-placeholder" style="display: none; text-align: center; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
-                    <div style="font-size: 32px; margin-bottom: 8px;">️</div>
+                    <div style="font-size: 32px; margin-bottom: 8px;">🖼️</div>
                     <span style="color: var(--text-secondary); font-size: 13px;">Image not uploaded</span>
                 </div>
 
-                <!-- The Image -->
-                <img id="img-${room.number}" alt="Room ${room.number}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                <img id="img-${room.cleanNumber}" alt="Room ${room.number}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
             </div>
             <div class="card-header">
                 <div class="room-title">Room ${room.number}</div>
@@ -2129,13 +2134,13 @@ function renderDirectory(rooms) {
         
         grid.appendChild(card);
 
-        // Trigger the smart loader
-        const imgElement = document.getElementById(`img-${room.number}`);
-        window.loadRoomImage(imgElement, room.number);
+        // Pass the CLEANED number to the loader
+        const imgElement = document.getElementById(`img-${room.cleanNumber}`);
+        window.loadRoomImage(imgElement, room.cleanNumber);
     });
 }
 
-// 4. Filter function for the search bar
+// 4. Search Filter (Searches both original and cleaned numbers)
 function filterRoomDirectory() {
     const query = document.getElementById('room-search-input').value.toLowerCase().trim();
     
@@ -2144,9 +2149,16 @@ function filterRoomDirectory() {
         return;
     }
     
-    const filtered = allDirectoryRooms.filter(room => room.number.toLowerCase().includes(query));
+    const filtered = allDirectoryRooms.filter(room => 
+        room.number.toLowerCase().includes(query) || 
+        room.cleanNumber.toLowerCase().includes(query)
+    );
+    
     renderDirectory(filtered);
 }
+
+
+        
     </script>
 
 
