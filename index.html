@@ -2048,62 +2048,50 @@ function switchTab(targetTab) {
 
 
 
+
+
 // ==========================================
-// ROOM DIRECTORY & SMART IMAGE LOADER (FIXED)
+// ROOM DIRECTORY (AUTO-INDEXED & SORTED)
 // ==========================================
 
 let allDirectoryRooms = [];
 
-// 1. Smart Image Loader (Uses the CLEANED filename)
-window.loadRoomImage = function(imgElement, cleanRoomNumber) {
-    const extensions = ['png', 'jpg', 'jpeg', 'webp', 'gif'];
-    let currentIndex = 0;
-
-    function tryNext() {
-        if (currentIndex < extensions.length) {
-            // Use the cleaned number to perfectly match your uploaded files
-            imgElement.src = `room-directory/${cleanRoomNumber}.${extensions[currentIndex]}`;
-            currentIndex++;
-        } else {
-            imgElement.style.display = 'none';
-            const placeholder = imgElement.parentElement.querySelector('.img-placeholder');
-            if (placeholder) placeholder.style.display = 'flex';
-        }
-    }
-
-    imgElement.onerror = tryNext;
-    tryNext(); 
-};
-
-// 2. Load and CLEAN the room numbers
+// 1. Load the auto-generated index and sort numerically
 async function loadRoomDirectory() {
     const grid = document.getElementById('directory-grid');
     try {
-        const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
-        if (!response.ok) throw new Error();
-        const database = await response.json();
-        const rooms = Object.values(database);
-
-        // Map rooms and create a "clean" version of the number for filenames and search
-        allDirectoryRooms = rooms.map(r => {
-            const originalNumber = String(r.roomNumber);
-            // Removes spaces, dashes, and the word "Room" to match your exact filenames
-            const cleanNumber = originalNumber.replace(/[^a-zA-Z0-9]/g, ''); 
-            
+        // Fetch the JSON file created by your new GitHub workflow
+        const response = await fetch(`room-directory-index.json?t=${new Date().getTime()}`);
+        if (!response.ok) throw new Error("Index file not found");
+        
+        const files = await response.json();
+        
+        // Extract room numbers from filenames (e.g., "0114.png" -> "0114")
+        allDirectoryRooms = files.map(filename => {
             return {
-                number: originalNumber,
-                cleanNumber: cleanNumber
+                number: filename.replace(/\.(png|jpg|jpeg|webp|gif)$/i, ''),
+                filename: filename
             };
         });
 
-        console.log(" Loaded rooms:", allDirectoryRooms); // Check console to verify
+        // 🎯 MAGIC SORT: Sorts in perfect ascending numerical order 
+        // (e.g., 0114, 0115, 0116, 5483) instead of alphabetical
+        allDirectoryRooms.sort((a, b) => {
+            return a.number.localeCompare(b.number, undefined, { 
+                numeric: true, 
+                sensitivity: 'base' 
+            });
+        });
+
         renderDirectory(allDirectoryRooms);
     } catch (err) {
-        grid.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">Could not load room list.</div>`;
+        grid.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+            Could not load room directory. Please ensure the workflow has run and generated the index.
+        </div>`;
     }
 }
 
-// 3. Render the grid
+// 2. Render the grid cards
 function renderDirectory(rooms) {
     const grid = document.getElementById('directory-grid');
     
@@ -2118,45 +2106,79 @@ function renderDirectory(rooms) {
         card.className = "room-card";
         
         card.innerHTML = `
-            <div class="room-image-container" style="width: 100%; height: 220px; background: rgba(15, 23, 42, 0.6); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px; position: relative;">
+            <div class="room-image-container" style="width: 100%; height: 250px; background: rgba(15, 23, 42, 0.6); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px; position: relative;">
                 
+                <!-- Hidden Placeholder if image fails to load -->
                 <div class="img-placeholder" style="display: none; text-align: center; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
                     <div style="font-size: 32px; margin-bottom: 8px;">🖼️</div>
-                    <span style="color: var(--text-secondary); font-size: 13px;">Image not uploaded</span>
+                    <span style="color: var(--text-secondary); font-size: 13px;">Image not found</span>
                 </div>
 
-                <img id="img-${room.cleanNumber}" alt="Room ${room.number}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                <!-- The Image -->
+                <img src="room-directory/${room.filename}" alt="Room ${room.number}" style="max-width: 100%; max-height: 100%; object-fit: contain;" 
+                     onerror="this.style.display='none'; this.parentElement.querySelector('.img-placeholder').style.display='flex'">
             </div>
             <div class="card-header">
                 <div class="room-title">Room ${room.number}</div>
             </div>
         `;
-        
         grid.appendChild(card);
-
-        // Pass the CLEANED number to the loader
-        const imgElement = document.getElementById(`img-${room.cleanNumber}`);
-        window.loadRoomImage(imgElement, room.cleanNumber);
     });
 }
 
-// 4. Search Filter (Searches both original and cleaned numbers)
+// 3. Search Filter (Instantly filters by room number)
 function filterRoomDirectory() {
     const query = document.getElementById('room-search-input').value.toLowerCase().trim();
     
     if (!query) {
-        renderDirectory(allDirectoryRooms);
+        renderDirectory(allDirectoryRooms); // Show all if search is empty
         return;
     }
     
-    const filtered = allDirectoryRooms.filter(room => 
-        room.number.toLowerCase().includes(query) || 
-        room.cleanNumber.toLowerCase().includes(query)
-    );
-    
+    // Filter rooms that include the search text
+    const filtered = allDirectoryRooms.filter(room => room.number.toLowerCase().includes(query));
     renderDirectory(filtered);
 }
 
+// ==========================================
+// REQUIRED UPDATES TO EXISTING FUNCTIONS
+// ==========================================
+
+// 1. Update your existing switchTab function to include 'directory'
+function switchTab(targetTab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
+
+    if(targetTab === 'live') {
+        document.getElementById('tab-live-btn').classList.add('active');
+        document.getElementById('panel-live').classList.add('active');
+    } else if (targetTab === 'future') {
+        document.getElementById('tab-future-btn').classList.add('active');
+        document.getElementById('panel-future').classList.add('active');
+    } else if (targetTab === 'blueprint') {
+        document.getElementById('tab-blueprint-btn').classList.add('active');
+        document.getElementById('panel-blueprint').classList.add('active');
+    } else if (targetTab === 'directory') { // 👈 ADD THIS BLOCK
+        document.getElementById('tab-directory-btn').classList.add('active');
+        document.getElementById('panel-directory').classList.add('active');
+    }
+}
+
+// 2. Add loadRoomDirectory() to your DOMContentLoaded event
+document.addEventListener("DOMContentLoaded", () => {
+    loadRoomRegistry();
+    loadFutureRoomRegistry();
+    loadRoomDirectory(); // 👈 ADD THIS LINE
+    
+    const dateInput = document.getElementById('input-date');
+    if(dateInput) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        dateInput.value = `${year}-${month}-${day}`;
+    }
+});
 
         
     </script>
