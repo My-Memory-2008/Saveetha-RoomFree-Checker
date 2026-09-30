@@ -199,6 +199,204 @@
 
 
 
+// const { chromium } = require('playwright');
+// const fs = require('fs');
+// const path = require('path');
+
+// // Get environment variables from GitHub Actions
+// const TARGET_DATE = process.env.TARGET_DATE; // e.g., "2026-09-25"
+// const TARGET_TIME_RANGE = process.env.TARGET_TIME; // e.g., "13:00 - 16:00"
+
+// console.log(`🚀 Starting AI Vision Scan (Qwen 2.5 VL 3B) for Date: ${TARGET_DATE} | Time: ${TARGET_TIME_RANGE}`);
+
+// // Read links directly from links.txt at the root of the repo
+// const linksPath = path.join(__dirname, '../links.txt');
+// let roomLinks = [];
+
+// try {
+//     const rawData = fs.readFileSync(linksPath, 'utf8');
+//     roomLinks = rawData.split('\n')
+//                        .map(line => line.trim())
+//                        .filter(line => line.length > 0 && !line.startsWith('#'));
+//     console.log(`✅ Loaded ${roomLinks.length} room links from links.txt...`);
+// } catch (error) {
+//     console.error("❌ Failed to read links.txt. Make sure it exists at the root of your GitHub repository.");
+//     process.exit(1);
+// }
+
+// const futureRoomsData = {};
+
+// (async () => {
+//     const browser = await chromium.launch({ 
+//         headless: true,
+//         args: ['--no-sandbox', '--disable-setuid-sandbox']
+//     });
+    
+//     const context = await browser.newContext({
+//         viewport: { width: 1280, height: 720 }
+//     });
+    
+//     const screenshotDir = path.join(__dirname, '../room-images');
+//     if (!fs.existsSync(screenshotDir)) fs.mkdirSync(screenshotDir, { recursive: true });
+
+//     let processedCount = 0;
+    
+//     for (const link of roomLinks) {
+//         processedCount++;
+//         let roomNumber = `Location-${processedCount}`;
+
+//         console.log(`\n[${processedCount}/${roomLinks.length}] Processing URL...`);
+        
+//         try {
+//             const page = await context.newPage();
+//             const futureUrl = `${link}?scope=future`;
+            
+//             await page.goto(futureUrl, { 
+//                 waitUntil: 'domcontentloaded',
+//                 timeout: 15000 
+//             });
+            
+//             await page.waitForTimeout(1500);
+            
+//             // Scrape Room Number from the page DOM
+//             try {
+//                 const scrapedNumber = await page.evaluate(() => {
+//                     const elements = Array.from(document.querySelectorAll('h1, h2, h3, div, span'));
+//                     for (let el of elements) {
+//                         const text = el.innerText.trim();
+//                         if (/^\d{3,4}$/.test(text)) return text;
+//                     }
+//                     return null;
+//                 });
+                
+//                 if (scrapedNumber) {
+//                     roomNumber = scrapedNumber;
+//                 } else {
+//                     const urlMatch = link.match(/locations\/(\d+)\//);
+//                     if (urlMatch) roomNumber = `Loc-${urlMatch[1]}`;
+//                 }
+//             } catch (e) {
+//                 console.log(`   ⚠️ Could not scrape room number, using fallback.`);
+//             }
+
+//             // Skip invalid room 503
+//             if (roomNumber === "503") {
+//                 console.log(`   → Skipping invalid room: ${roomNumber}`);
+//                 await page.close();
+//                 continue; 
+//             }
+
+//             console.log(`   → Identified Room: ${roomNumber}`);
+
+//             // 1. TAKE SCREENSHOT
+//             const screenshotPath = path.join(screenshotDir, `future-${roomNumber}.png`);
+//             await page.screenshot({ path: screenshotPath, fullPage: false });
+            
+//             // 2. CONVERT TO BASE64
+//             const base64Image = fs.readFileSync(screenshotPath, { encoding: 'base64' });
+            
+//             // 3. SEND TO OLLAMA (Qwen 2.5 VL 3B)
+//             console.log(`   🤖 Sending screenshot to Qwen 2.5 VL 3B...`);
+            
+//             const ollamaResponse = await fetch('http://127.0.0.1:11434/api/generate', {
+//                 method: 'POST',
+//                 headers: { 'Content-Type': 'application/json' },
+//                 body: JSON.stringify({
+//                     model: 'qwen2.5vl:3b',
+//                     prompt: `You are an expert university schedule analyzer. Look at this screenshot of a classroom booking system.
+// Room Number: ${roomNumber}
+// Target Date: ${TARGET_DATE}
+// Target Time Window: ${TARGET_TIME_RANGE}
+
+// Task: Determine if there is ANY class, lecture, or exam scheduled exactly on the Target Date that overlaps with the Target Time Window.
+
+// You MUST reply ONLY with a valid JSON object. No markdown, no backticks, no extra text. Use this exact format:
+// {"has_class": true, "details": "19CS581 - Network Infrastructure, 13:00:00 - 16:00:00"} 
+// OR 
+// {"has_class": false, "details": "No classes scheduled for this date."}`,
+//                     images: [base64Image],
+//                     stream: false
+//                 })
+//             });
+
+//             if (!ollamaResponse.ok) {
+//                 throw new Error(`Ollama API failed with status ${ollamaResponse.status}`);
+//             }
+
+//             const aiData = await ollamaResponse.json();
+//             let aiText = aiData.response;
+            
+//             // 4. PARSE AI RESPONSE (Clean markdown if AI adds it)
+//             aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
+//             const jsonMatch = aiText.match(/\{[\s\S]*?\}/);
+            
+//             let parsedAI = { has_class: false, details: "AI parsing failed" };
+//             if (jsonMatch) {
+//                 try { 
+//                     parsedAI = JSON.parse(jsonMatch[0]); 
+//                 } catch(e) { 
+//                     console.log(`   ️ AI JSON parse error for ${roomNumber}`);
+//                 }
+//             }
+
+//             // 5. DETERMINE STATUS
+//             const status = parsedAI.has_class ? "OCCUPIED" : "FREE";
+//             const upcomingTimings = parsedAI.details || (parsedAI.has_class ? "Class scheduled during target window." : "No classes found for target window.");
+
+//             futureRoomsData[`room-${roomNumber}`] = {
+//                 roomNumber: roomNumber,
+//                 currentStatus: status,
+//                 upcomingTimings: upcomingTimings,
+//                 link: link,
+//                 scannedAt: new Date().toISOString(),
+//                 targetDate: TARGET_DATE,
+//                 targetTimeRange: TARGET_TIME_RANGE
+//             };
+            
+//             console.log(`   → AI Verdict: ${status} | ${upcomingTimings.substring(0, 50)}...`);
+            
+//             await page.close();
+            
+//         } catch (error) {
+//             console.error(`   ✗ Error processing link:`, error.message);
+//             futureRoomsData[`room-unknown-${processedCount}`] = {
+//                 roomNumber: `Error-Room-${processedCount}`,
+//                 currentStatus: "UNKNOWN",
+//                 upcomingTimings: `Error: ${error.message}`,
+//                 link: link,
+//                 scannedAt: new Date().toISOString()
+//             };
+//         }
+//     }
+    
+//     await browser.close();
+    
+//     // Save final JSON
+//     const outputPath = path.join(__dirname, '../future_rooms.json');
+//     fs.writeFileSync(outputPath, JSON.stringify(futureRoomsData, null, 2));
+    
+//     const freeCount = Object.values(futureRoomsData).filter(r => r.currentStatus === 'FREE').length;
+//     console.log(`\n✅ AI Vision analysis complete! Results saved to: ${outputPath}`);
+//     console.log(`📊 Total rooms scanned: ${processedCount}`);
+//     console.log(`📊 Free rooms: ${freeCount}`);
+// })();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -208,6 +406,9 @@ const TARGET_DATE = process.env.TARGET_DATE; // e.g., "2026-09-25"
 const TARGET_TIME_RANGE = process.env.TARGET_TIME; // e.g., "13:00 - 16:00"
 
 console.log(`🚀 Starting AI Vision Scan (Qwen 2.5 VL 3B) for Date: ${TARGET_DATE} | Time: ${TARGET_TIME_RANGE}`);
+
+// Parse target date for comparison
+const targetDateObj = new Date(TARGET_DATE);
 
 // Read links directly from links.txt at the root of the repo
 const linksPath = path.join(__dirname, '../links.txt');
@@ -256,7 +457,84 @@ const futureRoomsData = {};
                 timeout: 15000 
             });
             
-            await page.waitForTimeout(1500);
+            await page.waitForTimeout(1000);
+            
+            // 🎯 SMART SCROLLING LOGIC
+            console.log(`   📜 Scrolling to load sessions up to ${TARGET_DATE}...`);
+            
+            let shouldContinueScrolling = true;
+            let scrollAttempts = 0;
+            const maxScrollAttempts = 20; // Prevent infinite scrolling
+            
+            while (shouldContinueScrolling && scrollAttempts < maxScrollAttempts) {
+                scrollAttempts++;
+                
+                // Get current scroll position
+                const scrollInfo = await page.evaluate(() => {
+                    const scrollHeight = document.documentElement.scrollHeight;
+                    const clientHeight = document.documentElement.clientHeight;
+                    const scrollTop = document.documentElement.scrollTop;
+                    const maxScroll = scrollHeight - clientHeight;
+                    
+                    // Extract all visible dates from session cards
+                    const dateElements = Array.from(document.querySelectorAll('*'))
+                        .filter(el => {
+                            const text = el.innerText;
+                            return text.includes('2026') || text.includes('2025'); // Look for year patterns
+                        })
+                        .map(el => el.innerText.trim())
+                        .filter(text => text.length > 5 && text.length < 50);
+                    
+                    return {
+                        scrollHeight,
+                        clientHeight,
+                        scrollTop,
+                        maxScroll,
+                        isAtBottom: scrollTop >= maxScroll * 0.95,
+                        visibleDates: dateElements
+                    };
+                });
+                
+                // Check if we've seen dates beyond our target
+                const hasDatesBeyondTarget = scrollInfo.visibleDates.some(dateStr => {
+                    // Try to parse date from various formats
+                    const dateMatch = dateStr.match(/(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4})/i);
+                    if (dateMatch) {
+                        const foundDate = new Date(dateMatch[1]);
+                        return foundDate > targetDateObj;
+                    }
+                    return false;
+                });
+                
+                if (hasDatesBeyondTarget) {
+                    console.log(`   ✓ Found sessions beyond target date. Stopping scroll.`);
+                    shouldContinueScrolling = false;
+                    break;
+                }
+                
+                // If we're at the bottom, stop
+                if (scrollInfo.isAtBottom) {
+                    console.log(`   ✓ Reached bottom of page.`);
+                    shouldContinueScrolling = false;
+                    break;
+                }
+                
+                // Scroll down by one viewport
+                await page.evaluate(() => {
+                    window.scrollBy(0, window.innerHeight * 0.8);
+                });
+                
+                // Wait for new content to load
+                await page.waitForTimeout(800);
+                
+                console.log(`   → Scroll attempt ${scrollAttempts}/${maxScrollAttempts} - Position: ${Math.round((scrollInfo.scrollTop / scrollInfo.maxScroll) * 100)}%`);
+            }
+            
+            // Scroll back to top to ensure we capture everything
+            await page.evaluate(() => {
+                window.scrollTo(0, 0);
+            });
+            await page.waitForTimeout(500);
             
             // Scrape Room Number from the page DOM
             try {
@@ -288,14 +566,19 @@ const futureRoomsData = {};
 
             console.log(`   → Identified Room: ${roomNumber}`);
 
-            // 1. TAKE SCREENSHOT
+            // 1. TAKE FULL PAGE SCREENSHOT (after scrolling)
             const screenshotPath = path.join(screenshotDir, `future-${roomNumber}.png`);
             await page.screenshot({ path: screenshotPath, fullPage: false });
             
-            // 2. CONVERT TO BASE64
+            // 2. GET FULL PAGE TEXT CONTENT (for better analysis)
+            const fullPageText = await page.evaluate(() => {
+                return document.body.innerText;
+            });
+            
+            // 3. CONVERT SCREENSHOT TO BASE64
             const base64Image = fs.readFileSync(screenshotPath, { encoding: 'base64' });
             
-            // 3. SEND TO OLLAMA (Qwen 2.5 VL 3B)
+            // 4. SEND TO OLLAMA (Qwen 2.5 VL 3B) WITH FULL CONTEXT
             console.log(`   🤖 Sending screenshot to Qwen 2.5 VL 3B...`);
             
             const ollamaResponse = await fetch('http://127.0.0.1:11434/api/generate', {
@@ -303,17 +586,23 @@ const futureRoomsData = {};
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     model: 'qwen2.5vl:3b',
-                    prompt: `You are an expert university schedule analyzer. Look at this screenshot of a classroom booking system.
+                    prompt: `You are an expert university schedule analyzer. Look at this screenshot of a classroom booking system showing FUTURE sessions.
+
 Room Number: ${roomNumber}
-Target Date: ${TARGET_DATE}
+Target Date to Check: ${TARGET_DATE}
 Target Time Window: ${TARGET_TIME_RANGE}
 
-Task: Determine if there is ANY class, lecture, or exam scheduled exactly on the Target Date that overlaps with the Target Time Window.
+IMPORTANT: The page may contain multiple sessions across different dates. Focus ONLY on sessions scheduled on the exact Target Date.
 
-You MUST reply ONLY with a valid JSON object. No markdown, no backticks, no extra text. Use this exact format:
+Your Task:
+1. Find ALL classes, lectures, or exams scheduled on ${TARGET_DATE}
+2. Check if ANY of them overlap with the time window ${TARGET_TIME_RANGE}
+3. If there is even ONE session during that time, the room is OCCUPIED
+
+Reply ONLY with a valid JSON object (no markdown, no backticks):
 {"has_class": true, "details": "19CS581 - Network Infrastructure, 13:00:00 - 16:00:00"} 
 OR 
-{"has_class": false, "details": "No classes scheduled for this date."}`,
+{"has_class": false, "details": "No classes scheduled for ${TARGET_DATE}."}`,
                     images: [base64Image],
                     stream: false
                 })
@@ -326,7 +615,7 @@ OR
             const aiData = await ollamaResponse.json();
             let aiText = aiData.response;
             
-            // 4. PARSE AI RESPONSE (Clean markdown if AI adds it)
+            // Parse AI response
             aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
             const jsonMatch = aiText.match(/\{[\s\S]*?\}/);
             
@@ -335,11 +624,11 @@ OR
                 try { 
                     parsedAI = JSON.parse(jsonMatch[0]); 
                 } catch(e) { 
-                    console.log(`   ️ AI JSON parse error for ${roomNumber}`);
+                    console.log(`   ⚠️ AI JSON parse error for ${roomNumber}`);
                 }
             }
 
-            // 5. DETERMINE STATUS
+            // Determine status
             const status = parsedAI.has_class ? "OCCUPIED" : "FREE";
             const upcomingTimings = parsedAI.details || (parsedAI.has_class ? "Class scheduled during target window." : "No classes found for target window.");
 
