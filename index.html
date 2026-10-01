@@ -1466,43 +1466,111 @@
         }
 
         // --- LIVE SCAN LOGIC (UNCHANGED & WORKING) ---
-        async function loadRoomRegistry() {
-            const gridContainer = document.getElementById("rooms-grid");
-            try {
-                const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
-                if (!response.ok) throw new Error();
-                const database = await response.json();
-                const rooms = Object.keys(database);
-                const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
+        // async function loadRoomRegistry() {
+        //     const gridContainer = document.getElementById("rooms-grid");
+        //     try {
+        //         const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+        //         if (!response.ok) throw new Error();
+        //         const database = await response.json();
+        //         const rooms = Object.keys(database);
+        //         const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
 
-                if (freeRooms.length === 0) {
-                    gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">All monitored rooms are currently reported as occupied.</div>`;
-                    return;
-                }
-                gridContainer.innerHTML = "";
-                freeRooms.forEach(key => {
-                    const room = database[key];
-                    const card = document.createElement("div");
-                    card.className = "room-card";
-                    let contentString = `
-                        <div class="card-header">
-                            <div class="room-title">Room ${room.roomNumber}</div>
-                            <span class="status-badge">● Vacant & Free</span>
-                        </div>
-                        <div class="schedule-details">
-                            <strong>Live Timeline Extraction:</strong><br>${room.upcomingTimings || "No active lectures detected."}
-                        </div>
-                    `;
-                    if (room.link) {
-                        contentString += `<a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">🔗 Verify Live Status</a>`;
-                    }
-                    card.innerHTML = contentString;
-                    gridContainer.appendChild(card);
-                });
-            } catch (err) {
-                gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No database found. Click the button above to run your initial workflow vision scan.</div>`;
-            }
+        //         if (freeRooms.length === 0) {
+        //             gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">All monitored rooms are currently reported as occupied.</div>`;
+        //             return;
+        //         }
+        //         gridContainer.innerHTML = "";
+        //         freeRooms.forEach(key => {
+        //             const room = database[key];
+        //             const card = document.createElement("div");
+        //             card.className = "room-card";
+        //             let contentString = `
+        //                 <div class="card-header">
+        //                     <div class="room-title">Room ${room.roomNumber}</div>
+        //                     <span class="status-badge">● Vacant & Free</span>
+        //                 </div>
+        //                 <div class="schedule-details">
+        //                     <strong>Live Timeline Extraction:</strong><br>${room.upcomingTimings || "No active lectures detected."}
+        //                 </div>
+        //             `;
+        //             if (room.link) {
+        //                 contentString += `<a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">🔗 Verify Live Status</a>`;
+        //             }
+        //             card.innerHTML = contentString;
+        //             gridContainer.appendChild(card);
+        //         });
+        //     } catch (err) {
+        //         gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No database found. Click the button above to run your initial workflow vision scan.</div>`;
+        //     }
+        // }
+
+
+
+
+
+
+        async function loadRoomRegistry() {
+    const gridContainer = document.getElementById("rooms-grid");
+    try {
+        const response = await fetch(`rooms.json?t=${new Date().getTime()}`);
+        if (!response.ok) throw new Error();
+        const database = await response.json();
+        const rooms = Object.keys(database);
+        
+        // 🎯 STRICT FILTER: Only show rooms explicitly marked as Free
+        const freeRooms = rooms.filter(key => {
+            const status = database[key].currentStatus;
+            return status && status.toLowerCase() === "free";
+        });
+
+        if (freeRooms.length === 0) {
+            gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                All monitored rooms currently have active sessions.
+            </div>`;
+            return;
         }
+        
+        gridContainer.innerHTML = "";
+        freeRooms.forEach(key => {
+            const room = database[key];
+            const card = document.createElement("div");
+            card.className = "room-card";
+            
+            let contentString = `
+                <div class="card-header">
+                    <div class="room-title">Room ${room.roomNumber}</div>
+                    <span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3);">
+                        ● No Session Found
+                    </span>
+                </div>
+                <div class="schedule-details">
+                    <strong>Status:</strong> Verified Empty<br>
+                    <strong>Details:</strong> ${room.upcomingTimings || 'No Session Found'}
+                </div>
+            `;
+            
+            if (room.link) {
+                contentString += `
+                    <a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">
+                        🔗 Verify Live Status
+                    </a>
+                `;
+            }
+            card.innerHTML = contentString;
+            gridContainer.appendChild(card);
+        });
+    } catch (err) {
+        gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No database found. Click the button above to run your initial workflow vision scan.</div>`;
+    }
+}
+
+
+
+        
+
+
+        
 
         async function triggerWorkflowAI() {
             const btn = document.getElementById('ai-btn');
