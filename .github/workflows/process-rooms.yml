@@ -355,17 +355,16 @@
 
 
 
-
 name: Process All Room Schedules (AI Live Mode)
 
 on:
-  workflow_dispatch: # Allows 1-click manual trigger
+  workflow_dispatch:
 
 jobs:
   run-scraping:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Allows committing rooms.json back to the repository
+      contents: write
 
     steps:
     - name: Checkout Repository Codebase
@@ -396,8 +395,8 @@ jobs:
 
     - name: Download Vision Model
       run: |
-        # Pulling SmolVLM. (Fallback to moondream if smolvlm is not in your registry)
-        ollama pull smolvlm || ollama pull moondream
+        echo "Pulling moondream for fast and reliable CPU inference..."
+        ollama pull moondream
 
     - name: Run AI Scraping Script
       run: node scripts/analyze_rooms.js
