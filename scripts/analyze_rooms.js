@@ -793,7 +793,123 @@
 
 
 
-// scripts/analyze_rooms.js (PURE PLAYWRIGHT - NO AI)
+// // scripts/analyze_rooms.js (PURE PLAYWRIGHT - NO AI)
+// const fs = require('fs');
+// const path = require('path');
+// const { chromium } = require('playwright');
+
+// async function scrapeRoomSchedules() {
+//     const jsonPath = path.join(__dirname, '../rooms.json');
+//     const linksFile = path.join(__dirname, '../links.txt');
+//     let db = {};
+
+//     if (!fs.existsSync(linksFile)) {
+//         console.error("Critical Error: links.txt file missing.");
+//         return;
+//     }
+
+//     const urls = fs.readFileSync(linksFile, 'utf-8')
+//         .split('\n')
+//         .map(line => line.trim())
+//         .filter(line => line.startsWith('http'));
+
+//     console.log(`⚡ Loaded ${urls.length} links for instant scraping...`);
+//     if (urls.length === 0) return;
+
+//     // Launch browser with optimized flags for GitHub Actions
+//     const browser = await chromium.launch({
+//         headless: true,
+//         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+//     });
+
+//     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+//     const timeStr = new Date().toLocaleTimeString('en-US', { 
+//         timeZone: 'Asia/Kolkata', 
+//         hour: '2-digit', 
+//         minute: '2-digit', 
+//         hour12: true 
+//     }) + " IST";
+
+//     // ✅ Process 5 rooms at the same time (Safe for GitHub Actions 2-core CPU)
+//     const concurrencyLimit = 5;
+//     const executing = new Set();
+//     const results = [];
+
+//     for (let i = 0; i < urls.length; i++) {
+//         const url = urls[i];
+//         const index = i;
+
+//         const promise = (async () => {
+//             const page = await context.newPage();
+//             try {
+//                 // Wait for the page to load and the "Current Sessions" tab to appear
+//                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
+//                 await page.waitForSelector('text=Current Sessions', { timeout: 5000 }).catch(() => {});
+
+//                 // Extract Room Number (Looks for the big number like 5453 in h1 or h2)
+//                 let roomNumber = `Loc_${index + 1}`;
+//                 try {
+//                     const headingText = await page.locator('h1, h2').first().textContent();
+//                     const match = headingText.match(/\d+/);
+//                     if (match) roomNumber = match[0];
+//                 } catch (e) {
+//                     // Fallback if heading isn't found
+//                 }
+
+//                 // ✅ THE CHECK: Look for the exact text from your screenshot
+//                 const pageText = await page.locator('body').innerText();
+//                 const isFree = pageText.includes("No Sessions Found");
+
+//                 console.log(`✅ Room ${roomNumber}: ${isFree ? 'FREE' : 'OCCUPIED'}`);
+
+//                 return {
+//                     roomNumber,
+//                     link: url, // ✅ Saves the URL to the database
+//                     currentStatus: isFree ? "Free" : "Occupied",
+//                     upcomingTimings: isFree ? `Verified empty at ${timeStr}` : `Active session at ${timeStr}`
+//                 };
+//             } catch (e) {
+//                 console.error(`❌ Failed ${url}: ${e.message}`);
+//                 return null;
+//             } finally {
+//                 await page.close();
+//             }
+//         })();
+
+//         results.push(promise);
+//         executing.add(promise);
+
+//         // Control concurrency
+//         if (executing.size >= concurrencyLimit) {
+//             await Promise.race(executing);
+//         }
+//     }
+
+//     const finalResults = await Promise.all(results);
+//     await browser.close();
+
+//     // Build the final JSON database
+//     finalResults.forEach(res => {
+//         if (res) db[res.roomNumber] = res;
+//     });
+
+//     fs.writeFileSync(jsonPath, JSON.stringify(db, null, 2));
+//     console.log(`🚀 Finished scraping ${finalResults.filter(r => r).length} rooms instantly!`);
+// }
+
+// scrapeRoomSchedules();
+
+
+
+
+
+
+
+
+
+
+
+// scripts/analyze_rooms.js (AI VISION MODE)
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -801,22 +917,26 @@ const { chromium } = require('playwright');
 async function scrapeRoomSchedules() {
     const jsonPath = path.join(__dirname, '../rooms.json');
     const linksFile = path.join(__dirname, '../links.txt');
-    let db = {};
-
+    const screenshotDir = path.join(__dirname, '../room-images');
+    
     if (!fs.existsSync(linksFile)) {
-        console.error("Critical Error: links.txt file missing.");
+        console.error("❌ Critical Error: links.txt file is missing.");
         return;
     }
 
+    if (!fs.existsSync(screenshotDir)) {
+        fs.mkdirSync(screenshotDir, { recursive: true });
+    }
+
+    // Read ONLY from links.txt
     const urls = fs.readFileSync(linksFile, 'utf-8')
         .split('\n')
         .map(line => line.trim())
         .filter(line => line.startsWith('http'));
 
-    console.log(`⚡ Loaded ${urls.length} links for instant scraping...`);
+    console.log(`⚡ Loaded ${urls.length} links for AI live scraping...`);
     if (urls.length === 0) return;
 
-    // Launch browser with optimized flags for GitHub Actions
     const browser = await chromium.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
@@ -830,71 +950,103 @@ async function scrapeRoomSchedules() {
         hour12: true 
     }) + " IST";
 
-    // ✅ Process 5 rooms at the same time (Safe for GitHub Actions 2-core CPU)
-    const concurrencyLimit = 5;
-    const executing = new Set();
+    // Concurrency limit of 2 is safe for CPU-based Vision AI on GitHub Actions
+    const concurrencyLimit = 2; 
     const results = [];
 
-    for (let i = 0; i < urls.length; i++) {
-        const url = urls[i];
-        const index = i;
-
-        const promise = (async () => {
-            const page = await context.newPage();
-            try {
-                // Wait for the page to load and the "Current Sessions" tab to appear
-                await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
-                await page.waitForSelector('text=Current Sessions', { timeout: 5000 }).catch(() => {});
-
-                // Extract Room Number (Looks for the big number like 5453 in h1 or h2)
-                let roomNumber = `Loc_${index + 1}`;
+    for (let i = 0; i < urls.length; i += concurrencyLimit) {
+        const batch = urls.slice(i, i + concurrencyLimit);
+        console.log(`\n🔄 Processing batch (Rooms ${i + 1} to ${Math.min(i + concurrencyLimit, urls.length)})...`);
+        
+        const batchPromises = batch.map((url, idx) => {
+            const actualIndex = i + idx;
+            return (async () => {
+                const page = await context.newPage();
                 try {
-                    const headingText = await page.locator('h1, h2').first().textContent();
-                    const match = headingText.match(/\d+/);
-                    if (match) roomNumber = match[0];
+                    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
+                    
+                    // Try to click "Current Sessions" tab if it exists, otherwise ignore
+                    try {
+                        await page.locator('text=Current Sessions').click({ timeout: 3000 }).catch(() => {});
+                    } catch(e) {}
+                    
+                    await page.waitForTimeout(1500); // Allow UI to settle
+
+                    // Extract Room Number from heading
+                    let roomNumber = `Loc_${actualIndex + 1}`;
+                    try {
+                        const headingText = await page.locator('h1, h2, h3').first().textContent();
+                        const match = headingText ? headingText.match(/\d+/) : null;
+                        if (match) roomNumber = match[0];
+                    } catch (e) {}
+
+                    // Take screenshot for AI analysis
+                    const screenshotPath = path.join(screenshotDir, `live-${roomNumber}.png`);
+                    await page.screenshot({ path: screenshotPath, fullPage: false });
+                    const base64Image = fs.readFileSync(screenshotPath, { encoding: 'base64' });
+
+                    // Send to Ollama (SmolVLM)
+                    console.log(`🤖 Analyzing Room ${roomNumber} with SmolVLM...`);
+                    const ollamaResponse = await fetch('http://127.0.0.1:11434/api/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model: 'smolvlm', // Use 'moondream' or 'qwen2.5vl:3b' if smolvlm is unavailable
+                            prompt: `Look at this live classroom schedule screenshot. 
+Determine if there is an ACTIVE class or session happening right now. 
+Reply ONLY with a valid JSON object (no markdown, no backticks):
+{"is_occupied": true or false, "details": "Brief description of what is visible, e.g., 'No sessions found' or '19CS581 active'"}`,
+                            images: [base64Image],
+                            stream: false
+                        })
+                    });
+
+                    if (!ollamaResponse.ok) {
+                        throw new Error(`Ollama API failed with status ${ollamaResponse.status}`);
+                    }
+
+                    const aiData = await ollamaResponse.json();
+                    let aiText = aiData.response.replace(/```json/g, '').replace(/```/g, '').trim();
+                    const jsonMatch = aiText.match(/\{[\s\S]*?\}/);
+                    
+                    let parsedAI = { is_occupied: false, details: "AI parsing failed" };
+                    if (jsonMatch) {
+                        try { parsedAI = JSON.parse(jsonMatch[0]); } catch(e) {}
+                    }
+
+                    const isFree = !parsedAI.is_occupied;
+                    console.log(`✅ Room ${roomNumber}: ${isFree ? 'FREE' : 'OCCUPIED'} (${parsedAI.details})`);
+
+                    return {
+                        roomNumber,
+                        link: url,
+                        currentStatus: isFree ? "Free" : "Occupied",
+                        upcomingTimings: isFree ? `Verified empty at ${timeStr}` : `${parsedAI.details} at ${timeStr}`
+                    };
+
                 } catch (e) {
-                    // Fallback if heading isn't found
+                    console.error(`❌ Failed ${url}: ${e.message}`);
+                    return null;
+                } finally {
+                    await page.close();
                 }
-
-                // ✅ THE CHECK: Look for the exact text from your screenshot
-                const pageText = await page.locator('body').innerText();
-                const isFree = pageText.includes("No Sessions Found");
-
-                console.log(`✅ Room ${roomNumber}: ${isFree ? 'FREE' : 'OCCUPIED'}`);
-
-                return {
-                    roomNumber,
-                    link: url, // ✅ Saves the URL to the database
-                    currentStatus: isFree ? "Free" : "Occupied",
-                    upcomingTimings: isFree ? `Verified empty at ${timeStr}` : `Active session at ${timeStr}`
-                };
-            } catch (e) {
-                console.error(`❌ Failed ${url}: ${e.message}`);
-                return null;
-            } finally {
-                await page.close();
-            }
-        })();
-
-        results.push(promise);
-        executing.add(promise);
-
-        // Control concurrency
-        if (executing.size >= concurrencyLimit) {
-            await Promise.race(executing);
-        }
+            })();
+        });
+        
+        const batchResults = await Promise.all(batchPromises);
+        results.push(...batchResults);
     }
 
-    const finalResults = await Promise.all(results);
     await browser.close();
 
     // Build the final JSON database
-    finalResults.forEach(res => {
+    const db = {};
+    results.forEach(res => {
         if (res) db[res.roomNumber] = res;
     });
 
     fs.writeFileSync(jsonPath, JSON.stringify(db, null, 2));
-    console.log(`🚀 Finished scraping ${finalResults.filter(r => r).length} rooms instantly!`);
+    console.log(`\n🚀 Finished AI scraping ${results.filter(r => r).length} rooms successfully!`);
 }
 
 scrapeRoomSchedules();
