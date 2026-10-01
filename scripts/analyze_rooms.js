@@ -908,7 +908,6 @@
 
 
 
-
 // scripts/analyze_rooms.js (AI VISION MODE)
 const fs = require('fs');
 const path = require('path');
@@ -928,7 +927,6 @@ async function scrapeRoomSchedules() {
         fs.mkdirSync(screenshotDir, { recursive: true });
     }
 
-    // Read ONLY from links.txt
     const urls = fs.readFileSync(linksFile, 'utf-8')
         .split('\n')
         .map(line => line.trim())
@@ -965,14 +963,12 @@ async function scrapeRoomSchedules() {
                 try {
                     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
                     
-                    // Try to click "Current Sessions" tab if it exists, otherwise ignore
                     try {
                         await page.locator('text=Current Sessions').click({ timeout: 3000 }).catch(() => {});
                     } catch(e) {}
                     
-                    await page.waitForTimeout(1500); // Allow UI to settle
+                    await page.waitForTimeout(1500);
 
-                    // Extract Room Number from heading
                     let roomNumber = `Loc_${actualIndex + 1}`;
                     try {
                         const headingText = await page.locator('h1, h2, h3').first().textContent();
@@ -980,18 +976,16 @@ async function scrapeRoomSchedules() {
                         if (match) roomNumber = match[0];
                     } catch (e) {}
 
-                    // Take screenshot for AI analysis
                     const screenshotPath = path.join(screenshotDir, `live-${roomNumber}.png`);
                     await page.screenshot({ path: screenshotPath, fullPage: false });
                     const base64Image = fs.readFileSync(screenshotPath, { encoding: 'base64' });
 
-                    // Send to Ollama (SmolVLM)
-                    console.log(`🤖 Analyzing Room ${roomNumber} with SmolVLM...`);
+                    console.log(`🤖 Analyzing Room ${roomNumber} with Moondream...`);
                     const ollamaResponse = await fetch('http://127.0.0.1:11434/api/generate', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            model: 'smolvlm', // Use 'moondream' or 'qwen2.5vl:3b' if smolvlm is unavailable
+                            model: 'moondream', // 🎯 CHANGED FROM 'smolvlm' TO 'moondream'
                             prompt: `Look at this live classroom schedule screenshot. 
 Determine if there is an ACTIVE class or session happening right now. 
 Reply ONLY with a valid JSON object (no markdown, no backticks):
@@ -1039,7 +1033,6 @@ Reply ONLY with a valid JSON object (no markdown, no backticks):
 
     await browser.close();
 
-    // Build the final JSON database
     const db = {};
     results.forEach(res => {
         if (res) db[res.roomNumber] = res;
