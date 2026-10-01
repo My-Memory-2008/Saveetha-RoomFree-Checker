@@ -907,7 +907,8 @@
 
 
 
-// scripts/analyze_rooms.js (AI VISION MODE)
+
+// scripts/analyze_rooms.js (AI VISION MODE WITH SAFEGUARDS)
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -986,8 +987,11 @@ async function scrapeRoomSchedules() {
                             model: 'moondream',
                             prompt: `Look at this live classroom schedule screenshot. 
 Determine if there is an ACTIVE class or session happening right now. 
-Reply ONLY with a valid JSON object (no markdown, no backticks):
-{"is_occupied": true or false, "details": "If occupied, state the class name/time. If completely free, state exactly 'No Session Found'."}`,
+Reply ONLY with a valid JSON object (no markdown, no backticks). 
+If free, is_occupied MUST be false.
+{"is_occupied": false, "details": "No Session Found"} 
+OR 
+{"is_occupied": true, "details": "Class Name/Time active"}`,
                             images: [base64Image],
                             stream: false
                         })
@@ -1004,6 +1008,12 @@ Reply ONLY with a valid JSON object (no markdown, no backticks):
                     let parsedAI = { is_occupied: false, details: "No Session Found" };
                     if (jsonMatch) {
                         try { parsedAI = JSON.parse(jsonMatch[0]); } catch(e) {}
+                    }
+
+                    // 🛡️ SMART SAFEGUARD: If the AI says "no session" in the text, FORCE it to be FREE.
+                    // This prevents the AI from accidentally setting is_occupied: true while saying "no session".
+                    if (parsedAI.details && parsedAI.details.toLowerCase().includes("no session")) {
+                        parsedAI.is_occupied = false;
                     }
 
                     const isFree = !parsedAI.is_occupied;
