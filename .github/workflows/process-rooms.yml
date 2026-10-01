@@ -312,7 +312,51 @@
 
 
 
-name: Process All Room Schedules (Instant Mode)
+# name: Process All Room Schedules (Instant Mode)
+
+# on:
+#   workflow_dispatch: # Allows 1-click manual trigger
+
+# jobs:
+#   run-scraping:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: write # Allows committing rooms.json back to the repository
+
+#     steps:
+#     - name: Checkout Repository Codebase
+#       uses: actions/checkout@v4
+
+#     - name: Setup Node.js Environment
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: '20'
+
+#     - name: Install Playwright Dependencies
+#       run: |
+#         npm install playwright
+#         npx playwright install chromium --with-deps
+
+#     - name: Run Instant Scraping Script
+#       run: node scripts/analyze_rooms.js
+
+#     - name: Commit and Save Fresh Database Snapshot
+#       run: |
+#         git config --global user.name "Self Workflow Agent"
+#         git config --global user.email "actions@github.com"
+#         git add rooms.json
+#         git commit -m "Automated instant room scrape [IST Verified]" || exit 0
+#         git push
+
+
+
+
+
+
+
+
+
+name: Process All Room Schedules (AI Live Mode)
 
 on:
   workflow_dispatch: # Allows 1-click manual trigger
@@ -337,13 +381,32 @@ jobs:
         npm install playwright
         npx playwright install chromium --with-deps
 
-    - name: Run Instant Scraping Script
+    - name: Install Ollama Core Engine
+      run: |
+        curl -fsSL https://ollama.com/install.sh | sh
+
+    - name: Start Ollama Server
+      run: |
+        ollama serve &
+        echo "Waiting for Ollama server to boot..."
+        until curl -s http://127.0.0.1:11434 > /dev/null; do
+          sleep 1
+        done
+        echo "Ollama server is up and running!"
+
+    - name: Download Vision Model
+      run: |
+        # Pulling SmolVLM. (Fallback to moondream if smolvlm is not in your registry)
+        ollama pull smolvlm || ollama pull moondream
+
+    - name: Run AI Scraping Script
       run: node scripts/analyze_rooms.js
 
     - name: Commit and Save Fresh Database Snapshot
       run: |
         git config --global user.name "Self Workflow Agent"
         git config --global user.email "actions@github.com"
-        git add rooms.json
-        git commit -m "Automated instant room scrape [IST Verified]" || exit 0
+        
+        git add rooms.json room-images/
+        git commit -m "Automated AI live room scrape [IST Verified]" || exit 0
         git push
