@@ -907,7 +907,6 @@
 
 
 
-
 // scripts/analyze_rooms.js (AI VISION MODE)
 const fs = require('fs');
 const path = require('path');
@@ -948,7 +947,6 @@ async function scrapeRoomSchedules() {
         hour12: true 
     }) + " IST";
 
-    // Concurrency limit of 2 is safe for CPU-based Vision AI on GitHub Actions
     const concurrencyLimit = 2; 
     const results = [];
 
@@ -985,11 +983,11 @@ async function scrapeRoomSchedules() {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            model: 'moondream', // 🎯 CHANGED FROM 'smolvlm' TO 'moondream'
+                            model: 'moondream',
                             prompt: `Look at this live classroom schedule screenshot. 
 Determine if there is an ACTIVE class or session happening right now. 
 Reply ONLY with a valid JSON object (no markdown, no backticks):
-{"is_occupied": true or false, "details": "Brief description of what is visible, e.g., 'No sessions found' or '19CS581 active'"}`,
+{"is_occupied": true or false, "details": "If occupied, state the class name/time. If completely free, state exactly 'No Session Found'."}`,
                             images: [base64Image],
                             stream: false
                         })
@@ -1003,7 +1001,7 @@ Reply ONLY with a valid JSON object (no markdown, no backticks):
                     let aiText = aiData.response.replace(/```json/g, '').replace(/```/g, '').trim();
                     const jsonMatch = aiText.match(/\{[\s\S]*?\}/);
                     
-                    let parsedAI = { is_occupied: false, details: "AI parsing failed" };
+                    let parsedAI = { is_occupied: false, details: "No Session Found" };
                     if (jsonMatch) {
                         try { parsedAI = JSON.parse(jsonMatch[0]); } catch(e) {}
                     }
@@ -1015,7 +1013,7 @@ Reply ONLY with a valid JSON object (no markdown, no backticks):
                         roomNumber,
                         link: url,
                         currentStatus: isFree ? "Free" : "Occupied",
-                        upcomingTimings: isFree ? `Verified empty at ${timeStr}` : `${parsedAI.details} at ${timeStr}`
+                        upcomingTimings: isFree ? "No Session Found" : `${parsedAI.details} at ${timeStr}`
                     };
 
                 } catch (e) {
