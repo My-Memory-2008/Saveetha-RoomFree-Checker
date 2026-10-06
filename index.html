@@ -1213,7 +1213,7 @@
     </header>
 
     <!-- Interactive Tab Switcher Navigation Bar -->
-    <div class="tab-navigation">
+    <!-- <div class="tab-navigation">
         <button id="tab-live-btn" class="tab-btn active" onclick="switchTab('live')">
             <span>⚡</span> Live Rooms
         </button>
@@ -1221,15 +1221,37 @@
             <span>🔮</span> Search Future Slots
         </button>
         <button id="tab-blueprint-btn" class="tab-btn" onclick="switchTab('blueprint')">
-        <span>🏢</span> Floor Blueprints
+            <span>🏢</span> Floor Blueprints
         </button>
         <button id="tab-directory-btn" class="tab-btn" onclick="switchTab('directory')">
+            <span>🔍</span> Room Directory
+        </button>
+    </div> -->
+
+
+
+
+    <div class="tab-navigation">
+    <button id="tab-live-btn" class="tab-btn active" onclick="switchTab('live')">
+        <span>⚡</span> Live Rooms
+    </button>
+    <button id="tab-future-btn" class="tab-btn" onclick="switchTab('future')">
+        <span>🔮</span> Search Future Slots
+    </button>
+    <button id="tab-blueprint-btn" class="tab-btn" onclick="switchTab('blueprint')">
+        <span>🏢</span> Floor Blueprints
+    </button>
+    <button id="tab-directory-btn" class="tab-btn" onclick="switchTab('directory')">
         <span>🔍</span> Room Directory
-        </button>
-        <button id="tab-fast-btn" class="tab-btn" onclick="switchTab('fast')">
+    </button>
+    
+    <!-- 👇 ADD THIS NEW BUTTON 👇 -->
+    <button id="tab-fast-btn" class="tab-btn" onclick="switchTab('fast')">
         <span>⚡</span> Fast Live
-        </button>
-    </div>
+    </button>
+</div>
+
+    
 
     <!-- ========================================== -->
     <!-- TAB 1 SECTION: REGULAR LIVE VIEW MODULE    -->
@@ -1412,26 +1434,23 @@
 <div id="panel-fast" class="tab-content-panel">
     <div class="control-panel">
         <div class="control-row">
-            <button id="fast-ai-btn" onclick="triggerFastWorkflowAI()" class="btn-ai">
+            <button id="fast-ai-btn" onclick="triggerFastWorkflowAI()" class="btn-ai" style="width: 100%;">
                 <span>⚡</span> Run Fast Text AI Scan
             </button>
-            <div id="fast-polling-status" class="polling-status">
-                <div class="spinner"></div>
-                <span id="fast-polling-text">Waking up GitHub Action Runner...</span>
-            </div>
         </div>
-
         <div id="fast-progress-wrapper" class="progress-wrapper">
             <div class="progress-track">
                 <div id="fast-progress-fill" class="progress-fill"></div>
             </div>
-            <div id="fast-progress-text" class="progress-text">Initializing fast AI sequence...</div>
+            <div id="fast-progress-text" class="progress-text">Ready to evaluate live sessions via Text AI...</div>
         </div>
     </div>
 
     <!-- Fast Live Display Cards Grid -->
     <div id="fast-rooms-grid" class="grid-container">
-        <!-- Rendered dynamically -->
+        <div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+            Click the button above to run the Fast AI scan.
+        </div>
     </div>
 </div>
 
@@ -2271,6 +2290,10 @@ function switchTab(targetTab) {
     } else if (targetTab === 'directory') { // 👈 ADD THIS BLOCK
         document.getElementById('tab-directory-btn').classList.add('active');
         document.getElementById('panel-directory').classList.add('active');
+    }else if (targetTab === 'fast') {
+        document.getElementById('tab-fast-btn').classList.add('active');
+        document.getElementById('panel-fast').classList.add('active');
+        loadFastRoomRegistry(); // Load the data when the tab is clicked
     }
 }
 
@@ -2279,6 +2302,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadRoomRegistry();
     loadFutureRoomRegistry();
     loadRoomDirectory(); // 👈 ADD THIS LINE
+    loadFastRoomRegistry(); 
     
     const dateInput = document.getElementById('input-date');
     if(dateInput) {
@@ -2296,14 +2320,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
 // ==========================================
 // FAST LIVE SCAN LOGIC (TEXT AI)
 // ==========================================
-
-const FAST_WORKFLOW_FILE = "fast-live-scan.yml";
-const FAST_FUNCTION_URL = "/trigger-fast"; // Note: You'll need to create this function if you want 1-click triggering, or just use the GitHub UI
 
 async function loadFastRoomRegistry() {
     const gridContainer = document.getElementById("fast-rooms-grid");
@@ -2354,38 +2373,71 @@ async function loadFastRoomRegistry() {
     }
 }
 
-// Update your existing switchTab function to include 'fast'
-function switchTab(targetTab) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
+async function triggerFastWorkflowAI() {
+    const btn = document.getElementById('fast-ai-btn');
+    const progressWrapper = document.getElementById('fast-progress-wrapper');
+    const progressFill = document.getElementById('fast-progress-fill');
+    const progressText = document.getElementById('fast-progress-text');
 
-    if(targetTab === 'live') {
-        document.getElementById('tab-live-btn').classList.add('active');
-        document.getElementById('panel-live').classList.add('active');
-    } else if (targetTab === 'future') {
-        document.getElementById('tab-future-btn').classList.add('active');
-        document.getElementById('panel-future').classList.add('active');
-    } else if (targetTab === 'blueprint') {
-        document.getElementById('tab-blueprint-btn').classList.add('active');
-        document.getElementById('panel-blueprint').classList.add('active');
-    } else if (targetTab === 'directory') {
-        document.getElementById('tab-directory-btn').classList.add('active');
-        document.getElementById('panel-directory').classList.add('active');
-    } else if (targetTab === 'fast') { // 🎯 NEW TAB
-        document.getElementById('tab-fast-btn').classList.add('active');
-        document.getElementById('panel-fast').classList.add('active');
-        loadFastRoomRegistry(); // Load data when tab is clicked
+    btn.disabled = true;
+    progressWrapper.style.display = 'flex';
+    progressFill.style.width = '0%';
+    progressFill.classList.remove('success');
+    progressText.innerText = "Triggering Fast GitHub Action...";
+    btn.innerHTML = `<span></span> Processing...`;
+
+    try {
+        // This assumes you have a /trigger-fast Cloudflare function set up. 
+        // If not, you can trigger it manually from the GitHub Actions tab.
+        const response = await fetch('/trigger-fast', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                GITHUB_USERNAME: "My-Memory-2008", 
+                REPO_NAME: "Saveetha-RoomFree-Checker",             
+                WORKFLOW_FILE: "fast-live-scan.yml" 
+            })
+        });
+
+        if (response.ok) {
+            progressFill.style.width = '50%';
+            progressText.innerText = "Fast AI Scan triggered! Waiting for Cloudflare rebuild...";
+            
+            let checkAttempts = 0;
+            const checkInterval = setInterval(async () => {
+                checkAttempts++;
+                try {
+                    const res = await fetch(`rooms_fast.json?t=${new Date().getTime()}`, { cache: "no-store" });
+                    if (res.ok) {
+                        clearInterval(checkInterval);
+                        progressFill.style.width = '100%';
+                        progressFill.classList.add('success');
+                        progressText.innerText = "Fast scan complete! Reloading dashboard...";
+                        progressText.style.color = "var(--accent-emerald)";
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
+                } catch(e) {}
+                if(checkAttempts > 60) {
+                    clearInterval(checkInterval);
+                    progressText.innerText = "Build took too long. Refresh grid manually.";
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>⚡</span> Run Fast Text AI Scan`;
+                }
+            }, 5000);
+        } else {
+            alert("Failed to trigger fast workflow. Please trigger it manually from GitHub Actions.");
+            btn.disabled = false;
+            btn.innerHTML = `<span>⚡</span> Run Fast Text AI Scan`;
+        }
+    } catch (err) {
+        alert("Network Error: " + err.message);
+        btn.disabled = false;
+        btn.innerHTML = `<span>⚡</span> Run Fast Text AI Scan`;
     }
 }
 
-// Add to your DOMContentLoaded
-document.addEventListener("DOMContentLoaded", () => {
-    loadRoomRegistry();
-    loadFutureRoomRegistry();
-    loadRoomDirectory();
-    loadFastRoomRegistry(); //  ADD THIS
-    // ... rest of your code ...
-});
+
+
 
 
         
