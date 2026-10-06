@@ -1,0 +1,52 @@
+name: Fast Live Room Scan (Text AI)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-fast-scraping:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout Repository Codebase
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Playwright Dependencies
+      run: |
+        npm install playwright
+        npx playwright install chromium --with-deps
+
+    - name: Install Ollama Core Engine
+      run: |
+        curl -fsSL https://ollama.com/install.sh | sh
+
+    - name: Start Ollama Server
+      run: |
+        ollama serve &
+        echo "Waiting for Ollama server to boot..."
+        until curl -s http://127.0.0.1:11434 > /dev/null; do
+          sleep 1
+        done
+        echo "Ollama server is up and running!"
+
+    - name: Download Vision Model
+      run: ollama pull moondream
+
+    - name: Run Fast Text-Based AI Script
+      run: node scripts/analyze_rooms_fast.js
+
+    - name: Commit and Save Fast Database
+      run: |
+        git config --global user.name "Fast Scan Agent"
+        git config --global user.email "actions@github.com"
+        
+        git add rooms_fast.json
+        git commit -m "Automated FAST text-based room scrape [IST Verified]" || exit 0
+        git push
