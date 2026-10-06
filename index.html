@@ -1226,6 +1226,9 @@
         <button id="tab-directory-btn" class="tab-btn" onclick="switchTab('directory')">
         <span>🔍</span> Room Directory
         </button>
+        <button id="tab-fast-btn" class="tab-btn" onclick="switchTab('fast')">
+        <span>⚡</span> Fast Live
+        </button>
     </div>
 
     <!-- ========================================== -->
@@ -1400,6 +1403,37 @@
 </div>
 
 
+
+
+
+<!-- ========================================== -->
+<!-- TAB 5 SECTION: FAST LIVE SCAN              -->
+<!-- ========================================== -->
+<div id="panel-fast" class="tab-content-panel">
+    <div class="control-panel">
+        <div class="control-row">
+            <button id="fast-ai-btn" onclick="triggerFastWorkflowAI()" class="btn-ai">
+                <span>⚡</span> Run Fast Text AI Scan
+            </button>
+            <div id="fast-polling-status" class="polling-status">
+                <div class="spinner"></div>
+                <span id="fast-polling-text">Waking up GitHub Action Runner...</span>
+            </div>
+        </div>
+
+        <div id="fast-progress-wrapper" class="progress-wrapper">
+            <div class="progress-track">
+                <div id="fast-progress-fill" class="progress-fill"></div>
+            </div>
+            <div id="fast-progress-text" class="progress-text">Initializing fast AI sequence...</div>
+        </div>
+    </div>
+
+    <!-- Fast Live Display Cards Grid -->
+    <div id="fast-rooms-grid" class="grid-container">
+        <!-- Rendered dynamically -->
+    </div>
+</div>
 
     
     
@@ -2256,6 +2290,105 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+
+
+
+
+
+
+
+
+// ==========================================
+// FAST LIVE SCAN LOGIC (TEXT AI)
+// ==========================================
+
+const FAST_WORKFLOW_FILE = "fast-live-scan.yml";
+const FAST_FUNCTION_URL = "/trigger-fast"; // Note: You'll need to create this function if you want 1-click triggering, or just use the GitHub UI
+
+async function loadFastRoomRegistry() {
+    const gridContainer = document.getElementById("fast-rooms-grid");
+    try {
+        const response = await fetch(`rooms_fast.json?t=${new Date().getTime()}`);
+        if (!response.ok) throw new Error();
+        const database = await response.json();
+        const rooms = Object.keys(database);
+        
+        // Strict filter: Only show FREE rooms
+        const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
+
+        if (freeRooms.length === 0) {
+            gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                All monitored rooms currently have active sessions (Fast Scan).
+            </div>`;
+            return;
+        }
+        
+        gridContainer.innerHTML = "";
+        freeRooms.forEach(key => {
+            const room = database[key];
+            const card = document.createElement("div");
+            card.className = "room-card";
+            
+            let contentString = `
+                <div class="card-header">
+                    <div class="room-title">Room ${room.roomNumber}</div>
+                    <span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3);">
+                        ● No Session Found
+                    </span>
+                </div>
+                <div class="schedule-details">
+                    <strong>Status:</strong> Verified Empty (Fast AI)<br>
+                    <strong>Details:</strong> ${room.upcomingTimings || 'No Session Found'}
+                </div>
+            `;
+            
+            if (room.link) {
+                contentString += `<a href="${room.link}" target="_blank" rel="noopener noreferrer" class="verify-btn">🔗 Verify Live Status</a>`;
+            }
+            card.innerHTML = contentString;
+            gridContainer.appendChild(card);
+        });
+    } catch (err) {
+        gridContainer.innerHTML = `<div class="room-card" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No fast scan database found. Run the Fast AI Scan workflow.</div>`;
+    }
+}
+
+// Update your existing switchTab function to include 'fast'
+function switchTab(targetTab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
+
+    if(targetTab === 'live') {
+        document.getElementById('tab-live-btn').classList.add('active');
+        document.getElementById('panel-live').classList.add('active');
+    } else if (targetTab === 'future') {
+        document.getElementById('tab-future-btn').classList.add('active');
+        document.getElementById('panel-future').classList.add('active');
+    } else if (targetTab === 'blueprint') {
+        document.getElementById('tab-blueprint-btn').classList.add('active');
+        document.getElementById('panel-blueprint').classList.add('active');
+    } else if (targetTab === 'directory') {
+        document.getElementById('tab-directory-btn').classList.add('active');
+        document.getElementById('panel-directory').classList.add('active');
+    } else if (targetTab === 'fast') { // 🎯 NEW TAB
+        document.getElementById('tab-fast-btn').classList.add('active');
+        document.getElementById('panel-fast').classList.add('active');
+        loadFastRoomRegistry(); // Load data when tab is clicked
+    }
+}
+
+// Add to your DOMContentLoaded
+document.addEventListener("DOMContentLoaded", () => {
+    loadRoomRegistry();
+    loadFutureRoomRegistry();
+    loadRoomDirectory();
+    loadFastRoomRegistry(); //  ADD THIS
+    // ... rest of your code ...
+});
+
+
+        
         
     </script>
 
