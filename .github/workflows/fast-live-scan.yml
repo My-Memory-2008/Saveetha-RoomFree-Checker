@@ -1,11 +1,12 @@
 name: Fast Live Room Scan (Text AI)
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: #  THIS LINE IS MANDATORY. If it's missing, GitHub returns a 403 error!
 
 jobs:
   run-fast-scraping:
     runs-on: ubuntu-latest
+    # ... rest of your code ...
     permissions:
       contents: write
 
