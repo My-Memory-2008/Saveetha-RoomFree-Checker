@@ -2319,20 +2319,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+// ==========================================
+// FAST LIVE SCAN LOGIC (TEXT AI) - UPDATED
+// ==========================================
 
-// ==========================================
-// FAST LIVE SCAN LOGIC (TEXT AI)
-// ==========================================
+const FAST_WORKFLOW_FILE = "fast-live-scan.yml";
+const FAST_FUNCTION_URL = "/trigger-fast";
 
 async function loadFastRoomRegistry() {
     const gridContainer = document.getElementById("fast-rooms-grid");
     try {
-        const response = await fetch(`rooms_fast.json?t=${new Date().getTime()}`);
+        const response = await fetch(`rooms_fast.json?t=${new Date().getTime()}`, {
+            cache: "no-store",
+            headers: { "Cache-Control": "no-cache, no-store, must-revalidate" }
+        });
+        
         if (!response.ok) throw new Error();
         const database = await response.json();
         const rooms = Object.keys(database);
         
-        // Strict filter: Only show FREE rooms
         const freeRooms = rooms.filter(key => database[key].currentStatus.toLowerCase() === "free");
 
         if (freeRooms.length === 0) {
@@ -2383,60 +2388,130 @@ async function triggerFastWorkflowAI() {
     progressWrapper.style.display = 'flex';
     progressFill.style.width = '0%';
     progressFill.classList.remove('success');
-    progressText.innerText = "Triggering Fast GitHub Action...";
-    btn.innerHTML = `<span></span> Processing...`;
+    progressText.innerText = "Dispatching to GitHub Actions...";
+    progressText.style.color = "var(--accent-amber)";
+    btn.innerHTML = `<span>⏳</span> Processing...`;
 
     try {
-        // This assumes you have a /trigger-fast Cloudflare function set up. 
-        // If not, you can trigger it manually from the GitHub Actions tab.
-        const response = await fetch('/trigger-fast', {
+        const response = await fetch(FAST_FUNCTION_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 GITHUB_USERNAME: "My-Memory-2008", 
                 REPO_NAME: "Saveetha-RoomFree-Checker",             
-                WORKFLOW_FILE: "fast-live-scan.yml" 
+                WORKFLOW_FILE: FAST_WORKFLOW_FILE
             })
         });
 
-        if (response.ok) {
-            progressFill.style.width = '50%';
-            progressText.innerText = "Fast AI Scan triggered! Waiting for Cloudflare rebuild...";
-            
-            let checkAttempts = 0;
-            const checkInterval = setInterval(async () => {
-                checkAttempts++;
-                try {
-                    const res = await fetch(`rooms_fast.json?t=${new Date().getTime()}`, { cache: "no-store" });
-                    if (res.ok) {
-                        clearInterval(checkInterval);
-                        progressFill.style.width = '100%';
-                        progressFill.classList.add('success');
-                        progressText.innerText = "Fast scan complete! Reloading dashboard...";
-                        progressText.style.color = "var(--accent-emerald)";
-                        setTimeout(() => window.location.reload(), 1500);
-                    }
-                } catch(e) {}
-                if(checkAttempts > 60) {
-                    clearInterval(checkInterval);
-                    progressText.innerText = "Build took too long. Refresh grid manually.";
-                    btn.disabled = false;
-                    btn.innerHTML = `<span>⚡</span> Run Fast Text AI Scan`;
-                }
-            }, 5000);
+        const data = await response.json().catch(() => ({ error: "Invalid server response." }));
+
+        if (response.ok && data.success) {
+            startFastProgressPolling();
         } else {
-            alert("Failed to trigger fast workflow. Please trigger it manually from GitHub Actions.");
-            btn.disabled = false;
-            btn.innerHTML = `<span>⚡</span> Run Fast Text AI Scan`;
+            alert("Failed to trigger fast workflow: " + (data.error || data.details));
+            resetFastUI();
         }
     } catch (err) {
         alert("Network Error: " + err.message);
-        btn.disabled = false;
-        btn.innerHTML = `<span>⚡</span> Run Fast Text AI Scan`;
+        resetFastUI();
     }
 }
 
+// 🎯 REAL-TIME STEP POLLING FOR FAST SCAN
+function startFastProgressPolling() {
+    const progressFill = document.getElementById('fast-progress-fill');
+    const progressText = document.getElementById('fast-progress-text');
+    let attempts = 0;
+    
+    const interval = setInterval(async () => {
+        attempts++;
+        try {
+            const statusRes = await fetch(`/fast-status?t=${new Date().getTime()}`, { cache: "no-store" });
+            const data = await statusRes.json();
 
+            if (data.runStatus === 'in_progress' || data.runStatus === 'queued') {
+                progressFill.style.width = `${data.progress}%`;
+                progressText.innerText = `GitHub Action: ${data.currentStep}`;
+            } 
+            else if (data.runStatus === 'completed' && data.conclusion === 'success') {
+                progressFill.style.width = `90%`;
+                progressText.innerText = "GitHub finished! Waiting for Cloudflare site rebuild...";
+                clearInterval(interval);
+                startFastDataPolling();
+            }
+            else if (data.runStatus === 'completed' && data.conclusion !== 'success') {
+                progressText.innerText = "Workflow failed. Check GitHub Actions tab.";
+                progressText.style.color = "var(--accent-rose)";
+                clearInterval(interval);
+                resetFastUI();
+            }
+        } catch (e) { console.log("Fast polling error:", e); }
+        
+        if (attempts > 120) { // 8 minute timeout
+            clearInterval(interval); 
+            progressText.innerText = "Timed out. Please refresh manually."; 
+            resetFastUI(); 
+        }
+    }, 3000); 
+}
+
+// 🎯 DATA POLLING (Waits for Cloudflare to actually serve the new JSON)
+function startFastDataPolling() {
+    const progressFill = document.getElementById('fast-progress-fill');
+    const progressText = document.getElementById('fast-progress-text');
+    let attempts = 0;
+    
+    const interval = setInterval(async () => {
+        attempts++;
+        try {
+            const cacheBuster = new Date().getTime();
+            const res = await fetch(`rooms_fast.json?nocache=${cacheBuster}`, { 
+                method: 'GET',
+                cache: "no-store",
+                headers: { 
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "Pragma": "no-cache",
+                    "Expires": "0"
+                }
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                const rooms = Object.values(data);
+                
+                if (rooms.length > 0) {
+                    // If the JSON has data, Cloudflare has rebuilt!
+                    clearInterval(interval);
+                    progressFill.style.width = '100%';
+                    progressFill.classList.add('success');
+                    progressText.innerText = "Fast scan sync complete! Updating dashboard...";
+                    progressText.style.color = "var(--accent-emerald)";
+                    
+                    setTimeout(() => window.location.reload(), 1000);
+                    return;
+                }
+            }
+        } catch(e) {
+            console.log("Fast data polling... waiting for Cloudflare rebuild.");
+        }
+        
+        if (attempts > 60) { 
+            clearInterval(interval); 
+            progressText.innerText = "Rebuild took too long. Please refresh manually."; 
+            resetFastUI(); 
+        }
+    }, 3000);
+}
+
+function resetFastUI() {
+    const btn = document.getElementById('fast-ai-btn');
+    const progressWrapper = document.getElementById('fast-progress-wrapper');
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>⚡</span> Run Fast Text AI Scan`;
+    }
+    if (progressWrapper) progressWrapper.style.display = 'none';
+}
 
 
 
